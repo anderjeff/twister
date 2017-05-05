@@ -1,0 +1,171 @@
+﻿<UserControl x:Class="Twister.Views.FullyReversedTestUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:views="clr-namespace:Twister.Views"
+             xmlns:local="clr-namespace:Twister.ViewModels"
+             xmlns:chart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200" Padding="10">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+            <RowDefinition Height="100" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <!--Torque stack panel-->
+        <StackPanel>
+            <Label Content="Torque (in-lbs)" />
+            <Label Name="lblTorque"
+                   HorizontalAlignment="Center"
+                   Style="{StaticResource styleImportantValues}"
+                   Content="{Binding CurrentTorque, StringFormat=n0, FallbackValue=0}" />
+        </StackPanel>
+
+        <!--Angle stack panel-->
+        <StackPanel Grid.Column="1">
+            <Label Content="Angle (deg)" />
+            <Label Name="lblAngle"
+                   HorizontalAlignment="Center"
+                   Style="{StaticResource styleImportantValues}"
+                   Content="{Binding CurrentAngle, StringFormat=n2, FallbackValue=0.00}" />
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Margin="5,0,0,10"
+                Grid.ColumnSpan="2"
+                BorderBrush="Gray" BorderThickness="1" CornerRadius="10"
+                Background="{Binding MessageBackgroundColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            <TextBlock Padding="10"
+                       TextWrapping="Wrap"
+                       FontFamily="Segoe Ui"
+                       FontSize="18"
+                       VerticalAlignment="Center"
+                       Text="{Binding Instructions, FallbackValue='Enter the number on your barcode and press the Validate button.'}" />
+        </Border>
+
+        <!--Enter Test id control-->
+        <views:EnterTestIdUserControl x:Name="ucEnterTestId"
+                                      FocusManager.IsFocusScope="True"
+                                      Grid.Row="2" Grid.ColumnSpan="2"
+                                      DataContext="{Binding}"
+                                      Visibility="{Binding IsTestIdNeeded, Converter={StaticResource BoolToVisConverter}, FallbackValue=Visible, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!-- Current Test Settings -->
+        <views:FullyReversedTestSettingsUserControl x:Name="ucTestSettings"
+                                                    Grid.Row="3" Grid.ColumnSpan="2"
+                                                    DataContext="{Binding}"
+                                                    Margin="0,20,0,0" />
+
+        <!--Start and Stop Buttons-->
+        <Button Grid.Row="5"
+                Margin="5"
+                Padding="25"
+                Content="Start"
+                Style="{StaticResource styleStartButton}"
+                Command="{Binding StartTestCommand}" />
+        <Button Grid.Row="5" Grid.Column="1"
+                Margin="5"
+                Content="STOP"
+                Style="{StaticResource styleStopButton}"
+                Command="{Binding StopTestCommand}" />
+
+        <!-- A border to suround the graph -->
+        <Border BorderBrush="Gray"
+                BorderThickness="1"
+                Grid.Column="2"
+                Grid.RowSpan="6"
+                Margin="10,5,10,5">
+            <!--Add the chart-->
+            <WindowsFormsHost
+                FontFamily="Segoe Ui">
+                <WindowsFormsHost.Child>
+                    <chart:Chart x:Name="_chartTestData"
+                                 Dock="Fill" />
+                </WindowsFormsHost.Child>
+            </WindowsFormsHost>
+        </Border>
+
+        <TextBlock Grid.Column="3"
+                   Text="Completed Tests"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontFamily="Segoe UI"
+                   FontSize="28"
+                   DockPanel.Dock="Top" />
+
+        <!-- A DataGrid to show past tests -->
+        <DataGrid Grid.RowSpan="5"
+                  Grid.Row="1"
+                  Grid.Column="3"
+                  SelectedItem="{Binding SelectedTest}"
+                  ItemsSource="{Binding DisplayedCompletedTests}"
+                  IsReadOnly="True"
+                  RowHeaderWidth="0"
+                  AutoGenerateColumns="False"
+                  HorizontalScrollBarVisibility="Auto"
+                  Margin="0,5,0,5"
+                  MinWidth="0">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Test Id"
+                                        Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="{Binding Path=TestId}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Started"
+                                        Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{Binding Path=StartDate, StringFormat='h:mm:ss tt'}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Duration"
+                                        Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock VerticalAlignment="Center"
+                                       HorizontalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0:00}:{1:00;00}">
+                                        <Binding Path="Duration.Minutes" />
+                                        <Binding Path="Duration.Seconds" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Samples"
+                                        Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Text="{Binding Path=Samples, StringFormat='n0'}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

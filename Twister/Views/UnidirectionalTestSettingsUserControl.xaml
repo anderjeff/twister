@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="Twister.Views.UnidirectionalTestSettingsUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Twister.Views"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="fonts" TargetType="Label">
+            <Setter Property="FontFamily" Value="Segoe Ui" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Margin" Value="10,0,0,0" />
+        </Style>
+        <Style x:Key="LeftColumnLabel" BasedOn="{StaticResource fonts}" TargetType="{x:Type Label}">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style x:Key="RightColumnLabel" BasedOn="{StaticResource fonts}" TargetType="{x:Type Label}">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Foreground" Value="Green" />
+        </Style>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="FontFamily" Value="Segoe Ui" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="DarkGray" />
+        </Style>
+        <Style TargetType="{x:Type GroupBox}">
+            <Setter Property="FontFamily" Value="Segoe Ui" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Operator -->
+        <Label Content="Operator"
+               Grid.Row="0"
+               Style="{StaticResource LeftColumnLabel}" />
+        <Label Content="{Binding Session.BenchOperator}"
+               Grid.Column="1"
+               Grid.Row="0"
+               Style="{StaticResource RightColumnLabel}" />
+
+        <!-- Work Order -->
+        <Label Content="Work Order"
+               Grid.Row="1"
+               Style="{StaticResource LeftColumnLabel}" />
+        <Label Content="{Binding Session.WorkId}"
+               Grid.Column="1"
+               Grid.Row="1"
+               Style="{StaticResource RightColumnLabel}" />
+
+        <!-- Torque Limit (-) -->
+        <Label Content="Torque Limit (-)"
+               Grid.Row="2"
+               Style="{StaticResource LeftColumnLabel}" />
+        <Label Content="{Binding Session.TestTemplate.CounterclockwiseTorque}"
+               Grid.Column="1"
+               Grid.Row="2"
+               Style="{StaticResource RightColumnLabel}" />
+
+        <!-- Torque Limit (+) -->
+        <Label Content="Torque Limit (+)"
+               Grid.Row="3"
+               Style="{StaticResource LeftColumnLabel}" />
+        <Label Content="{Binding Session.TestTemplate.ClockwiseTorque}"
+               Grid.Column="1"
+               Grid.Row="3"
+               Style="{StaticResource RightColumnLabel}" />
+
+        <!-- Run Speed -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <Label Content="Speed" Style="{StaticResource LeftColumnLabel}" />
+            <Button Margin="10,0,0,0" Command="{Binding EditTestSettingsCommand}">
+                <Image Source="/Images/edit_image.png" Height="24" />
+            </Button>
+        </StackPanel>
+
+        <Label Content="{Binding Session.TestTemplate.RunSpeed}"
+               Grid.Column="1"
+               Grid.Row="4"
+               Style="{StaticResource RightColumnLabel}" />
+
+        <!-- Torque Direction -->
+        <GroupBox Header="Direction" Grid.Row="5"
+                  Grid.ColumnSpan="3"
+                  Margin="10,10,10,0">
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <RadioButton Name="rdoCW"
+                             Content="Clockwise"
+                             Padding="10"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Center"
+                             Command="{Binding SelectClockwiseTestCommand}" />
+                <RadioButton Name="rdoCCW"
+                             Content="Counterclockwise"
+                             Padding="10"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Center"
+                             Grid.Column="1"
+                             Command="{Binding SelectCounterclockwiseTestCommand}" />
+            </Grid>
+        </GroupBox>
+
+        <!-- Close Program button -->
+        <Button Name="btnCloseProgram"
+                Grid.Column="0"
+                Grid.Row="7"
+                Grid.ColumnSpan="3"
+                Content="{Binding CloseProgramMessage}"
+                BorderThickness="2"
+                Margin="0,10,0,0" Padding="15"
+                HorizontalAlignment="Right"
+                Command="{Binding ExitProgamCommand}" />
+        <!-- Save Test Data button -->
+        <Button Name="btnSaveTestData"
+                Grid.Column="0"
+                Grid.Row="7"
+                Content="Save Test Data"
+                Background="LightGreen"
+                BorderThickness="2"
+                Margin="0,10,0,0" Padding="15"
+                Command="{Binding SaveDataCommand}" />
+    </Grid>
+</UserControl>
