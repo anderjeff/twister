@@ -500,5 +500,15 @@ namespace Twister.Business.Tests
             */
             _acDrive.StoreParameter(ServoDrive.RegisterAddress.TestInProcess, 0);
         }
+
+        public void UpdateSpeedParameters(int runSpeed, int moveSpeed)
+        {
+            // update the drive
+            LoadTestParameter(ServoDrive.RegisterAddress.Runspeed, runSpeed);
+            LoadTestParameter(ServoDrive.RegisterAddress.Manualspeed, moveSpeed);
+
+            // update the database
+            Database.TestTemplateDb.UpdateSpeedSettings(runSpeed, moveSpeed, CurrentTest.TestTemplateId);
+        }
     }
 }

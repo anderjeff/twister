@@ -5,7 +5,7 @@
         xmlns:viewModels="clr-namespace:Twister.ViewModels"
         Title="MainWindow" WindowState="Maximized"
         x:Name="mainWindow"
-        Icon="../Images/twister3.png"
+        Icon="../Images/twister.png"
         Closed="mainWindow_Closed">
 
     <Window.Resources>

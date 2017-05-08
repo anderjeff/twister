@@ -90,8 +90,11 @@ namespace Twister.ViewModels
         private void EditTestSettings()
         {
             // open dialog box with test settings
-
-            // if user accepts changes, update the VFD parameters for the next run.
+            RunSpeedSettings_VM vm = new RunSpeedSettings_VM();
+            if (vm.ShowDialog())
+            {
+                TestBench.Singleton.UpdateSpeedParameters(vm.RunSpeed, vm.MoveSpeed);
+            }
         }
 
         /// <summary>
@@ -129,7 +132,9 @@ namespace Twister.ViewModels
         protected void StopTest()
         {
             TestBench.Singleton.EmergencyStop();
+
             StopTestCommand.RaiseCanExecuteChanged();
+            EditTestSettingsCommand.RaiseCanExecuteChanged();
         }
 
         protected abstract void StartTest();
@@ -218,6 +223,7 @@ namespace Twister.ViewModels
             StopTestCommand.RaiseCanExecuteChanged();
             StartTestCommand.RaiseCanExecuteChanged();
             ExitProgamCommand.RaiseCanExecuteChanged();
+            EditTestSettingsCommand.RaiseCanExecuteChanged();
         }
 
         protected void TestBench_TestStarted(object sender, TorqueTestEventArgs e)

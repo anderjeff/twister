@@ -5,7 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Twister.Common;
 
-namespace Twister.Ui
+namespace Twister
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -19,31 +19,14 @@ namespace Twister.Ui
     {
         LogManager _logManager = new LogManager();
         ILogger _log;
-        private bool _contentLoaded;
 
+        [System.STAThreadAttribute()]
+        [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public static void Main()
         {
-            Twister.Ui.App app = new App();
+            App app = new App();
             app.InitializeComponent();
             app.Run();
-        }
-
-        [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
-        private void InitializeComponent()
-        {
-            if(_contentLoaded)
-            {
-                return;
-            }
-            _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Twister;component/app.xaml", System.UriKind.Relative);
-
-            #line 1 "..\..\App.xaml"
-            System.Windows.Application.LoadComponent(this, resourceLocater);
-
-            #line default
-            #line hidden
         }
 
         protected override void OnStartup(StartupEventArgs e)

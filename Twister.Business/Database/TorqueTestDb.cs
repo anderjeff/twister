@@ -84,7 +84,6 @@ namespace Twister.Business.Database
             }
         }
 
-
         /// <summary>
         ///     Determines if the testId has already been used.
         /// </summary>
@@ -108,7 +107,6 @@ namespace Twister.Business.Database
                 throw;
             }
         }
-
 
         /// <summary>
         ///     For a given testId, this method will get you a TorqueTest from
@@ -171,7 +169,6 @@ namespace Twister.Business.Database
                 CloseConnection(conn);
             }
         }
-
 
         internal static void SetTorqeTestParameters(SqlCommand cmd, TorqueTest torqueTest)
         {

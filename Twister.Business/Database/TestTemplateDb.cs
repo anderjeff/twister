@@ -51,5 +51,50 @@ namespace Twister.Business.Database
                 CloseConnection(conn);
             }
         }
+
+        internal static void UpdateSpeedSettings(int runSpeed, int moveSpeed, int testId)
+        {
+            SqlConnection conn = null;
+            try
+            {
+                var sel = "up_SaveTestSettings";
+                conn = TwisterConnection();
+
+                SqlCommand cmd = CreateCommand(conn, sel);
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@runSpeed",
+                    Value = runSpeed
+                });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@moveSpeed",
+                    Value = moveSpeed
+                });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@testId",
+                    Value = testId
+                });
+
+                int rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected != 1)
+                {
+                    string message = $"Error saving speed settings. Expected 1 update using " +
+                                     $"run speed = {runSpeed} and move speed = {moveSpeed}.";
+                    throw new Exception(message);
+                }
+
+                cmd.Dispose();
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(Msg.GeneralExceptionMessage(ex, "SaveToDatabase"));
+            }
+            finally
+            {
+                CloseConnection(conn);
+            }
+        }
     }
 }

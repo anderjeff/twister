@@ -6,27 +6,57 @@
         xmlns:local="clr-namespace:Twister.Views"
         xmlns:vm="clr-namespace:Twister.ViewModels"
         mc:Ignorable="d"
-        Title="RunSpeedSettingsWindow" Height="300" Width="300">
+        Title="Speed Settings" Height="200" Width="350"
+        Icon="/Images/twister.png">
+    
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="75"/>
+        </Style>
+    </Window.Resources>
 
     <Window.DataContext>
         <vm:RunSpeedSettings_VM />
     </Window.DataContext>
 
-    <Grid>
+    <Grid Margin="5">
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="50" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Run Speed" />
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding RunSpeed, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox Grid.Row="0" Grid.Column="1" 
+                 Text="{Binding RunSpeed, UpdateSourceTrigger=PropertyChanged}" 
+                 ToolTip="The rotational speed (rpm) of the motor shaft when the test is running."/>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="Enter a value between 1 and 100" />
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Move Speed" />
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MoveSpeed, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox Grid.Row="1" Grid.Column="1" 
+                 Text="{Binding MoveSpeed, UpdateSourceTrigger=PropertyChanged}" 
+                 ToolTip="The rotational speed (rpm) of motor shaft when the joystick is used for manual movement."/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="Enter a value between 1 and 100" />
 
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Button Content="OK" Width="75" Margin="0,0,15,0" Command="{Binding }"/>
+            <Button Content="Cancel" Width="75"/>
+        </StackPanel>
     </Grid>
 </Window>

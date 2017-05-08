@@ -54,10 +54,14 @@
         <Label Content="Target Torque (+)"
                Grid.Row="3"
                Style="{StaticResource LeftColumnLabel}" />
-        <Label Content="Speed"
-               Grid.Row="4"
-               Style="{StaticResource LeftColumnLabel}" />
 
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <Label Content="Speed" Style="{StaticResource LeftColumnLabel}" />
+            <Button Margin="10,0,0,0" Command="{Binding EditTestSettingsCommand}">
+                <Image Source="/Images/edit_image.png" Height="24" />
+            </Button>
+        </StackPanel>
+        
         <!-- Values -->
         <!-- Labels -->
         <Label Content="{Binding Session.BenchOperator}"
