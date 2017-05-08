@@ -54,7 +54,7 @@ namespace Twister.ViewModels
 
         public decimal? CwValue
         {
-            get => CurrentCalibration.NominalCwDeflection;
+            get { return CurrentCalibration.NominalCwDeflection; }
             set
             {
                 // don't check for != value here, this is only set once
@@ -65,7 +65,7 @@ namespace Twister.ViewModels
 
         public decimal? CcwValue
         {
-            get => CurrentCalibration.NominalCcwDeflection;
+            get { return CurrentCalibration.NominalCcwDeflection; }
             set
             {
                 // don't check for != value here, this is only set once

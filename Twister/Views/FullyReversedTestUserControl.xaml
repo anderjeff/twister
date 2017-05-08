@@ -65,7 +65,6 @@
         <!-- Current Test Settings -->
         <views:FullyReversedTestSettingsUserControl x:Name="ucTestSettings"
                                                     Grid.Row="3" Grid.ColumnSpan="2"
-                                                    DataContext="{Binding}"
                                                     Margin="0,20,0,0" />
 
         <!--Start and Stop Buttons-->

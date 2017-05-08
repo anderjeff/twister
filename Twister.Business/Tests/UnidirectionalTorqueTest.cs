@@ -30,7 +30,7 @@ namespace Twister.Business.Tests
         /// </summary>
         public TestDirection Direction
         {
-            get => _direction;
+            get { return _direction; }
             set
             {
                 _direction = value;

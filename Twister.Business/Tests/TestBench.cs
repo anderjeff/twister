@@ -110,6 +110,7 @@ namespace Twister.Business.Tests
             return _testToSave != null;
         }
 
+
         /// <summary>
         ///     Load default parameters to give the bench a certain basic behavior, before the
         ///     tests alter that behavior.
@@ -507,8 +508,17 @@ namespace Twister.Business.Tests
             LoadTestParameter(ServoDrive.RegisterAddress.Runspeed, runSpeed);
             LoadTestParameter(ServoDrive.RegisterAddress.Manualspeed, moveSpeed);
 
+            TestSession.Instance.TestTemplate.RunSpeed = runSpeed;
+            TestSession.Instance.TestTemplate.MoveSpeed= moveSpeed;
+
             // update the database
-            Database.TestTemplateDb.UpdateSpeedSettings(runSpeed, moveSpeed, CurrentTest.TestTemplateId);
+            Database.TestTemplateDb.UpdateSpeedSettings(runSpeed, moveSpeed, TestSession.Instance.TestTemplate.Id);
+        }
+
+        public TestTemplate RetrieveCurrentTestTemplate(TestTemplate testTemplate)
+        {
+            Database.TestTemplateDb.LoadTemplateThatHasId(testTemplate);
+            return testTemplate;
         }
     }
 }

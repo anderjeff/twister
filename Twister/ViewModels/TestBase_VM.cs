@@ -84,13 +84,18 @@ namespace Twister.ViewModels
 
         private bool IsRunning()
         {
-            return TestBench.Singleton.IsTesting;
+            return !TestBench.Singleton.IsTesting;
         }
 
         private void EditTestSettings()
         {
             // open dialog box with test settings
             RunSpeedSettings_VM vm = new RunSpeedSettings_VM();
+            
+            TestTemplate template = TestBench.Singleton.RetrieveCurrentTestTemplate(Session.TestTemplate);
+            vm.RunSpeed = template.RunSpeed;
+            vm.MoveSpeed = template.MoveSpeed;
+
             if (vm.ShowDialog())
             {
                 TestBench.Singleton.UpdateSpeedParameters(vm.RunSpeed, vm.MoveSpeed);
@@ -582,7 +587,7 @@ namespace Twister.ViewModels
         /// </summary>
         public Chart TorqueAngleChart
         {
-            get => _torqueAngleChart;
+            get { return _torqueAngleChart; }
             set
             {
                 _torqueAngleChart = value;

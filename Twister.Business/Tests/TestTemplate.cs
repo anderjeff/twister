@@ -101,7 +101,7 @@ namespace Twister.Business.Tests
         /// </summary>
         public int RunSpeed
         {
-            get => _runSpeed;
+            get { return _runSpeed; }
             set
             {
                 _runSpeed = value;

@@ -61,6 +61,8 @@ namespace Twister.ViewModels
         public bool ShowDialog()
         {
             _window = new RunSpeedSettingsWindow();
+            _window.DataContext = this;
+
             bool? result = _window.ShowDialog();
 
             if (result == true)
