@@ -30,6 +30,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -40,17 +42,21 @@
 
         <TextBlock Text="Run Speed" />
         <TextBox Grid.Row="0" Grid.Column="1" 
-                 Text="{Binding RunSpeed}" 
+                 Text="{Binding RunSpeed, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
                  ToolTip="The rotational speed (rpm) of the motor shaft when the test is running."/>
         <TextBlock Grid.Row="0" Grid.Column="2" Text="Enter a value between 1 and 100" />
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Move Speed" />
-        <TextBox Grid.Row="1" Grid.Column="1" 
-                 Text="{Binding MoveSpeed}" 
-                 ToolTip="The rotational speed (rpm) of motor shaft when the joystick is used for manual movement."/>
-        <TextBlock Grid.Row="1" Grid.Column="2" Text="Enter a value between 1 and 100" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding RunSpeedValidationMessage}"/>
 
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Move Speed" />
+        <TextBox Grid.Row="2" Grid.Column="1" 
+                 Text="{Binding MoveSpeed, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                 ToolTip="The rotational speed (rpm) of motor shaft when the joystick is used for manual movement."/>
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="Enter a value between 1 and 100" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding MoveSpeedValidationMessage}"/>
+
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
             <Button Content="OK" Width="75" Margin="0,0,15,0" Command="{Binding UpdateSpeedSettingsCommand}"/>
             <Button Content="Cancel" Width="75" Command="{Binding CancelSpeedSettingsUpdateCommand}"/>
         </StackPanel>
