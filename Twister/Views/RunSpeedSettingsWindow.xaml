@@ -40,13 +40,13 @@
 
         <TextBlock Text="Run Speed" />
         <TextBox Grid.Row="0" Grid.Column="1" 
-                 Text="{Binding RunSpeed}" 
+                 Text="{Binding RunSpeed, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" 
                  ToolTip="The rotational speed (rpm) of the motor shaft when the test is running."/>
         <TextBlock Grid.Row="0" Grid.Column="2" Text="Enter a value between 1 and 100" />
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Move Speed" />
         <TextBox Grid.Row="1" Grid.Column="1" 
-                 Text="{Binding MoveSpeed}" 
+                 Text="{Binding MoveSpeed, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" 
                  ToolTip="The rotational speed (rpm) of motor shaft when the joystick is used for manual movement."/>
         <TextBlock Grid.Row="1" Grid.Column="2" Text="Enter a value between 1 and 100" />
 

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Twister.Utilities;
 using Twister.Views;
 
 namespace Twister.ViewModels
 {
-    public class RunSpeedSettings_VM : Base_VM
+    public class RunSpeedSettings_VM : Base_VM, IDataErrorInfo
     {
         public RunSpeedSettings_VM()
         {
@@ -47,6 +48,26 @@ namespace Twister.ViewModels
 
         public RelayCommand UpdateSpeedSettingsCommand { get; private set; }
         public RelayCommand CancelSpeedSettingsUpdateCommand { get; private set; }
+
+        #region IDataErrorInfo implemenation
+
+        public string Error
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
 
         private void CancelSpeedSettingsUpdate()
         {
