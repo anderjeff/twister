@@ -64,5 +64,35 @@ namespace Twister.Business.Data
                 return false;
             }
         }
-    }
+
+		/// <summary>
+		///     Verifies that the test id has not already been used, is not null,
+		///     and is not an empty value.  If the number is verified, this call
+		///     will also save the _testToSave, and indicate that in the response
+		///     to the caller.
+		/// </summary>
+		/// <param name="testId">
+		///     The testId the user is trying to assign to the test that just completed.
+		/// </param>
+		/// <returns>
+		///     If the testId is null, whitespace, or a duplicate testId, an error
+		///     will be returned to the user.  If no error is detected, null will be
+		///     returned
+		/// </returns>
+		public static string VerifyTestId(string testId)
+		{
+			try
+			{
+				// verification of number provided
+
+				if (string.IsNullOrWhiteSpace(testId)) return Messages.BlankTorqueTestId();
+				if (TorqueTestDb.InvalidTestId(testId)) return Messages.DuplicateTestId(testId);
+				return null;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+	}
 }

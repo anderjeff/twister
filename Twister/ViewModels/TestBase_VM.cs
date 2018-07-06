@@ -474,9 +474,9 @@ namespace Twister.ViewModels
             {
                 if (TestBench.Singleton.HasTestToSave())
                 {
-                    string messageForUser = TestBench.Singleton.VerifyTestId(UserProvidedTestId);
+					string messageForUser = DataValidator.VerifyTestId(UserProvidedTestId);
 
-                    if (messageForUser != null)
+					if (messageForUser != null)
                     {
                         DisplayTempMessage(messageForUser, ERROR_BRUSH, 2);
                     }
@@ -536,7 +536,7 @@ namespace Twister.ViewModels
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             // here is where the test data is saved to the database.
-            string messageForUser = TestBench.Singleton.SaveTestToDatabase(UserProvidedTestId);
+            string messageForUser = TestBench.Singleton.PersistTestData(UserProvidedTestId);
             e.Result = messageForUser;
         }
 
