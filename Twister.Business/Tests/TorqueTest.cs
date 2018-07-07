@@ -164,18 +164,10 @@ namespace Twister.Business.Tests
 
         protected void InformInitializationComplete()
         {
-            try
-            {
-                // at this point, the test has been initialized and it is free to start.
-                Initialized = true;
-                TestBench.Singleton.VerifyAlive();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            // at this point, the test has been initialized and it is free to start.
+	        Initialized = true;
+	        TestBench.Singleton.VerifyAlive();
         }
-
 
         /// <summary>
         ///     Begins the TorqueTest.

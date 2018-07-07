@@ -29,11 +29,18 @@
             <Setter Property="FontFamily" Value="Segoe Ui" />
             <Setter Property="FontSize" Value="20" />
         </Style>
+
+        <Style TargetType="{x:Type CheckBox}">
+            <Setter Property="FontFamily" Value="Segoe Ui" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
     </UserControl.Resources>
+
     <StackPanel Orientation="Vertical"
                 VerticalAlignment="Center"
                 Width="600">
-
 
         <Border BorderBrush="Gray"
                 BorderThickness="1"
@@ -50,6 +57,9 @@
 
         </Border>
 
+        <StackPanel Orientation="Horizontal">
+
+        </StackPanel>
         <Button Name="bthSteeringTest"
                 Margin="5,10"
                 Padding="30"
@@ -71,6 +81,21 @@
                 Content="Torsion Test To Failure"
                 HorizontalContentAlignment="Left"
                 Command="{Binding TorsionTestCommand}" />
+
+        <Button Name="btnFatigueTest"
+                Margin="5,10"
+                Padding="30"
+                Background="LightGray"
+                Foreground="Black"
+                FontFamily="Segoe Ui"
+                FontWeight="DemiBold"
+                Content="Fatigue Test"
+                HorizontalContentAlignment="Left"
+                Command="{Binding FatigueTestCommand}" />
+
+        <CheckBox Content="Use Test Simulator" 
+                  IsChecked="{Binding SimulatorIsUsed}"
+                  ToolTip="Simulate the connection to the Kolmorgen Servo Drive.  This cannot be used in production testing."/>
 
     </StackPanel>
 </UserControl>

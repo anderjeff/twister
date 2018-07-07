@@ -163,15 +163,8 @@ namespace Twister.Business.Tests
         /// </summary>
         public void Load()
         {
-            try
-            {
-                TestTemplateDb.LoadTemplateThatHasId(this);
-                _templateLoaded = true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+			TestTemplateDb.LoadTemplateThatHasId(this);
+	        _templateLoaded = true;
+		}
     }
 }

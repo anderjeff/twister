@@ -8,8 +8,8 @@ namespace Twister.Business.Data
     public class DataValidator
     {
         /// <summary>
-        ///     Determines if the workId provided is a number that has been used
-        ///     for a work order.
+        ///     Determines if the workId is null or whitespace and if the value
+        ///     provided is a number that has been used for another work order.
         /// </summary>
         /// <param name="workId">The work order indentification number.</param>
         /// <param name="message">
@@ -20,6 +20,12 @@ namespace Twister.Business.Data
         /// <returns></returns>
         public bool ValidWorkOrder(string workId, out string message)
         {
+	        if (string.IsNullOrWhiteSpace(workId))
+	        {
+		        message = Messages.WorkOrderCannotBeNullOrEmpty();
+		        return false;
+	        }
+
             try
             {
                 var workIdFound = ShopfloorWorkOrderDb.WorkIdExists(workId);
@@ -40,7 +46,13 @@ namespace Twister.Business.Data
 
         public bool ValidEmployeeNumber(string clockNumber, out string message)
         {
-            try
+	        if (string.IsNullOrWhiteSpace(clockNumber))
+	        {
+		        message = Messages.ClockNumberCannotBeNullOrEmpty();
+		        return false;
+	        }
+
+			try
             {
                 var employeeFound = false;
                 BenchOperator bo = BenchOperatorDb.GetEmployeeById(clockNumber);

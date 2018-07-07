@@ -99,7 +99,17 @@ namespace Twister.Business.Shared
             return message;
         }
 
-        public static string WorkOrderDoesNotExist(string workId)
+	    public static string WorkOrderCannotBeNullOrEmpty()
+	    {
+		    return "Work order cannot be an empty value.";
+	    }
+
+	    public static string ClockNumberCannotBeNullOrEmpty()
+	    {
+		    return "Clock number cannot be an empty value.";
+	    }
+
+		public static string WorkOrderDoesNotExist(string workId)
         {
             return string.Format("Work order {0} does not exist, please try a different number.", workId);
         }

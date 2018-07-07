@@ -56,17 +56,10 @@ namespace Twister.Business.Tests
         /// </summary>
         public void Initialize(TestType desiredTest)
         {
-            try
-            {
-                TestTemplate = new TestTemplate(desiredTest);
-                TestTemplate.Load();
+			TestTemplate = new TestTemplate(desiredTest);
+	        TestTemplate.Load();
 
-                CompletedTests = new ObservableCollection<TorqueTest>();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+	        CompletedTests = new ObservableCollection<TorqueTest>();
+		}
     }
 }
