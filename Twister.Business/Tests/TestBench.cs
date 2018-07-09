@@ -19,8 +19,8 @@ namespace Twister.Business.Tests
 		protected static TestBench _testBench;
 
 		// The bench has this equipment
-		private static AnalogInputDevice _torqueCell;
-		private static ServoDrive _acDrive;
+		private static ITorqueCell _torqueCell;
+		private static IServoDrive _acDrive;
 
 		// The bench runs one test at a time.
 		private TorqueTest _currentTest;
@@ -37,12 +37,8 @@ namespace Twister.Business.Tests
 		/// <summary>
 		/// A constructor used to create singleton instance.
 		/// </summary>
-		protected TestBench(AnalogInputDevice torqueCell, ServoDrive servoDrive)
+		protected TestBench(ITorqueCell torqueCell, IServoDrive servoDrive)
 		{
-			// specifify the locations that the devices reside on the network.
-			//_torqueCell = new AnalogInputDevice("128.1.1.30");
-			//_acDrive = new ServoDrive("128.1.1.35");
-
 			_torqueCell = torqueCell;
 			_acDrive = servoDrive;
 
@@ -59,7 +55,7 @@ namespace Twister.Business.Tests
 			get { return _testBench; }
 		}
 
-		public static void Initialize(AnalogInputDevice torqueCell, ServoDrive servoDrive)
+		public static void Initialize(ITorqueCell torqueCell, IServoDrive servoDrive)
 		{
 			_testBench = new TestBench(torqueCell, servoDrive);
 		}
@@ -127,7 +123,7 @@ namespace Twister.Business.Tests
 		public void InformReady()
 		{
 			// -1 means true in the AKD Basic logic I used
-			Singleton.LoadTestParameter(ServoDrive.RegisterAddress.SoftwareInitialized, -1);
+			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.SoftwareInitialized, -1);
 		}
 
 		/// <summary>
@@ -136,7 +132,7 @@ namespace Twister.Business.Tests
 		public void InformNotReady()
 		{
 			// 0 means false in the AKD Basic logic I used.
-			Singleton.LoadTestParameter(ServoDrive.RegisterAddress.SoftwareInitialized, 0);
+			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.SoftwareInitialized, 0);
 		}
 
 		/// <summary>
@@ -162,7 +158,7 @@ namespace Twister.Business.Tests
 		/// <param name="testId"></param>
 		private void SetTestType(int testId)
 		{
-			_acDrive.StoreParameter(ServoDrive.RegisterAddress.TestType, testId);
+			_acDrive.StoreParameter(ServoDriveEnums.RegisterAddress.TestType, testId);
 		}
 
 		public void BeginCurrentTest()
@@ -209,7 +205,7 @@ namespace Twister.Business.Tests
                  * of the access to _torqueCell, and to _acDrive, which I am trying to 
                  * restrict to inside this class only.
                  */
-				LoadTestParameter(ServoDrive.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);
+				LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);
 			}
 
 			// now create and return the data point
@@ -264,7 +260,7 @@ namespace Twister.Business.Tests
              * A watchdogValue of 50 shuts it down almost instantly.
              */
 			var watchdogValue = 100;
-			LoadTestParameter(ServoDrive.RegisterAddress.WatchdogValue, watchdogValue);
+			LoadTestParameter(ServoDriveEnums.RegisterAddress.WatchdogValue, watchdogValue);
 		}
 
 		/// <summary>
@@ -289,7 +285,7 @@ namespace Twister.Business.Tests
 				/* This value should be -1 when the test is running, and 
                  * zero when the test stops running.
                  */
-				var value = _acDrive.RetrieveParameter(ServoDrive.RegisterAddress.TestInProcess);
+				var value = _acDrive.RetrieveParameter(ServoDriveEnums.RegisterAddress.TestInProcess);
 
 				// use my flag, not sure yet if this is important and/or needed.
 				if (value == -5000)
@@ -319,7 +315,7 @@ namespace Twister.Business.Tests
 		/// </summary>
 		/// <param name="location"></param>
 		/// <param name="value"></param>
-		internal void LoadTestParameter(ServoDrive.RegisterAddress location, int value)
+		internal void LoadTestParameter(ServoDriveEnums.RegisterAddress location, int value)
 		{
 			_acDrive.StoreParameter(location, value);
 		}
@@ -330,7 +326,7 @@ namespace Twister.Business.Tests
 		/// </summary>
 		/// <param name="location"></param>
 		/// <param name="value"></param>
-		internal void LoadTestParameter(ServoDrive.RegisterAddress location, float value)
+		internal void LoadTestParameter(ServoDriveEnums.RegisterAddress location, float value)
 		{
 			_acDrive.StoreParameter(location, value);
 		}
@@ -345,7 +341,7 @@ namespace Twister.Business.Tests
              * parameter is stored on the device so the running AKD Basic program can read the value 
              * and respond accordingly.
              */
-			LoadTestParameter(ServoDrive.RegisterAddress.TestInProcess, -1);
+			LoadTestParameter(ServoDriveEnums.RegisterAddress.TestInProcess, -1);
 			_runModeDeterminate = true;
 		}
 
@@ -358,7 +354,7 @@ namespace Twister.Business.Tests
              * the torque test.  So the parameter is stored on the device so the 
              * running AKD Basic program can read the value and respond accordingly.
              */
-			LoadTestParameter(ServoDrive.RegisterAddress.TestInProcess, 0);
+			LoadTestParameter(ServoDriveEnums.RegisterAddress.TestInProcess, 0);
 
 			if (_currentTest != null)
 			{
@@ -468,14 +464,14 @@ namespace Twister.Business.Tests
                 the test will indicate complete and begin the test complete events.  As always 
                 the 0 indicates a value of false.
             */
-			_acDrive.StoreParameter(ServoDrive.RegisterAddress.TestInProcess, 0);
+			_acDrive.StoreParameter(ServoDriveEnums.RegisterAddress.TestInProcess, 0);
 		}
 
 		public void UpdateSpeedParameters(int runSpeed, int moveSpeed)
 		{
 			// update the drive
-			LoadTestParameter(ServoDrive.RegisterAddress.Runspeed, runSpeed);
-			LoadTestParameter(ServoDrive.RegisterAddress.Manualspeed, moveSpeed);
+			LoadTestParameter(ServoDriveEnums.RegisterAddress.Runspeed, runSpeed);
+			LoadTestParameter(ServoDriveEnums.RegisterAddress.Manualspeed, moveSpeed);
 
 			TestSession.Instance.TestTemplate.RunSpeed = runSpeed;
 			TestSession.Instance.TestTemplate.MoveSpeed = moveSpeed;

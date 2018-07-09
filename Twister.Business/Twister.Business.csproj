@@ -57,8 +57,13 @@
     <Compile Include="Data\Sample.cs" />
     <Compile Include="Data\WorkOrderInfo.cs" />
     <Compile Include="Hardware\AnalogInputDevice.cs" />
+    <Compile Include="Hardware\IServoDrive.cs" />
+    <Compile Include="Hardware\ITorqueCell.cs" />
     <Compile Include="Hardware\ModbusServer.cs" />
     <Compile Include="Hardware\ServoDrive.cs" />
+    <Compile Include="Hardware\ServoDriveEnums.cs" />
+    <Compile Include="Hardware\SimulatedServoDrive.cs" />
+    <Compile Include="Hardware\SimulatedTorqueCell.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\Messages.cs" />
     <Compile Include="Shared\NotifyPropertyChangedBase.cs" />

@@ -79,16 +79,13 @@ namespace Twister.Business.Hardware
         //private static ushort _refresh = 10; 
         private static bool _connected;
 
-        protected string _ipAddress;
-
         // synchronous socket and buffer
         private Socket _tcpSynCl;
 
         private readonly byte[] _tcpSynClBuffer = new byte[2048];
 
-        public ModbusServer(string ipAddress)
+        public ModbusServer()
         {
-            _ipAddress = ipAddress;
         }
 
 
@@ -270,7 +267,7 @@ namespace Twister.Business.Hardware
         /// <param name="startAddress">Address from where the data read begins.</param>
         /// <param name="numInputs">Length of data.</param>
         /// <param name="values">Contains the result of function.</param>
-        protected void ReadInputRegister(ushort transactionId, ushort startAddress, ushort numInputs, ref byte[] values)
+        internal void ReadInputRegister(ushort transactionId, ushort startAddress, ushort numInputs, ref byte[] values)
         {
             // adu may be null if CreateReadAdu throws exception.
             var adu = CreateReadAdu(transactionId, startAddress, numInputs, FNC_READ_INPUT_REGISTER);
@@ -287,7 +284,7 @@ namespace Twister.Business.Hardware
         /// <param name="startAddress">Address from where the data read begins.</param>
         /// <param name="qtyRegisters">Length of data.</param>
         /// <param name="values">Contains the result of function.</param>
-        protected void ReadHoldingRegister(ushort transactionId, ushort startAddress, ushort qtyRegisters,
+        internal void ReadHoldingRegister(ushort transactionId, ushort startAddress, ushort qtyRegisters,
             ref byte[] values)
         {
             // adu may be null if CreateReadAdu throws exception.
@@ -308,7 +305,7 @@ namespace Twister.Business.Hardware
         /// <param name="startAddress">Address to where the data is written.</param>
         /// <param name="values">Contains the register values to write.</param>
         /// <param name="result">Contains the result of the synchronous write.</param>
-        protected void WriteMultipleRegister(ushort transactionId, ushort startAddress, byte[] values,
+        internal void WriteMultipleRegister(ushort transactionId, ushort startAddress, byte[] values,
             ref byte[] result)
         {
             try

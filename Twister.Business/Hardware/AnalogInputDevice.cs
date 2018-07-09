@@ -2,14 +2,17 @@
 
 namespace Twister.Business.Hardware
 {
-    public class AnalogInputDevice : ModbusServer
+    public class AnalogInputDevice : ITorqueCell
     {
-        // for multithreading
-        private static readonly object _objLock = new object();
+	    private readonly ModbusServer _server;
 
-        public AnalogInputDevice(string ipAddress)
-            : base(ipAddress)
+	    // for multithreading
+        private static readonly object _objLock = new object();
+	    private const string IP_ADDRESS = "128.1.1.30";
+
+        public AnalogInputDevice(ModbusServer server)
         {
+	        _server = server;
         }
 
         /// <summary>
@@ -24,7 +27,7 @@ namespace Twister.Business.Hardware
             {
                 lock (_objLock)
                 {
-                    Connect(_ipAddress);
+                    _server.Connect(IP_ADDRESS);
 
                     // each input register can hold only 2 bytes, we are only reading 1 register
                     var data = new byte[2];
@@ -34,7 +37,7 @@ namespace Twister.Business.Hardware
                     ushort startAddress = 0;
                     ushort numInputs = 1;
 
-                    ReadInputRegister(transactionId, startAddress, numInputs, ref data);
+                    _server.ReadInputRegister(transactionId, startAddress, numInputs, ref data);
 
                     // Data is big endian, windows is little endian, so need to reverse.
                     Array.Reverse(data);
@@ -44,7 +47,7 @@ namespace Twister.Business.Hardware
 
                     Torque = 0.667f * value;
 
-                    Dispose();
+                    _server.Dispose();
                 }
             }
             catch (Exception)

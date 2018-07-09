@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twister", "Twister\Twister.csproj", "{D6A42937-3FA6-436F-815D-090E9AB89793}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twister.Common", "Twister.Common\Twister.Common.csproj", "{36743F6B-B9EB-4DFB-85B4-A3EF29208FC3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twister.Business", "Twister.Business\Twister.Business.csproj", "{FF410532-1E10-491A-9D7A-D0D0468F3643}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF3E7C60-16E7-42E4-8E05-0F8A4B1AA028}"
+	ProjectSection(SolutionItems) = preProject
+		HoursLogged.txt = HoursLogged.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +35,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A73708A9-9DFF-4A87-A88A-2008A7FCE8BC}
 	EndGlobalSection
 EndGlobal

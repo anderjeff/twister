@@ -40,14 +40,13 @@ namespace Twister.ViewModels
 	    {
 		    if (SimulatorIsUsed)
 		    {
-				// go to the test creation window using the test simulator.
-			    TestBench.Initialize(new AnalogInputDevice(""), new ServoDrive(""));
+				InitializeSimulatedTestBench(TestType.FatigueTest);
 		    }
 		    else
 		    {
-				// go to the test creation window using the real test bench.
+				InitializeRealTestBench();
 		    }
-	    }
+		}
 
 		// want to run a torsion test to failure
 		private void TorsionTest()
@@ -61,6 +60,7 @@ namespace Twister.ViewModels
 	            }
 				else
 	            {
+					InitializeRealTestBench();
 		            MainWindow_VM.Instance.TestSession.Initialize(TestType.TorsionTestToFailure);
 					MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.UserLoginVm;
 	            }
@@ -92,6 +92,7 @@ namespace Twister.ViewModels
 	            }
 				else
 	            {
+					InitializeRealTestBench();
 		            MainWindow_VM.Instance.TestSession.Initialize(TestType.SteeringShaftTest_4000_inlbs);
 		            MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.UserLoginVm;
 	            }
@@ -102,7 +103,24 @@ namespace Twister.ViewModels
             }
         }
 
-        private bool IsAuthorizedUser()
+	    private void InitializeRealTestBench()
+	    {
+		    var torqueCell = new AnalogInputDevice(new ModbusServer());
+		    var servoDrive = new ServoDrive(new ModbusServer());
+		    TestBench.Initialize(torqueCell, servoDrive);
+	    }
+
+	    private void InitializeSimulatedTestBench(TestType testType)
+	    {
+			// get the behavior for the simulators, based on test type.
+			// todo implement some type of class that takes TestType and helps torque cell and servo drive to figure out the proper behavior
+
+			var torqueCell = new SimulatedTorqueCell();
+		    var servoDrive = new SimulatedServoDrive();
+			TestBench.Initialize(torqueCell, servoDrive);
+	    }
+
+		private bool IsAuthorizedUser()
         {
             return Environment.UserName == "janderson" ||
 				   Environment.UserName == "Jeff" ||

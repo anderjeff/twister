@@ -10,7 +10,8 @@ namespace Twister.Business.Tests
     public enum TestType
     {
         SteeringShaftTest_4000_inlbs = 1,
-        TorsionTestToFailure = 2
+        TorsionTestToFailure = 2,
+		FatigueTest = 3
     }
 
     /// <summary>

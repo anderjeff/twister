@@ -3,40 +3,24 @@ using System.Diagnostics;
 
 namespace Twister.Business.Hardware
 {
-    public class ServoDrive : ModbusServer
+    public class ServoDrive : IServoDrive
     {
-        /// <summary>
-        ///     An enumeration that represents the register location on the ADK BASIC
-        ///     drive.  Values correspond to Figure 2 in the TT-4000 User Manual.
-        /// </summary>
-        public enum RegisterAddress
-        {
-            TestInProcess = 5000, // USER.INT
-            SoftwareInitialized = 5002, // USER.INT
-            TorqueValue = 5004, // USER.INT
-            WatchdogValue = 5006, // USER.INT
-            CcwTorqueLimit = 5008, // USER.INT 
-            CwTorqueLimit = 5010, // USER.INT
-            Runspeed = 5012, // USER.INT
-            Manualspeed = 5014, // USER.INT
-            DiffLimit = 5016, // USER.FLOAT    
-            TorqueDirection = 5018, // USER.INT
-            TestType = 5020 // USER.INT
-        }
-
         // 16-bit resolution, 70 : 1 gear ratio
         private const int COUNTS_PER_REV = 65536 * 70;
+	    private const string IP_ADDRESS = "128.1.1.35";
 
-        // for multithreading
-        private static object _objLock = new object();
+		// for multithreading
+		private static object _objLock = new object();
+	    private readonly ModbusServer _server;
 
-        /// <summary>
+	    /// <summary>
         ///     Constructor.  Requires a valid IP address to the servo drive.
         /// </summary>
         /// <param name="ipAddress">The IPV4 address for the servo drive.</param>
-        public ServoDrive(string ipAddress)
-            : base(ipAddress)
+        /// <param name="server">The server that the values are retrieved from and stored to.</param>
+        public ServoDrive(ModbusServer server)
         {
+	        _server = server;
         }
 
         // The current angle of rotation of the gearbox
@@ -50,49 +34,47 @@ namespace Twister.Business.Hardware
         {
             try
             {
-                lock (this)
-                {
-                    //Debug.WriteLine("Entering ServoDrive.RefreshPosition()");
+	            lock (this)
+	            {
+		            //Debug.WriteLine("Entering ServoDrive.RefreshPosition()");
 
-                    Connect(_ipAddress);
+		            _server.Connect(IP_ADDRESS);
 
-                    // reading the loop position feedback value at index 588
-                    // see Modbus Parameter Table, pg 344 of user guide.
+		            // reading the loop position feedback value at index 588
+		            // see Modbus Parameter Table, pg 344 of user guide.
 
-                    var data = new byte[16];
-                    ushort transId = 1;
-                    ushort startAddr = 588;
-                    ushort numInputs = 4;
+		            var data = new byte[16];
+		            ushort transId = 1;
+		            ushort startAddr = 588;
+		            ushort numInputs = 4;
 
-                    ReadHoldingRegister(transId, startAddr, numInputs, ref data);
+		            _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
 
-                    if (data != null)
-                    {
-                        Array.Reverse(data);
-                        var value = BitConverter.ToInt64(data, 0);
+		            if (data != null)
+		            {
+			            Array.Reverse(data);
+			            var value = BitConverter.ToInt64(data, 0);
 
-                        if (value == 0)
-                        {
-                            GearboxAngle = 0f;
-                        }
-                        else
-                        {
-                            // represents the PL.FB from the ADK drive.
-                            long count = 0;
+			            if (value == 0)
+			            {
+				            GearboxAngle = 0f;
+			            }
+			            else
+			            {
+				            // represents the PL.FB from the ADK drive.
+				            long count = 0;
 
-                            if (Math.Abs(value) < COUNTS_PER_REV)
-                                count = value;
-                            else
-                                count = value % COUNTS_PER_REV;
+				            if (Math.Abs(value) < COUNTS_PER_REV)
+					            count = value;
+				            else
+					            count = value % COUNTS_PER_REV;
 
-                            GearboxAngle = count * (360f / COUNTS_PER_REV);
-                        }
-                    }
+				            GearboxAngle = count * (360f / COUNTS_PER_REV);
+			            }
+		            }
 
-                    Dispose();
-
-                    //Debug.WriteLine("Exiting ServoDrive.RefreshPosition()");
-                }
+		            _server.Dispose();
+	            }
             }
             catch (Exception ex)
             {
@@ -101,7 +83,6 @@ namespace Twister.Business.Hardware
                     ex.Message, GearboxAngle);
             }
         }
-
 
         /// <summary>
         ///     Writes a user specified value to the specified register address.
@@ -112,7 +93,7 @@ namespace Twister.Business.Hardware
         /// <param name="value">
         ///     The value to store in the specified RegisterAddress
         /// </param>
-        public void StoreParameter(RegisterAddress location, int value)
+        public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)
         {
             try
             {
@@ -120,7 +101,7 @@ namespace Twister.Business.Hardware
                 {
                     //Debug.WriteLine("Entering ServoDrive.StoreParameter() \n\t value: {0}\n\t RegisterLocation: {1}", new object[] { value, location.ToString() });
 
-                    Connect(_ipAddress);
+                    _server.Connect(IP_ADDRESS);
 
                     // for clarity, defining parameters
                     var byteValue = BitConverter.GetBytes(value);
@@ -129,11 +110,9 @@ namespace Twister.Business.Hardware
                     var startAddress = (ushort) location;
                     var response = new byte[5]; // per Modbus standard, response is 5 bytes.              
 
-                    WriteMultipleRegister(transId, startAddress, byteValue, ref response);
+                    _server.WriteMultipleRegister(transId, startAddress, byteValue, ref response);
 
-                    Dispose();
-
-                    //Debug.WriteLine("Exiting ServoDrive.StoreParameter() \n\t value: {0}\n\t RegisterLocation: {1}", new object[] { value, location.ToString() });
+                    _server.Dispose();
                 }
             }
             catch (Exception ex)
@@ -151,15 +130,13 @@ namespace Twister.Business.Hardware
         /// <param name="value">
         ///     The value to store in the specified RegisterAddress
         /// </param>
-        public void StoreParameter(RegisterAddress location, float value)
+        public void StoreParameter(ServoDriveEnums.RegisterAddress location, float value)
         {
             try
             {
                 lock (this)
                 {
-                    //Debug.WriteLine("Entering ServoDrive.StoreParameter() \n\t value: {0}\n\t RegisterLocation: {1}", new object[] { value, location.ToString() });
-
-                    Connect(_ipAddress);
+                    _server.Connect(IP_ADDRESS);
 
                     // for clarity, defining parameters
                     var byteValue = BitConverter.GetBytes(value);
@@ -168,11 +145,9 @@ namespace Twister.Business.Hardware
                     var startAddress = (ushort) location;
                     var response = new byte[5]; // per Modbus standard, response is 5 bytes.              
 
-                    WriteMultipleRegister(transId, startAddress, byteValue, ref response);
+                    _server.WriteMultipleRegister(transId, startAddress, byteValue, ref response);
 
-                    Dispose();
-
-                    //Debug.WriteLine("Exiting ServoDrive.StoreParameter() \n\t value: {0}\n\t RegisterLocation: {1}", new object[] { value, location.ToString() });
+                    _server.Dispose();
                 }
             }
             catch (Exception ex)
@@ -191,7 +166,7 @@ namespace Twister.Business.Hardware
         ///     A 32 bit signed integer representing the value in the
         ///     holding register on the servo drive.
         /// </returns>
-        public int RetrieveParameter(RegisterAddress location)
+        public int RetrieveParameter(ServoDriveEnums.RegisterAddress location)
         {
             try
             {
@@ -200,9 +175,7 @@ namespace Twister.Business.Hardware
 
                 lock (this)
                 {
-                    //Debug.WriteLine("Entering ServoDrive.RetrieveParameter() \n\t RegisterAddress: {0}", new object[] { location.ToString() });
-
-                    Connect(_ipAddress);
+                    _server.Connect(IP_ADDRESS);
 
                     // for clarity, defining parameters
                     ushort transId = 1;
@@ -210,7 +183,7 @@ namespace Twister.Business.Hardware
                     ushort qtyRegisters = 2;
                     var response = new byte[8]; // per Modbus standard, response is 8 bytes.              
 
-                    ReadHoldingRegister(transId, startAddress, qtyRegisters, ref response);
+                    _server.ReadHoldingRegister(transId, startAddress, qtyRegisters, ref response);
 
                     // response null means the connection was temporarily lost
                     if (response != null)
@@ -219,9 +192,7 @@ namespace Twister.Business.Hardware
                         value = BitConverter.ToInt32(response, 0);
                     }
 
-                    Dispose();
-
-                    //Debug.WriteLine("Exiting ServoDrive.RetrieveParameter() \n\tRegisterAddress: {0}", new object[] { location.ToString() });
+                    _server.Dispose();
                 }
 
                 return value;
