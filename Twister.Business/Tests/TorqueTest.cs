@@ -22,46 +22,6 @@ namespace Twister.Business.Tests
         public int MinTorque { get; set; }
         public int MaxTorque { get; set; }
 
-        public float MaxTorqueRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Max(t => t.Torque);
-                return 0;
-            }
-        }
-
-        public float MaximumAngleRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Max(s => s.Angle);
-                return 0;
-            }
-        }
-
-        public float MinTorqueRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Min(t => t.Torque);
-                return 0;
-            }
-        }
-
-        public float MinimumAngleRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Min(s => s.Angle);
-                return 0;
-            }
-        }
-
         /// <summary>
         ///     A unique identifier for the test, linking it to a type of Torque
         ///     Test defined elsewhere.
@@ -174,17 +134,9 @@ namespace Twister.Business.Tests
         /// </summary>
         internal void Start()
         {
-            try
-            {
-                // it's important to initialize the test first.
-                if (!Initialized)
-                    throw new Exception(Messages.UninitializedTest());
-                InProcess = true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+			// it's important to initialize the test first.
+	        if (!Initialized) throw new Exception(Messages.UninitializedTest());
+	        InProcess = true;
+		}
     }
 }

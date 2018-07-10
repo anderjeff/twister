@@ -30,79 +30,57 @@ namespace Twister.Business.Tests
 
         private void LoadManualSpeedFromXml(XmlDocument dom)
         {
-            try
-            {
-                /* get the desired speed for manual mode, this is how fast the shaft will rotate when the 
-                 * manual mode switch is set and the joystick is positioned in either the up or down position.
-                 */
-                XmlNode manualSpeedNode =
-                    dom.DocumentElement.SelectSingleNode("//parameter[@name='manualSpeed']/@value");
-                var manualSpeedValue = manualSpeedNode.Value;
-                int manualSpeed;
-                if (int.TryParse(manualSpeedValue, out manualSpeed))
-                {
-                    // set manual speed
-                    TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Manualspeed, manualSpeed);
-                    ManualSpeed = manualSpeed;
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+			/* get the desired speed for manual mode, this is how fast the shaft will rotate when the 
+             * manual mode switch is set and the joystick is positioned in either the up or down position.
+             */
+	        XmlNode manualSpeedNode =
+		        dom.DocumentElement.SelectSingleNode("//parameter[@name='manualSpeed']/@value");
+	        var manualSpeedValue = manualSpeedNode.Value;
+	        int manualSpeed;
+	        if (int.TryParse(manualSpeedValue, out manualSpeed))
+	        {
+		        // set manual speed
+		        TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Manualspeed, manualSpeed);
+		        ManualSpeed = manualSpeed;
+	        }
+		}
 
         private void LoadRunSpeedFromXml(XmlDocument dom)
         {
-            try
-            {
-                // get the desired run speed, this is how fast the shaft will turn during the test.
-                XmlNode runSpeedNode = dom.DocumentElement.SelectSingleNode("//parameter[@name='runSpeed']/@value");
-                var runSpeedValue = runSpeedNode.Value;
-                int runSpeed;
-                if (int.TryParse(runSpeedValue, out runSpeed))
-                {
-                    // set run speed
-                    TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Runspeed, runSpeed);
-                    RunSpeed = runSpeed;
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+			// get the desired run speed, this is how fast the shaft will turn during the test.
+	        XmlNode runSpeedNode = dom.DocumentElement.SelectSingleNode("//parameter[@name='runSpeed']/@value");
+	        var runSpeedValue = runSpeedNode.Value;
+	        int runSpeed;
+	        if (int.TryParse(runSpeedValue, out runSpeed))
+	        {
+		        // set run speed
+		        TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Runspeed, runSpeed);
+		        RunSpeed = runSpeed;
+	        }
+		}
 
         private void LoadTorqueLimitFromXml(XmlDocument dom)
         {
-            try
-            {
-                /* because this is a FULLY REVERSED TEST, the CW and CCW directions will both 
-                 * have the same value, so no need to get the parameter for each.
-                 */
-                XmlNode cwTorqueLimitNode =
-                    dom.DocumentElement.SelectSingleNode("//parameter[@name='cwTorque']/@value");
-                var cwTorqueValue = cwTorqueLimitNode.Value;
-                int torqueValue;
-                if (int.TryParse(cwTorqueValue, out torqueValue))
-                {
-                    // set clockwise torque
-                    TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, torqueValue);
+			/* because this is a FULLY REVERSED TEST, the CW and CCW directions will both 
+             * have the same value, so no need to get the parameter for each.
+             */
+	        XmlNode cwTorqueLimitNode = dom.DocumentElement.SelectSingleNode("//parameter[@name='cwTorque']/@value");
+	        var cwTorqueValue = cwTorqueLimitNode.Value;
+	        int torqueValue;
+	        if (int.TryParse(cwTorqueValue, out torqueValue))
+	        {
+		        // set clockwise torque
+		        TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, torqueValue);
 
-                    /* set counterclockwise torque to be the same value, this is, after all,
-                     * a fully reversed torque test, so by definition the values need to be 
-                     * equal and opposite (thus the -1 multiplier). 
-                     */
-                    TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CcwTorqueLimit, torqueValue * -1);
+		        /* set counterclockwise torque to be the same value, this is, after all,
+		         * a fully reversed torque test, so by definition the values need to be 
+		         * equal and opposite (thus the -1 multiplier). 
+		         */
+		        TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CcwTorqueLimit, torqueValue * -1);
 
-                    MaxTorque = torqueValue;
-                    MinTorque = torqueValue * -1;
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+		        MaxTorque = torqueValue;
+		        MinTorque = torqueValue * -1;
+	        }
+		}
     }
 }

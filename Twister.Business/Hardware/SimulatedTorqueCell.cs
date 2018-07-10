@@ -14,8 +14,8 @@ namespace Twister.Business.Hardware
 
 		public float Torque { get; private set; }
 		public void RefreshTorque()
-		{
-			Torque = 1;
+		{	
+
 		}
 	}
 }

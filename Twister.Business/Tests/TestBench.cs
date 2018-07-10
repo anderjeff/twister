@@ -45,7 +45,6 @@ namespace Twister.Business.Tests
 			CompletedTests = new List<TorqueTest>();
 		}
 
-
 		/// <summary>
 		///     A single instance of a TestBench.  We only have one bench.
 		/// </summary>
@@ -146,7 +145,9 @@ namespace Twister.Business.Tests
 			if (test != null)
 			{
 				if (_currentTest != null && _currentTest.InProcess)
+				{
 					throw new Exception("Cannot begin a new test before the current test has finished.");
+				}
 				CurrentTest = test;
 				SetTestType(CurrentTest.TestTemplateId);
 			}
@@ -163,7 +164,11 @@ namespace Twister.Business.Tests
 
 		public void BeginCurrentTest()
 		{
-			if (_currentTest == null) throw new Exception("No test has been defined.  Must create a test first.");
+			if (_currentTest == null)
+			{
+				throw new Exception("No test has been defined.  Must create a test first.");
+			}
+
 			if (!_currentTest.InProcess)
 			{
 				_currentTest.StartDate = DateTime.Now;
@@ -220,7 +225,7 @@ namespace Twister.Business.Tests
 		{
 			lock (_objLock)
 			{
-				if (_currentTest != null) _currentTest.Data.Add(sample);
+				_currentTest?.Data.Add(sample);
 			}
 		}
 
@@ -240,12 +245,12 @@ namespace Twister.Business.Tests
 				{
 					var copyOfData = new List<Sample>();
 					foreach (Sample savedSample in _currentTest.Data)
-						copyOfData.Add(new Sample(
-							savedSample.Torque, savedSample.Angle));
+					{
+						copyOfData.Add(new Sample(savedSample.Torque, savedSample.Angle));
+					}
 					return copyOfData;
 				}
 			}
-
 			return null;
 		}
 

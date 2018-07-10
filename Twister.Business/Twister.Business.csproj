@@ -70,6 +70,7 @@
     <Compile Include="Tests\BenchLimits.cs" />
     <Compile Include="Tests\BenchOperator.cs" />
     <Compile Include="Tests\Calibration.cs" />
+    <Compile Include="Tests\FatigueTest.cs" />
     <Compile Include="Tests\FullyReversedTorqueTest.cs" />
     <Compile Include="Tests\TestBench.cs" />
     <Compile Include="Tests\TestCompletedEventArgs.cs" />
@@ -80,10 +81,12 @@
     <Compile Include="Tests\UnidirectionalTorqueTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Database\Scripts\newdb.sql" />
     <Content Include="Data\TestParams.xml" />
     <Content Include="TwisterAkdBasic.bas" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
