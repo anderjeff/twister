@@ -12,10 +12,11 @@ namespace Twister.Business.Hardware
 		{
 		}
 
+		// I need min torque, max torque, and speed (could hard code a 3)
+		
 		public float Torque { get; private set; }
 		public void RefreshTorque()
 		{	
-
 		}
 	}
 }

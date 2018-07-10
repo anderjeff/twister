@@ -152,6 +152,12 @@ namespace Twister.Business.Tests
                     t.TestTemplateId = Id;
                     t.LoadTestParameters(this);
                     break;
+				case (int)TestType.FatigueTest:
+					Load();
+					t = new FatigueTest();
+					t.TestTemplateId = Id;
+					t.LoadTestParameters(this);
+					break;
                 default:
                     throw new Exception("Unsupported test type");
             }
