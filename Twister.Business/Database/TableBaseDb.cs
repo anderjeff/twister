@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
+using System.Configuration;
 using Msg = Twister.Business.Shared.Messages;
 
 namespace Twister.Business.Database
@@ -25,11 +26,11 @@ namespace Twister.Business.Database
         /// </returns>
         internal static SqlConnection TwisterConnection()
         {
-            try
-            {
-                twisterConn = new SqlConnection();
-                twisterConn.ConnectionString = TwisterConnectionString();
-                twisterConn.Open();
+			try
+			{
+				twisterConn = new SqlConnection();
+				twisterConn.ConnectionString = File.Exists(twisterPath) ? TwisterConnectionString() : ConfigurationManager.ConnectionStrings["Twister"].ConnectionString;
+				twisterConn.Open();
                 return twisterConn;
             }
             catch (Exception ex)
@@ -52,8 +53,8 @@ namespace Twister.Business.Database
             try
             {
                 vjsConn = new SqlConnection();
-                vjsConn.ConnectionString = VjsConnectionString();
-                vjsConn.Open();
+                vjsConn.ConnectionString = File.Exists(vjsPath) ? VjsConnectionString() : ConfigurationManager.ConnectionStrings["Vjs"].ConnectionString;
+				vjsConn.Open();
                 return vjsConn;
             }
             catch (Exception ex)

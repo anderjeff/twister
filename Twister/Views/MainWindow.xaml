@@ -30,6 +30,10 @@
             <views:CalibrationUserControl DataContext="{Binding}" />
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type viewModels:FatigueTest_VM}">
+            <views:FatigueTestUserControl DataContext="{Binding}" />
+        </DataTemplate>
+
     </Window.Resources>
 
     <Grid x:Name="layoutRoot">

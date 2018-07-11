@@ -20,20 +20,17 @@ namespace Twister.ViewModels
     /// </summary>
     public abstract class TestBase_VM : Base_VM
     {
-        protected readonly Brush ERROR_BRUSH = (Brush) new BrushConverter().ConvertFromString("Yellow");
-
         // constants
         protected readonly Brush EXCEPTION_BRUSH = (Brush) new BrushConverter().ConvertFromString("Red");
-
-        public readonly Brush GOOD_MESSAGE_BRUSH = (Brush) new BrushConverter().ConvertFromString("LightGreen");
         protected readonly Brush TEST_FAILURE_BRUSH = (Brush) new BrushConverter().ConvertFromString("Orange");
+        protected readonly Brush ERROR_BRUSH = (Brush) new BrushConverter().ConvertFromString("Yellow");
+        public readonly Brush GOOD_MESSAGE_BRUSH = (Brush) new BrushConverter().ConvertFromString("LightGreen");
         protected readonly Brush WAITING_BRUSH = (Brush) new BrushConverter().ConvertFromString("Gray");
+		
         private float _angleValueCurrent;
         private string _closeProgramMessage;
         private string _displayAngle; // used for databinding to UI display label
         private string _displayTorque; // used for databinding to UI display label
-
-
         private string _information;
         private bool _isTestIdNeeded;
         private Brush _messageBackgroundColor;
@@ -53,9 +50,6 @@ namespace Twister.ViewModels
             StopTestCommand = new RelayCommand(StopTest, CanStopTest);
             ExitProgamCommand = new RelayCommand(ExitProgram, CanExitProgram);
             SubmitTestIdCommand = new RelayCommand(SubmitTestId);
-
-            TestBench.Singleton.TestStarted += TestBench_TestStarted;
-            TestBench.Singleton.TestCompleted += TestBench_TestCompleted;
 
             _testData = new List<Sample>();
 
@@ -106,20 +100,33 @@ namespace Twister.ViewModels
         ///     A method to call just before opening the test window.
         /// </summary>
         public void PrepareToTest(TestSession session)
-        {
-            Session = session;
+		{
+			Session = session;
 
-            // get the threads rolling, so values update on the screen.
-            InitializeThreads();
+			InitilizeTestStartEndEvents();
 
-            // default behavior.
-            TestBench.Singleton.LoadDefaultBenchParameters();
+			// get the threads rolling, so values update on the screen.
+			InitializeThreads();
 
-            // ready to start testing.  
-            TestBench.Singleton.InformReady();
-        }
+			// default behavior.
+			TestBench.Singleton.LoadDefaultBenchParameters();
 
-        protected bool CanStopTest()
+			// ready to start testing.  
+			TestBench.Singleton.InformReady();
+		}
+
+		private void InitilizeTestStartEndEvents()
+		{
+			// in case the event handlers have already been setup, get
+			// rid of them so the event never fires twice.
+			TestBench.Singleton.TestStarted -= TestBench_TestStarted;
+			TestBench.Singleton.TestCompleted -= TestBench_TestCompleted;
+
+			TestBench.Singleton.TestStarted += TestBench_TestStarted;
+			TestBench.Singleton.TestCompleted += TestBench_TestCompleted;
+		}
+
+		protected bool CanStopTest()
         {
             bool isTesting = TestBench.Singleton.IsTesting;
             return isTesting;

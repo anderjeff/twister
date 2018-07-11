@@ -294,11 +294,11 @@ namespace Twister.Business.Tests
 
 				// use my flag, not sure yet if this is important and/or needed.
 				if (value == -5000)
-					Debug.WriteLine(
-						"Info _acDrive RetrieveParameter returned -5000, meaning response to ReadHoldingRegister was null");
+				{
+					Debug.WriteLine("Info _acDrive RetrieveParameter returned -5000, meaning response to ReadHoldingRegister was null");
+				}
 
-				if (value == 0)
-					return false;
+				if (value == 0) return false;
 
 				// test is still running.
 				return true;
@@ -373,7 +373,10 @@ namespace Twister.Business.Tests
 		{
 			// let the world know.
 			var handler = TestStarted;
-			if (handler != null) TestStarted(this, new TorqueTestEventArgs(test));
+			if (handler != null)
+			{
+				TestStarted(this, new TorqueTestEventArgs(test));
+			}
 		}
 
 		private void OnTestCompleted()
