@@ -25,10 +25,6 @@ namespace Twister.Business.Database
                 command.Dispose();
                 return workOrderExists;
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
             {
                 CloseConnection(connection);

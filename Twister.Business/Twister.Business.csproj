@@ -72,6 +72,7 @@
     <Compile Include="Tests\BenchOperator.cs" />
     <Compile Include="Tests\Calibration.cs" />
     <Compile Include="Tests\FatigueTest.cs" />
+    <Compile Include="Tests\FatigueTestCondition.cs" />
     <Compile Include="Tests\FullyReversedTorqueTest.cs" />
     <Compile Include="Tests\TestBench.cs" />
     <Compile Include="Tests\TestCompletedEventArgs.cs" />
@@ -83,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database\Scripts\newdb.sql" />
+    <Content Include="Database\Scripts\upgradedb1.sql" />
     <Content Include="Data\TestParams.xml" />
     <Content Include="TwisterAkdBasic.bas" />
   </ItemGroup>

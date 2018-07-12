@@ -11,7 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twister.Business", "Twister
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF3E7C60-16E7-42E4-8E05-0F8A4B1AA028}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\Users\janderso\Downloads\Book1.xlsx = ..\..\Users\janderso\Downloads\Book1.xlsx
 		HoursLogged.txt = HoursLogged.txt
 	EndProjectSection
 EndProject
