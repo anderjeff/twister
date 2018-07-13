@@ -25,11 +25,7 @@ namespace Twister.Business.Tests
 		/// The last time the test was modified.
 		/// </summary>
 		public DateTime ModifiedDate { get; set; }
-		
 
-		public override void LoadTestParameters(TestTemplate testTemplate)
-		{
-			throw new NotImplementedException();
-		}
+		
 	}
 }

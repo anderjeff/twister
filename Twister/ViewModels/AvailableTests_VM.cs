@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Twister.Business.Hardware;
 using Twister.Business.Tests;
 using Twister.Utilities;
@@ -116,9 +117,9 @@ namespace Twister.ViewModels
 	    {
 			// get the behavior for the simulators, based on test type.
 			// todo implement some type of class that takes TestType and helps torque cell and servo drive to figure out the proper behavior
-
-			var torqueCell = new SimulatedTorqueCell();
-		    var servoDrive = new SimulatedServoDrive();
+			var engine = new SimulatorEngine(new Stopwatch());
+			var torqueCell = new SimulatedTorqueCell(engine);
+		    var servoDrive = new SimulatedServoDrive(engine);
 			TestBench.Initialize(torqueCell, servoDrive);
 	    }
 

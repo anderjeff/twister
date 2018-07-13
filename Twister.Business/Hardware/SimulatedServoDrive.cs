@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,13 @@ namespace Twister.Business.Hardware
 {
 	public class SimulatedServoDrive : IServoDrive
 	{
+		private SimulatorEngine _engine;
+
+		public SimulatedServoDrive(SimulatorEngine engine)
+		{
+			_engine = engine;
+		}
+
 		public float GearboxAngle { get; private set; }
 		public void RefreshPosition()
 		{

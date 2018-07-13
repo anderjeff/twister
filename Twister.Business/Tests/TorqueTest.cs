@@ -115,14 +115,17 @@ namespace Twister.Business.Tests
         public bool WasShutDownEarly { get; set; }
 
 
-        /// <summary>
-        ///     Sets the test variables from a TestTemplate.  Each test can decide
-        ///     how to use the TestTemplate.
-        /// </summary>
-        /// <param name="testTemplate"></param>
-        public abstract void LoadTestParameters(TestTemplate testTemplate);
+	    /// <summary>
+	    ///     Sets the test variables from a TestTemplate.  Each test can decide
+	    ///     how to use the TestTemplate.
+	    /// </summary>
+	    /// <param name="testTemplate"></param>
+	    public virtual void LoadTestParameters(TestTemplate testTemplate)
+	    {
+			// no default behavior.
+	    }
 
-        protected void InformInitializationComplete()
+	    protected void InformInitializationComplete()
         {
             // at this point, the test has been initialized and it is free to start.
 	        Initialized = true;
