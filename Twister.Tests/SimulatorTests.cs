@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Twister.Business.Data;
 using Twister.Business.Hardware;
 using Twister.Business.Tests;
 
@@ -32,14 +33,17 @@ namespace Twister.Tests
 
 			var torqueCell = new SimulatedTorqueCell(engine);
 
+			List<object> objSamples = new List<object>();
 			List<float> samples = new List<float>();
 			for (int i = 0; i < 500; i++)
 			{
 				torqueCell.RefreshTorque();
 				System.Threading.Thread.Sleep(1);
+				objSamples.Add(new {torqueCell.Torque, torqueCell.LastTime});
 				samples.Add(torqueCell.Torque);
 			}
 
+			Assert.AreEqual(objSamples.Count, 500);
 			Assert.AreEqual(samples.Count, 500);
 		}
 	}

@@ -20,6 +20,7 @@ namespace Twister.Business.Hardware
 		// I need min torque, max torque, and speed (could hard code a 3)
 
 
+		public double LastTime { get; private set; }
 		public float Torque { get; private set; }
 
 		public void RefreshTorque()
@@ -30,10 +31,10 @@ namespace Twister.Business.Hardware
 			int amplitude = (maxTorque - minTorque) / 2;
 			int verticalShift = amplitude + minTorque;
 			int frequency = _engine.CurrentCondition.CyclesPerSecond;
-			double time = _engine.ElapsedMilliseconds() / (double) 1000;
+			LastTime = _engine.ElapsedMilliseconds() / (double) 1000;
 
-			// T(t) = Asin(2πft) + vertical shift
-			Torque = (float) (amplitude * Math.Sin(frequency * 2 * Math.PI * time) + verticalShift);
+			// T(t) = Asin(2πft) + vertical shift... It's a sinusoidal curve.
+			Torque = (float) (amplitude * Math.Sin(frequency * 2 * Math.PI * LastTime) + verticalShift);
 		}
 	}
 }
