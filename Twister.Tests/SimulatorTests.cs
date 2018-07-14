@@ -13,11 +13,13 @@ namespace Twister.Tests
 	[TestFixture]
 	public class SimulatorTests
 	{
-		[Test]
-		public void SimulatedTorqueCellCalculatesTorqueAndUpdatesTorqueValue()
+		private SimulatorEngine _engine;
+
+		[SetUp]
+		public void Init()
 		{
 			var stopwatch = new System.Diagnostics.Stopwatch();
-			var engine = new SimulatorEngine(stopwatch);
+			_engine = new SimulatorEngine(stopwatch);
 			var condition = new FatigueTestCondition()
 			{
 				CounterclockwiseTorque = -500,
@@ -28,10 +30,21 @@ namespace Twister.Tests
 				FatigueTestId = 5,
 				Id = 1
 			};
-			engine.CurrentCondition = condition;
-			engine.StartSimulate();
+			_engine.CurrentCondition = condition;
+			_engine.StartSimulate();
+		}
 
-			var torqueCell = new SimulatedTorqueCell(engine);
+		[TearDown]
+		public void Cleanup()
+		{
+			_engine.StopSimulate();
+			_engine = null;
+		}
+
+		[Test]
+		public void SimulatedTorqueCellCalculatesTorqueAndUpdatesTorqueValue()
+		{
+			var torqueCell = new SimulatedTorqueCell(_engine);
 
 			List<object> objSamples = new List<object>();
 			List<float> samples = new List<float>();
@@ -45,6 +58,51 @@ namespace Twister.Tests
 
 			Assert.AreEqual(objSamples.Count, 500);
 			Assert.AreEqual(samples.Count, 500);
+		}
+
+		[Test]
+		public void CheckTestInProcessSetAndRetrievedProperly()
+		{
+			int newValue = 1;
+			var enumName = ServoDriveEnums.RegisterAddress.TestInProcess;
+
+			var servoDrive = new SimulatedServoDrive(_engine);
+			int actual = servoDrive.RetrieveParameter(enumName);
+			Assert.AreEqual(0, actual);
+
+			servoDrive.StoreParameter(enumName, newValue);
+			actual = servoDrive.RetrieveParameter(enumName);
+			Assert.AreEqual(newValue, actual);
+		}
+
+		[Test]
+		public void CheckSoftwareInitializedSetAndRetrievedProperly()
+		{
+			int newValue = 1;
+			var enumName = ServoDriveEnums.RegisterAddress.SoftwareInitialized;
+
+			var servoDrive = new SimulatedServoDrive(_engine);
+			int actual = servoDrive.RetrieveParameter(enumName);
+			Assert.AreEqual(0, actual);
+
+			servoDrive.StoreParameter(enumName, newValue);
+			actual = servoDrive.RetrieveParameter(enumName);
+			Assert.AreEqual(newValue, actual);
+		}
+
+		[Test]
+		public void CheckTorqueValueSetAndRetrievedProperly()
+		{
+			int newValue = 500;
+			var enumName = ServoDriveEnums.RegisterAddress.TorqueValue;
+
+			var servoDrive = new SimulatedServoDrive(_engine);
+			int actual = servoDrive.RetrieveParameter(enumName);
+			Assert.AreEqual(0, actual);
+
+			servoDrive.StoreParameter(enumName, newValue);
+			actual = servoDrive.RetrieveParameter(enumName);
+			Assert.AreEqual(newValue, actual);
 		}
 	}
 }
