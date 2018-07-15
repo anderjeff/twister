@@ -52,11 +52,20 @@ namespace Twister.Business.Hardware
 		private int OperatorEndsTest { get; set; }
 		
 		#endregion
-		
+
+		public float Stiffness { get; set; }
 		public float GearboxAngle { get; private set; }
 		public void RefreshPosition()
 		{
-			GearboxAngle = 2;
+			int torque = RetrieveParameter(ServoDriveEnums.RegisterAddress.TorqueValue);
+			if (Stiffness > 0)
+			{
+				GearboxAngle = torque / Stiffness;
+			}
+			else
+			{
+				GearboxAngle = 0;
+			}
 		}
 
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)
