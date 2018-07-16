@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -75,9 +76,12 @@ namespace Twister.Business.Hardware
 
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, float value)
 		{
-			// note for now, the only float stored in a register is DiffLimit. If this ever changes, consider 
-			// creating another dictionary for ServoDriveEnums.RegisterAddress to float, similar to current _addressDictionary.
-			DiffLimit = value;
+			PropertyInfo property = GetType().GetProperty(_addressDictionary[location], BindingFlags.NonPublic | BindingFlags.Instance);
+			if (property.PropertyType == typeof(int))
+			{
+				value = (int) value;
+			}
+			property.SetValue(this, value);
 		}
 
 		public int RetrieveParameter(ServoDriveEnums.RegisterAddress location)
