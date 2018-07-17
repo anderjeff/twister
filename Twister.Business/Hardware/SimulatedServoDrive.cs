@@ -10,6 +10,8 @@ namespace Twister.Business.Hardware
 {
 	public class SimulatedServoDrive : IServoDrive
 	{
+		private int? _previousTorque = null;
+
 		private SimulatorEngine _engine;
 		private Dictionary<ServoDriveEnums.RegisterAddress, string> _addressDictionary =
 			new Dictionary<ServoDriveEnums.RegisterAddress, string>();
@@ -53,19 +55,47 @@ namespace Twister.Business.Hardware
 		
 		#endregion
 
+		public int CycleCount { get; set; }
 		public float Stiffness { get; set; }
 		public float GearboxAngle { get; private set; }
+
 		public void RefreshPosition()
 		{
-			int torque = RetrieveParameter(ServoDriveEnums.RegisterAddress.TorqueValue);
+			int currentTorque = RetrieveParameter(ServoDriveEnums.RegisterAddress.TorqueValue);
 			if (Stiffness > 0)
 			{
-				GearboxAngle = torque / Stiffness;
+				GearboxAngle = currentTorque / Stiffness;
 			}
 			else
 			{
 				GearboxAngle = 0;
 			}
+
+			IncrementCycleCountIfNeeded(currentTorque);
+		}
+
+		/// <summary>
+		/// If the two values cross the midpoint, then increase the
+		/// counter by one.
+		/// </summary>
+		/// <param name="currentTorque">The current angle, measured when this method is called.</param>
+		private void IncrementCycleCountIfNeeded(int currentTorque)
+		{
+			if (_previousTorque == null)
+			{
+				_previousTorque = currentTorque;
+				// first measurement, no need to compare to anything.
+				return;
+			}
+
+			int midpoint = _engine.CurrentCondition.VerticalShift;
+			if (_previousTorque > midpoint && midpoint >= currentTorque)
+			{
+				_engine.CurrentCondition.CyclesCompleted++;
+				CycleCount++;
+			}
+
+			_previousTorque = currentTorque;
 		}
 
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)

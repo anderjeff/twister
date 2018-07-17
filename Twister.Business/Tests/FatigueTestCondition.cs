@@ -40,9 +40,34 @@ namespace Twister.Business.Tests
 		public int CyclesRequired { get; set; }
 
 		/// <summary>
+		/// The number of cycles that have been completed .
+		/// </summary>
+		public int CyclesCompleted { get; set; }
+
+		/// <summary>
 		/// The number of cycles that occur before the torque measurement is verified.
 		/// </summary>
 		public int CalibrationInterval { get; set; }
 
+		public int CyclesRemaining 
+		{
+			get { return CyclesRequired - CyclesCompleted; }
+		}
+
+		/// <summary>
+		/// The height of the waveform representing torque vs. time.
+		/// </summary>
+		public int Amplitude
+		{
+			get { return (ClockwiseTorque - CounterclockwiseTorque) / 2; }
+		}
+
+		/// <summary>
+		/// The midpoint value of torque.
+		/// </summary>
+		public int VerticalShift
+		{
+			get { return Amplitude + CounterclockwiseTorque; }
+		}
 	}
 }

@@ -113,6 +113,25 @@ namespace Twister.Tests
 			
 		}
 
+		[Test]
+		public void SimulatedServoDriveCountsCycles()
+		{
+			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+			sw.Start();
+
+			for (int i = 0; i < 5000; i++)
+			{
+				_torqueCell.RefreshTorque();
+				_servoDrive.StoreParameter(ServoDriveEnums.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);
+				_servoDrive.RefreshPosition();
+				System.Threading.Thread.Sleep(1);
+			}
+
+			Assert.Greater(_servoDrive.CycleCount, 1);
+
+			float seconds = sw.ElapsedMilliseconds / 1000f;
+			Assert.AreEqual(_servoDrive.CycleCount / seconds, _engine.CurrentCondition.CyclesPerSecond, 0.1);
+		}
 
 		[Test]
 		public void CheckTestInProcessSetAndRetrievedProperly()

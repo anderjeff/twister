@@ -25,11 +25,8 @@ namespace Twister.Business.Hardware
 
 		public void RefreshTorque()
 		{
-			int maxTorque = _engine.CurrentCondition.ClockwiseTorque;
-			int minTorque = _engine.CurrentCondition.CounterclockwiseTorque;
-
-			int amplitude = (maxTorque - minTorque) / 2;
-			int verticalShift = amplitude + minTorque;
+			int amplitude = _engine.CurrentCondition.Amplitude;
+			int verticalShift = _engine.CurrentCondition.VerticalShift;
 			int frequency = _engine.CurrentCondition.CyclesPerSecond;
 			LastTime = _engine.ElapsedMilliseconds() / (double) 1000;
 
