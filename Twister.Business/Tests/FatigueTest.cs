@@ -26,6 +26,20 @@ namespace Twister.Business.Tests
 		/// </summary>
 		public DateTime ModifiedDate { get; set; }
 
-		
+		public TimeSpan EstimatedCompletionTime {
+			get { return EstimatedCompletionTimeOfAllTestConditions(); }
+		}
+
+		private TimeSpan EstimatedCompletionTimeOfAllTestConditions()
+		{
+			double secondsToCompletion = 0.0;
+
+			foreach (var fatigueTestCondition in TestConditions)
+			{
+				secondsToCompletion += fatigueTestCondition.TimeRemaining.TotalSeconds;
+			}
+
+			return new TimeSpan(0, 0, (int) secondsToCompletion);
+		}
 	}
 }

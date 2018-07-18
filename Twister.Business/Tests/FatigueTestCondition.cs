@@ -54,6 +54,14 @@ namespace Twister.Business.Tests
 			get { return CyclesRequired - CyclesCompleted; }
 		}
 
+		public TimeSpan TimeRemaining
+		{
+			get
+			{
+				return GetTimeRemaining();
+			}
+		}
+
 		/// <summary>
 		/// The height of the waveform representing torque vs. time.
 		/// </summary>
@@ -68,6 +76,24 @@ namespace Twister.Business.Tests
 		public int VerticalShift
 		{
 			get { return Amplitude + CounterclockwiseTorque; }
+		}
+
+		private TimeSpan GetTimeRemaining()
+		{
+			int cyclesRemaining = CyclesRemaining;
+			int secondsRemaining = 0;
+			if (CalibrationInterval <= 1)
+			{
+				// note all cycles are considered calibration
+				// cycles and will take 1 second each.
+				secondsRemaining = cyclesRemaining;
+				return new TimeSpan(0, 0, secondsRemaining);
+			}
+
+			int calCyclesRemaining = cyclesRemaining / CalibrationInterval;
+			int cyclesNotCalRemaining = cyclesRemaining - calCyclesRemaining;
+			secondsRemaining = calCyclesRemaining + (cyclesNotCalRemaining * CyclesPerSecond);
+			return new TimeSpan(0, 0, secondsRemaining);
 		}
 	}
 }
