@@ -11,6 +11,7 @@ namespace Twister.Business.Hardware
 {
 	public class SimulatedServoDrive : IServoDrive
 	{
+		
 		private int? _previousTorque = null;
 
 		private SimulatorEngine _engine;
@@ -41,7 +42,27 @@ namespace Twister.Business.Hardware
 
 		#region AKD Basic Program Custom Registers.
 
-		private int TestInProcess { get; set; }
+		private int _testInProcess;
+		private int TestInProcess
+		{
+			get { return _testInProcess;}
+			set
+			{
+				if (value == -1)
+				{
+					_engine.StartSimulate();
+				}
+				else if (value == 0)
+				{
+					_engine.StopSimulate();
+				}
+				else
+				{
+					Console.WriteLine(
+						$"Invalid test in process flag provide. -1 means start, 0 means stop, you provided {value}.");
+				}
+			}
+		}
 		private int IsInitialized { get; set; }
 		private int TorqueValue { get; set; }
 		private int WatchdogValue { get; set; }

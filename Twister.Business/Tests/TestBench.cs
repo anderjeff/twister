@@ -70,7 +70,7 @@ namespace Twister.Business.Tests
 		}
 
 		/// <summary>
-		///     The TorqueTest that is currently running on this TestBench.
+		///		The TorqueTest that is currently running on this TestBench.
 		/// </summary>
 		public TorqueTest CurrentTest
 		{

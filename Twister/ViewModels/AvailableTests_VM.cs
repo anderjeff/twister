@@ -129,7 +129,6 @@ namespace Twister.ViewModels
 				   Environment.UserName == "Jeff" ||
                    Environment.UserName == "tkikkert" ||
                    Environment.UserName == "nwalton" ||
-                   Environment.UserName == "vforrester" ||
                    Environment.UserName == "jpbeierle";
         }
     }

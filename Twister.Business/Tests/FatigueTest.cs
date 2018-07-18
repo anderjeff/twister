@@ -16,7 +16,7 @@ namespace Twister.Business.Tests
 		/// <summary>
 		/// The conditions that make up the duty cycle.
 		/// </summary>
-		private List<FatigueTestCondition> TestConditions { get; set; }
+		public List<FatigueTestCondition> TestConditions { get; set; }
 		/// <summary>
 		/// The date the test was originally created.
 		/// </summary>
