@@ -19,6 +19,7 @@ namespace Twister.ViewModels
             _availableViewModels.Add(new FullyReversedTorqueTest_VM());
             _availableViewModels.Add(new UnidirectionalTorqueTest_VM());
             _availableViewModels.Add(new Calibration_VM());
+			_availableViewModels.Add(new FatigueTestSetup_VM());
 			_availableViewModels.Add(new FatigueTest_VM());
 
             CurrentViewModel = _availableViewModels[0];
@@ -62,12 +63,13 @@ namespace Twister.ViewModels
 
         public FullyReversedTorqueTest_VM SteeringShaftTestVm => _availableViewModels[2] as FullyReversedTorqueTest_VM;
 
-        public UnidirectionalTorqueTest_VM UnidirectionalToFailureTestVm =>
-            _availableViewModels[3] as UnidirectionalTorqueTest_VM;
+        public UnidirectionalTorqueTest_VM UnidirectionalToFailureTestVm => _availableViewModels[3] as UnidirectionalTorqueTest_VM;
 
         public Calibration_VM CalibrationVm => _availableViewModels[4] as Calibration_VM;
 
-		public FatigueTest_VM FatigueTestVm => _availableViewModels[5] as FatigueTest_VM;
+	    public FatigueTestSetup_VM FatigueTestSetupVm => _availableViewModels[5] as FatigueTestSetup_VM;
+
+		public FatigueTest_VM FatigueTestVm => _availableViewModels[6] as FatigueTest_VM;
 
         /// <summary>
         ///     Encapsulates the information needed for a bench operator to run

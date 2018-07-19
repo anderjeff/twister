@@ -83,6 +83,7 @@
     <Compile Include="ViewModels\Base_VM.cs" />
     <Compile Include="ViewModels\Calibration_VM.cs" />
     <Compile Include="ViewModels\FatigueTest_VM.cs" />
+    <Compile Include="ViewModels\FatigueTestSetup_VM.cs" />
     <Compile Include="ViewModels\FullyReversedTorqueTest_VM.cs" />
     <Compile Include="ViewModels\MainWindow_VM.cs" />
     <Compile Include="ViewModels\RunSpeedSettings_VM.cs" />
@@ -97,6 +98,12 @@
     </Compile>
     <Compile Include="Views\EnterTestIdUserControl.xaml.cs">
       <DependentUpon>EnterTestIdUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FatigueTestConditionUserControl.xaml.cs">
+      <DependentUpon>FatigueTestConditionUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FatigueTestSetupUserControl.xaml.cs">
+      <DependentUpon>FatigueTestSetupUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FatigueTestUserControl.xaml.cs">
       <DependentUpon>FatigueTestUserControl.xaml</DependentUpon>
@@ -150,6 +157,14 @@
     <Page Include="Views\EnterTestIdUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\FatigueTestConditionUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FatigueTestSetupUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\FatigueTestUserControl.xaml">
       <SubType>Designer</SubType>
