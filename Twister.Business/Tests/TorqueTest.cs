@@ -135,7 +135,7 @@ namespace Twister.Business.Tests
         /// <summary>
         ///     Begins the TorqueTest.
         /// </summary>
-        internal void Start()
+        internal virtual void Start()
         {
 			// it's important to initialize the test first.
 	        if (!Initialized) throw new Exception(Messages.UninitializedTest());

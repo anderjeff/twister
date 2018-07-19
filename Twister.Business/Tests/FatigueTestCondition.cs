@@ -101,19 +101,19 @@ namespace Twister.Business.Tests
 		{
 			int cyclesRemaining = CyclesRemaining;
 			int secondsRemaining = 0;
-			if (CalibrationInterval <= 1)
+			if (CalibrationInterval < 1)
 			{
-				// note all cycles are considered calibration
-				// cycles and will take 1 second each.
-				secondsRemaining = cyclesRemaining;
+				secondsRemaining = cyclesRemaining / CyclesPerSecond;
 				return new TimeSpan(0, 0, secondsRemaining);
 			}
 
 			// already checked CalibrationInterval for zero.
 			int calCyclesRemaining = cyclesRemaining / CalibrationInterval;
 			int cyclesNotCalRemaining = cyclesRemaining - calCyclesRemaining;
-			secondsRemaining = calCyclesRemaining + (cyclesNotCalRemaining * CyclesPerSecond);
-			return new TimeSpan(0, 0, secondsRemaining);
+			secondsRemaining = calCyclesRemaining + (cyclesNotCalRemaining / CyclesPerSecond);
+
+			var timeRemaining = new TimeSpan(0, 0, secondsRemaining);
+			return timeRemaining;
 		}
 	}
 }

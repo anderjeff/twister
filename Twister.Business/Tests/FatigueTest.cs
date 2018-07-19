@@ -36,10 +36,18 @@ namespace Twister.Business.Tests
 
 			foreach (var fatigueTestCondition in TestConditions)
 			{
-				secondsToCompletion += fatigueTestCondition.TimeRemaining.TotalSeconds;
+				var secondsForThisCondition = fatigueTestCondition.TimeRemaining.TotalSeconds;
+				secondsToCompletion += secondsForThisCondition;
 			}
 
-			return new TimeSpan(0, 0, (int) secondsToCompletion);
+			var timeToCompletion = new TimeSpan(0, 0, (int) secondsToCompletion);
+			return timeToCompletion;
+		}
+
+		internal override void Start()
+		{
+			InformInitializationComplete();
+			base.Start();
 		}
 	}
 }
