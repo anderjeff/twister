@@ -8,6 +8,15 @@ namespace Twister.Business.Tests
 {
 	public class FatigueTestCondition
 	{
+		private const int MAX_SPEED = 3;
+		private const int MIN_SPEED = 1;
+		private const int MAX_TORQUE = 20000;
+		private const int MIN_TORQUE = -20000;
+		private int _clockwiseTorque;
+		private int _counterClockwiseTorque;
+		private int _cyclesPerSecond;
+
+
 		/// <summary>
 		/// Gets or sets the unique identifier for the fatigue test condition.
 		/// </summary>
@@ -21,17 +30,61 @@ namespace Twister.Business.Tests
 		/// <summary>
 		/// Gets or sets the target torque in the clockwise direction.
 		/// </summary>
-		public int ClockwiseTorque { get; set; }
+		public int ClockwiseTorque
+		{
+			get { return _clockwiseTorque; }
+			set
+			{
+				if (value <= MAX_TORQUE)
+				{
+					_clockwiseTorque = value;
+				}
+				else
+				{
+					throw new ArgumentOutOfRangeException($"Clockwise torque cannot exceed {MAX_TORQUE} in-lbs.");
+				}
+
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the target torque in the counterclockwise direction.
 		/// </summary>
-		public int CounterclockwiseTorque { get; set; }
+		public int CounterclockwiseTorque
+		{
+			get { return _counterClockwiseTorque; }
+			set
+			{
+				if (value >= MIN_TORQUE)
+				{
+					_counterClockwiseTorque = value;
+				}
+				else
+				{
+					throw new ArgumentOutOfRangeException($"Clockwise torque cannot exceed {MIN_TORQUE} in-lbs.");
+				}
+
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the rotation speed, measured in cycles per second.
 		/// </summary>
-		public int CyclesPerSecond { get; set; }
+		public int CyclesPerSecond
+		{
+			get { return _cyclesPerSecond; }
+			set
+			{
+				if (value > 0 && value < 4)
+				{
+					_cyclesPerSecond = value;
+				}
+				else
+				{
+					throw new ArgumentOutOfRangeException($"Cycles per second must be between {MIN_SPEED} and {MAX_SPEED}.");
+				}
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the number of cycles required to be completed by this <see cref="FatigueTestCondition"/>
@@ -99,6 +152,12 @@ namespace Twister.Business.Tests
 		/// </returns>
 		private TimeSpan GetTimeRemaining()
 		{
+			// 0 cycles per second is not allowed, but temporarily it may be possible, so this covers it.
+			if (CyclesPerSecond == 0)
+			{
+				return new TimeSpan(0, 0, 0);
+			}
+
 			int cyclesRemaining = CyclesRemaining;
 			int secondsRemaining = 0;
 			if (CalibrationInterval < 1)

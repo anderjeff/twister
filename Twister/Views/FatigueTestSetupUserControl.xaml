@@ -7,9 +7,75 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <Style TargetType="Button">
+
+        <Style x:Key="TestSetupCellStyle" TargetType="{x:Type DataGridCell}">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe Ui" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Border Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style  x:Key="TestSetupColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Navy" />
+            <Setter Property="Padding" Value="5, 10" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="BorderBrush" Value="Black" />
+        </Style>
+
+        <Style  x:Key="TestSetupRowHeaderStyle" TargetType="{x:Type DataGridRowHeader}">
+            <Setter Property="Width" Value="0" />
+        </Style>
+
+        <Style x:Key="TestSetupDataGridRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Padding" Value="25" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TestSetupDataGridStyle" TargetType="{x:Type DataGrid}">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="SelectionUnit" Value="Cell" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CellStyle" Value="{StaticResource TestSetupCellStyle}" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource TestSetupColumnHeaderStyle}" />
+            <Setter Property="RowHeaderStyle" Value="{StaticResource TestSetupRowHeaderStyle}" />
+            <Setter Property="RowStyle" Value="{StaticResource TestSetupDataGridRowStyle}" />
+        </Style>
+
+        <Style TargetType="{x:Type Button}">
             <Setter Property="Padding" Value="15"/>
             <Setter Property="Margin" Value="15"/>
+        </Style>
+
+        <Style x:Key="HideLabelIfNoConditionsStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsVisible}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
 
@@ -19,75 +85,58 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>    
-        
-        <Button Grid.Row="0" HorizontalAlignment="Right" Content="Add" Command="{Binding Path=AddNewConditionCommand}"></Button>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <TextBlock FontSize="20" Text="You have not defined any test conditions" 
+                       VerticalAlignment="Center"
+                       Visibility="{Binding Path=NoConditionsDefined, Converter={StaticResource BoolToVisConverter}}" />
+            <Button Grid.Row="0" 
+                    HorizontalAlignment="Right" 
+                    Content="Add" 
+                    Command="{Binding Path=AddConditionCommand}"/>
+        </StackPanel>
         <DataGrid Grid.Row="1"
                   SelectedItem="{Binding SelectedTestCondition}"
                   ItemsSource="{Binding TestConditions}"
-                  RowHeaderWidth="0"
                   AutoGenerateColumns="False"
                   HorizontalScrollBarVisibility="Auto"
-                  Margin="0,5,0,5"
-                  MinWidth="0">
+                  Margin="0,5,15,5"
+                  MinWidth="0"
+                  Style="{StaticResource TestSetupDataGridStyle}"
+                  Visibility="{Binding Path=CanSeeNext, Converter={StaticResource BoolToVisConverter}}">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="CW Torque (in-lbs)"
-                                        Width="auto">
+                <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       Text="{Binding Path=CwTorque, StringFormat='n0'}" />
+                            <Button Content="X" 
+                                    Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.RemoveConditionCommand}" 
+                                    CommandParameter="{Binding}"
+                                    Foreground="White" Background="Red" BorderThickness="0"
+                                    FontWeight="Bold" 
+                                    Padding="10" Margin="0" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="IsTabStop" Value="False" />
+                        </Style>
+                    </DataGridTemplateColumn.CellStyle>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="CCW Torque (in-lbs)"
-                                        Width="auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock VerticalAlignment="Center"
-                                       Text="{Binding Path=CcwTorque, StringFormat='n0'}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-                <DataGridTemplateColumn Header="Cycles per Second"
-                                        Width="auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock VerticalAlignment="Center"
-                                       HorizontalAlignment="Center" 
-                                       Text="{Binding Path=CyclesPerSecond}">
-                            </TextBlock>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-                <DataGridTemplateColumn Header="Calibration Interval"
-                                        Width="auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       Text="{Binding Path=CalibrationInterval, StringFormat='n0'}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                
-                <DataGridTemplateColumn Header="Cycles"
-                                        Width="auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       Text="{Binding Path=Cycles, StringFormat='n0'}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <DataGridTextColumn Binding="{Binding ClockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Header="CW Torque (in-lbs)" />
+                <DataGridTextColumn Binding="{Binding CounterclockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Header="CCW Torque (in-lbs)" />
+                <DataGridTextColumn Binding="{Binding CyclesPerSecond, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Header="Cycles Per Second" />
+                <DataGridTextColumn Binding="{Binding CalibrationInterval, StringFormat='n0', UpdateSourceTrigger=PropertyChanged}" Header="Calibration Interval" />
+                <DataGridTextColumn Binding="{Binding CyclesRequired, StringFormat='n0', UpdateSourceTrigger=PropertyChanged}" Header="Cycles" />
             </DataGrid.Columns>
         </DataGrid>
 
-        <Button Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Right" Content="Next" Command="{Binding Path=NextScreenCommand}"></Button>
+        <Button Grid.Row="2" 
+                VerticalAlignment="Top" HorizontalAlignment="Right" 
+                Content="Next" 
+                Visibility="{Binding Path=CanSeeNext, Converter={StaticResource BoolToVisConverter}}"
+                Command="{Binding Path=NextScreenCommand}"></Button>
     </Grid>
 </UserControl>
+
