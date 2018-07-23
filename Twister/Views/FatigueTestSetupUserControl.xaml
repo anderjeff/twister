@@ -114,7 +114,8 @@
                                     CommandParameter="{Binding}"
                                     Foreground="White" Background="Red" BorderThickness="0"
                                     FontWeight="Bold" 
-                                    Padding="10" Margin="0" />
+                                    Padding="10" Margin="0" 
+                                    ToolTip="Click to remove the test condition."/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellStyle>
@@ -124,11 +125,16 @@
                     </DataGridTemplateColumn.CellStyle>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Binding="{Binding ClockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Header="CW Torque (in-lbs)" />
-                <DataGridTextColumn Binding="{Binding CounterclockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Header="CCW Torque (in-lbs)" />
-                <DataGridTextColumn Binding="{Binding CyclesPerSecond, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" Header="Cycles Per Second" />
-                <DataGridTextColumn Binding="{Binding CalibrationInterval, StringFormat='n0', UpdateSourceTrigger=PropertyChanged}" Header="Calibration Interval" />
-                <DataGridTextColumn Binding="{Binding CyclesRequired, StringFormat='n0', UpdateSourceTrigger=PropertyChanged}" Header="Cycles" />
+                <DataGridTextColumn Binding="{Binding ClockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}" 
+                                    Header="CW Torque (in-lbs)" />
+                <DataGridTextColumn Binding="{Binding CounterclockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}" 
+                                    Header="CCW Torque (in-lbs)" />
+                <DataGridTextColumn Binding="{Binding CyclesPerSecond, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}" 
+                                    Header="Cycles Per Second" />
+                <DataGridTextColumn Binding="{Binding CalibrationInterval, StringFormat='n0', UpdateSourceTrigger=LostFocus}" 
+                                    Header="Calibration Interval" />
+                <DataGridTextColumn Binding="{Binding CyclesRequired, StringFormat='n0', UpdateSourceTrigger=LostFocus}" 
+                                    Header="Cycles" />
             </DataGrid.Columns>
         </DataGrid>
 

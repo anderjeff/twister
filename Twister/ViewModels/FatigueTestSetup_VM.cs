@@ -18,30 +18,17 @@ namespace Twister.ViewModels
 
 		public FatigueTestSetup_VM()
 		{
+			_fatigueTest = new FatigueTest();
+			
 			NoConditionsDefined = true;
 			CanSeeNext = false;
-
+			
 			TestConditions = new ObservableCollection<FatigueTestCondition>();
 			TestConditions.CollectionChanged += TestConditionsOnCollectionChanged;
 
 			AddConditionCommand = new RelayCommand(AddCondition);
 			NextCommand = new RelayCommand(GoToNextScreen);
 			RemoveConditionCommand = new RelayCommand<FatigueTestCondition>(RemoveCondition);
-		}
-
-		private void RemoveCondition(FatigueTestCondition condition)
-		{
-			TestConditions.Remove(condition);
-		}
-
-		private void GoToNextScreen()
-		{
-			throw new NotImplementedException();
-		}
-
-		private void AddCondition()
-		{
-			TestConditions.Add(new FatigueTestCondition());
 		}
 
 		/// <summary>
@@ -77,6 +64,23 @@ namespace Twister.ViewModels
 			NoConditionsDefined =  TestConditions.Count == 0;
 			CanSeeNext = TestConditions.Count > 0;
 		}
+		
+		private void RemoveCondition(FatigueTestCondition condition)
+		{
+			_fatigueTest.TestConditions.Remove(condition);
+			TestConditions.Remove(condition);
+		}
 
+		private void AddCondition()
+		{
+			var condition = new FatigueTestCondition();
+			_fatigueTest.TestConditions.Add(condition);
+			TestConditions.Add(condition);
+		}
+
+		private void GoToNextScreen()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

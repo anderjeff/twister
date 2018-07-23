@@ -99,9 +99,6 @@
     <Compile Include="Views\EnterTestIdUserControl.xaml.cs">
       <DependentUpon>EnterTestIdUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\FatigueTestConditionUserControl.xaml.cs">
-      <DependentUpon>FatigueTestConditionUserControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\FatigueTestSetupUserControl.xaml.cs">
       <DependentUpon>FatigueTestSetupUserControl.xaml</DependentUpon>
     </Compile>
@@ -157,10 +154,6 @@
     <Page Include="Views\EnterTestIdUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\FatigueTestConditionUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\FatigueTestSetupUserControl.xaml">
       <SubType>Designer</SubType>

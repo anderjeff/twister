@@ -16,6 +16,10 @@ namespace Twister.Business.Tests
 		private int _counterClockwiseTorque;
 		private int _cyclesPerSecond;
 
+		public FatigueTestCondition()
+		{
+			CyclesPerSecond = 1;
+		}
 
 		/// <summary>
 		/// Gets or sets the unique identifier for the fatigue test condition.
@@ -32,16 +36,20 @@ namespace Twister.Business.Tests
 		/// </summary>
 		public int ClockwiseTorque
 		{
-			get { return _clockwiseTorque; }
+			get => _clockwiseTorque;
 			set
 			{
-				if (value <= MAX_TORQUE)
+				if (value < _counterClockwiseTorque)
+				{
+					_clockwiseTorque = _counterClockwiseTorque;
+				}
+				else if (value <= MAX_TORQUE)
 				{
 					_clockwiseTorque = value;
 				}
 				else
 				{
-					throw new ArgumentOutOfRangeException($"Clockwise torque cannot exceed {MAX_TORQUE} in-lbs.");
+					_clockwiseTorque = MAX_TORQUE;
 				}
 
 			}
@@ -52,18 +60,21 @@ namespace Twister.Business.Tests
 		/// </summary>
 		public int CounterclockwiseTorque
 		{
-			get { return _counterClockwiseTorque; }
+			get => _counterClockwiseTorque;
 			set
 			{
-				if (value >= MIN_TORQUE)
+				if (value > _clockwiseTorque)
+				{
+					_counterClockwiseTorque = _clockwiseTorque;
+				}
+				else if (value >= MIN_TORQUE)
 				{
 					_counterClockwiseTorque = value;
 				}
 				else
 				{
-					throw new ArgumentOutOfRangeException($"Clockwise torque cannot exceed {MIN_TORQUE} in-lbs.");
+					_counterClockwiseTorque = MIN_TORQUE;
 				}
-
 			}
 		}
 
@@ -75,13 +86,17 @@ namespace Twister.Business.Tests
 			get { return _cyclesPerSecond; }
 			set
 			{
-				if (value > 0 && value < 4)
+				if (value >= MIN_SPEED && value <= MAX_SPEED )
 				{
 					_cyclesPerSecond = value;
 				}
+				else if (value < MIN_SPEED)
+				{
+					_cyclesPerSecond = MIN_SPEED;
+				}
 				else
 				{
-					throw new ArgumentOutOfRangeException($"Cycles per second must be between {MIN_SPEED} and {MAX_SPEED}.");
+					_cyclesPerSecond = MAX_SPEED;
 				}
 			}
 		}
