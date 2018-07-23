@@ -142,7 +142,7 @@
                 VerticalAlignment="Top" HorizontalAlignment="Right" 
                 Content="Next" 
                 Visibility="{Binding Path=CanSeeNext, Converter={StaticResource BoolToVisConverter}}"
-                Command="{Binding Path=NextScreenCommand}"></Button>
+                Command="{Binding Path=NextCommand}" />
     </Grid>
 </UserControl>
 

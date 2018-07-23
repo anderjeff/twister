@@ -80,7 +80,10 @@ namespace Twister.ViewModels
 
 		private void GoToNextScreen()
 		{
-			throw new NotImplementedException();
+			var fatigueTestVm = MainWindow_VM.Instance.FatigueTestVm;
+			fatigueTestVm.FatigueTest = _fatigueTest;
+
+			MainWindow_VM.Instance.CurrentViewModel = fatigueTestVm;
 		}
 	}
 }
