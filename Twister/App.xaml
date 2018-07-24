@@ -78,6 +78,61 @@
 
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
 
+                <Style x:Key="TestSetupCellStyle" TargetType="{x:Type DataGridCell}">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe Ui" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Border Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style  x:Key="TestSetupColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Navy" />
+            <Setter Property="Padding" Value="5, 10" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="BorderBrush" Value="Black" />
+        </Style>
+
+        <Style  x:Key="TestSetupRowHeaderStyle" TargetType="{x:Type DataGridRowHeader}">
+            <Setter Property="Width" Value="0" />
+        </Style>
+
+        <Style x:Key="TestSetupDataGridRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Padding" Value="25" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TestSetupDataGridStyle" TargetType="{x:Type DataGrid}">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="SelectionUnit" Value="Cell" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CellStyle" Value="{StaticResource TestSetupCellStyle}" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource TestSetupColumnHeaderStyle}" />
+            <Setter Property="RowHeaderStyle" Value="{StaticResource TestSetupRowHeaderStyle}" />
+            <Setter Property="RowStyle" Value="{StaticResource TestSetupDataGridRowStyle}" />
+        </Style>
 
     </Application.Resources>
 </Application>
