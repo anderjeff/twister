@@ -82,6 +82,7 @@
     <Compile Include="ViewModels\AvailableTests_VM.cs" />
     <Compile Include="ViewModels\Base_VM.cs" />
     <Compile Include="ViewModels\Calibration_VM.cs" />
+    <Compile Include="ViewModels\FatigueTestCondition_VM.cs" />
     <Compile Include="ViewModels\FatigueTest_VM.cs" />
     <Compile Include="ViewModels\FatigueTestSetup_VM.cs" />
     <Compile Include="ViewModels\FullyReversedTorqueTest_VM.cs" />

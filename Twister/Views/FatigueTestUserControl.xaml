@@ -49,7 +49,7 @@
                            VerticalAlignment="Center" Padding="15" />
             </Grid>
 
-            <DataGrid Grid.Row="1"
+            <DataGrid Grid.Row="1" ColumnWidth="*" HorizontalAlignment="Center" VerticalAlignment="Top"
                       SelectedItem="{Binding SelectedTestCondition}"
                       ItemsSource="{Binding TestConditions}"
                       IsReadOnly="True"
@@ -60,20 +60,23 @@
                       Style="{StaticResource TestSetupDataGridStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn
-                        Binding="{Binding ClockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}"
+                        Binding="{Binding ClockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True}"
                         Header="CW Torque (in-lbs)" />
                     <DataGridTextColumn
-                        Binding="{Binding CounterclockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}"
+                        Binding="{Binding CounterclockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True}"
                         Header="CCW Torque (in-lbs)" />
                     <DataGridTextColumn
-                        Binding="{Binding CyclesPerSecond, StringFormat='n0', ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}"
+                        Binding="{Binding CyclesPerSecond, StringFormat='n0', ValidatesOnExceptions=True}"
                         Header="Cycles Per Second" />
                     <DataGridTextColumn
-                        Binding="{Binding CalibrationInterval, StringFormat='n0', UpdateSourceTrigger=LostFocus}"
+                        Binding="{Binding CalibrationInterval, StringFormat='n0'}"
                         Header="Calibration Interval" />
                     <DataGridTextColumn
-                        Binding="{Binding CyclesRequired, StringFormat='n0', UpdateSourceTrigger=LostFocus}"
+                        Binding="{Binding CyclesRequired, StringFormat='n0'}"
                         Header="Cycles" />
+                    <DataGridTextColumn
+                        Binding="{Binding CyclesCompleted, StringFormat='n0', UpdateSourceTrigger=PropertyChanged}"
+                        Header="Completed" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

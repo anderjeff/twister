@@ -26,9 +26,7 @@ namespace Twister.Business.Tests
 		/// </summary>
 		public DateTime ModifiedDate { get; set; }
 
-		public TimeSpan EstimatedCompletionTime {
-			get { return EstimatedCompletionTimeOfAllTestConditions(); }
-		}
+		public TimeSpan EstimatedCompletionTime => EstimatedCompletionTimeOfAllTestConditions();
 
 		private TimeSpan EstimatedCompletionTimeOfAllTestConditions()
 		{
