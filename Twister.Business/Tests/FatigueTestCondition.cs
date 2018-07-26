@@ -18,6 +18,7 @@ namespace Twister.Business.Tests
 
 		public FatigueTestCondition()
 		{
+			// default
 			CyclesPerSecond = 1;
 		}
 
@@ -83,7 +84,7 @@ namespace Twister.Business.Tests
 		/// </summary>
 		public int CyclesPerSecond
 		{
-			get { return _cyclesPerSecond; }
+			get => _cyclesPerSecond;
 			set
 			{
 				if (value >= MIN_SPEED && value <= MAX_SPEED )

@@ -150,6 +150,25 @@ namespace Twister.Business.Tests
 				}
 				CurrentTest = test;
 				SetTestType(CurrentTest.TestTemplateId);
+
+				
+
+			}
+		}
+
+		public void UpdateCurrentCondition(FatigueTestCondition newCondition)
+		{
+			if (!(_currentTest is FatigueTest)) return;
+
+			// if this is a simulated test, we need to get the current test to the 
+			// engine, so it knows how to respond when the test starts.
+			if (_acDrive is SimulatedServoDrive servoDrive)
+			{
+				servoDrive.Engine.CurrentCondition = newCondition;
+			}
+			if (_torqueCell is SimulatedTorqueCell torqueCell)
+			{
+				torqueCell.Engine.CurrentCondition = newCondition;
 			}
 		}
 

@@ -13,19 +13,29 @@ namespace Twister.Business.Tests
 			TestConditions = new List<FatigueTestCondition>();
 		}
 
+		///// <summary>
+		///// The portion of the test that is currently running.
+		///// </summary>
+		//private FatigueTestCondition CurrentCondition{ get; set; }
+
 		/// <summary>
 		/// The conditions that make up the duty cycle.
 		/// </summary>
 		public List<FatigueTestCondition> TestConditions { get; set; }
+
 		/// <summary>
 		/// The date the test was originally created.
 		/// </summary>
 		public DateTime CreatedDate { get; set; }
+
 		/// <summary>
 		/// The last time the test was modified.
 		/// </summary>
 		public DateTime ModifiedDate { get; set; }
 
+		/// <summary>
+		/// The estimated time when all test conditions should be completed.
+		/// </summary>
 		public TimeSpan EstimatedCompletionTime => EstimatedCompletionTimeOfAllTestConditions();
 
 		private TimeSpan EstimatedCompletionTimeOfAllTestConditions()
@@ -42,6 +52,9 @@ namespace Twister.Business.Tests
 			return timeToCompletion;
 		}
 
+		/// <summary>
+		/// Start running the test.
+		/// </summary>
 		internal override void Start()
 		{
 			InformInitializationComplete();

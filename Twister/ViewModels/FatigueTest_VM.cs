@@ -73,12 +73,12 @@ namespace Twister.ViewModels
 
 		protected override void StartTest()
 		{
-			throw new NotImplementedException();
+			
 		}
 
 		protected override void ScaleChartAxis(float currentTorque, float currentAngle)
 		{
-			throw new NotImplementedException();
+			// do nothing, there is no chart.
 		}
 
 		protected override void CleanupCurrentTest()

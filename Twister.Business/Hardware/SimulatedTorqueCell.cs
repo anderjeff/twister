@@ -23,6 +23,11 @@ namespace Twister.Business.Hardware
 		public double LastTime { get; private set; }
 		public float Torque { get; private set; }
 
+		/// <summary>
+		/// The source of the angle torque values.
+		/// </summary>
+		public SimulatorEngine Engine => _engine;
+
 		public void RefreshTorque()
 		{
 			int amplitude = _engine.CurrentCondition.Amplitude;

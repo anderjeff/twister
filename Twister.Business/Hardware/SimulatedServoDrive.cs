@@ -120,6 +120,11 @@ namespace Twister.Business.Hardware
 			_previousTorque = currentTorque;
 		}
 
+		/// <summary>
+		/// The source of the angle torque values.
+		/// </summary>
+		public SimulatorEngine Engine => _engine;
+
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)
 		{
 			GetType().GetProperty(_addressDictionary[location], BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, value);

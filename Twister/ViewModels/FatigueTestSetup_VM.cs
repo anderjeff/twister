@@ -82,7 +82,8 @@ namespace Twister.ViewModels
 		{
 			var fatigueTestVm = MainWindow_VM.Instance.FatigueTestVm;
 			fatigueTestVm.FatigueTest = _fatigueTest;
-
+			TestBench.Singleton.LoadTest(_fatigueTest);
+			
 			MainWindow_VM.Instance.CurrentViewModel = fatigueTestVm;
 		}
 	}
