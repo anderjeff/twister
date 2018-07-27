@@ -20,7 +20,7 @@ namespace Twister.ViewModels
             _availableViewModels.Add(new UnidirectionalTorqueTest_VM());
             _availableViewModels.Add(new Calibration_VM());
 			_availableViewModels.Add(new FatigueTestSetup_VM());
-			_availableViewModels.Add(new FatigueTest_VM());
+			_availableViewModels.Add(new FatigueTestViewModel());
 
             CurrentViewModel = _availableViewModels[0];
 
@@ -69,7 +69,7 @@ namespace Twister.ViewModels
 
 	    public FatigueTestSetup_VM FatigueTestSetupVm => _availableViewModels[5] as FatigueTestSetup_VM;
 
-		public FatigueTest_VM FatigueTestVm => _availableViewModels[6] as FatigueTest_VM;
+		public FatigueTestViewModel FatigueTestViewModel => _availableViewModels[6] as FatigueTestViewModel;
 
         /// <summary>
         ///     Encapsulates the information needed for a bench operator to run

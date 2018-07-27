@@ -41,7 +41,6 @@
                     Command="{Binding Path=AddConditionCommand}"/>
         </StackPanel>
         <DataGrid Grid.Row="1"
-                  SelectedItem="{Binding SelectedTestCondition}"
                   ItemsSource="{Binding TestConditions}"
                   AutoGenerateColumns="False"
                   HorizontalScrollBarVisibility="Auto"

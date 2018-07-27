@@ -30,7 +30,7 @@
             <views:CalibrationUserControl DataContext="{Binding}" />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type viewModels:FatigueTest_VM}">
+        <DataTemplate DataType="{x:Type viewModels:FatigueTestViewModel}">
             <views:FatigueTestUserControl DataContext="{Binding}" />
         </DataTemplate>
 

@@ -28,8 +28,9 @@ namespace Twister.Business.Database
         {
 			try
 			{
+				
 				twisterConn = new SqlConnection();
-				twisterConn.ConnectionString = File.Exists(twisterPath) ? TwisterConnectionString() : ConfigurationManager.ConnectionStrings["Twister"].ConnectionString;
+				twisterConn.ConnectionString = File.Exists(twisterPath) ? TwisterConnectionString() : "Data Source=HOME-PC;Initial Catalog=Twister;Integrated Security=True;";
 				twisterConn.Open();
                 return twisterConn;
             }
@@ -53,7 +54,7 @@ namespace Twister.Business.Database
             try
             {
                 vjsConn = new SqlConnection();
-                vjsConn.ConnectionString = File.Exists(vjsPath) ? VjsConnectionString() : ConfigurationManager.ConnectionStrings["Vjs"].ConnectionString;
+                vjsConn.ConnectionString = File.Exists(vjsPath) ? VjsConnectionString() : "Data Source=HOME-PC;Initial Catalog=Vjs;Integrated Security=True;";
 				vjsConn.Open();
                 return vjsConn;
             }

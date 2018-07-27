@@ -16,6 +16,8 @@ namespace Twister.ViewModels
 			_testCondition = testCondition;
 		}
 
+		public FatigueTestCondition Condition => _testCondition;
+		
 		public int ClockwiseTorque
 		{
 			get => _testCondition.ClockwiseTorque;

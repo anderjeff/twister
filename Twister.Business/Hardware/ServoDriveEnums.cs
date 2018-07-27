@@ -25,7 +25,8 @@ namespace Twister.Business.Hardware
 			DiffLimit = 5016, // USER.FLOAT    
 			TorqueDirection = 5018, // USER.INT
 			TestType = 5020, // USER.INT
-			OperatorEndsTest = 5022 // USER.INT
+			OperatorEndsTest = 5022, // USER.INT
+			CycleCount = 5024 // USER.INT
 		}
 	}
 }

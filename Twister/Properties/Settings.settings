@@ -1,8 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Twister.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="TwisterConnString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Data Source=HOME-PC;Initial Catalog=Twister;Integrated Security=True;</Value>
+    </Setting>
+    <Setting Name="VjsConnString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Data Source=HOME-PC;Initial Catalog=Vjs;Integrated Security=True;</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

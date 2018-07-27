@@ -80,7 +80,7 @@ namespace Twister.ViewModels
 
 		private void GoToNextScreen()
 		{
-			var fatigueTestVm = MainWindow_VM.Instance.FatigueTestVm;
+			var fatigueTestVm = MainWindow_VM.Instance.FatigueTestViewModel;
 			fatigueTestVm.FatigueTest = _fatigueTest;
 			TestBench.Singleton.LoadTest(_fatigueTest);
 			

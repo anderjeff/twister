@@ -90,6 +90,11 @@ namespace Twister.Business.Tests
 		/// </summary>
 		public List<TorqueTest> CompletedTests { get; set; }
 
+		/// <summary>
+		/// Get a value representing if the test bench is running with simulated sensors.
+		/// </summary>
+		public bool IsSimulated => (_torqueCell is SimulatedTorqueCell && _acDrive is SimulatedServoDrive);
+
 		// events
 		public event EventHandler<TorqueTestEventArgs> TestStarted;
 
@@ -235,6 +240,12 @@ namespace Twister.Business.Tests
 			// now create and return the data point
 			Sample sample = new Sample(_torqueCell.Torque, _acDrive.GearboxAngle);
 			return sample;
+		}
+
+		public int GetCycleCount()
+		{
+			int cycleCount = _acDrive.RetrieveParameter(ServoDriveEnums.RegisterAddress.CycleCount);
+			return cycleCount;
 		}
 
 		/// <summary>
