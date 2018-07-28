@@ -38,6 +38,7 @@ namespace Twister.Business.Hardware
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.TorqueDirection, "TorqueDirection");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.TestType, "TestType");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.OperatorEndsTest, "OperatorEndsTest");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CycleCount, "CycleCount");
 		}
 
 		#region AKD Basic Program Custom Registers.
@@ -74,10 +75,10 @@ namespace Twister.Business.Hardware
 		private int TorqueDirection { get; set; }
 		private int TestType { get; set; }
 		private int OperatorEndsTest { get; set; }
+		private int CycleCount { get; set; }
 		
 		#endregion
-
-		public int CycleCount { get; set; }
+		
 		public float Stiffness { get; set; }
 		public float GearboxAngle { get; private set; }
 

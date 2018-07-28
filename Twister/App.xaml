@@ -126,7 +126,7 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="Gray" />
             <Setter Property="SelectionMode" Value="Single" />
-            <Setter Property="SelectionUnit" Value="Cell" />
+            <Setter Property="SelectionUnit" Value="CellOrRowHeader" />
             <Setter Property="CanUserAddRows" Value="False" />
             <Setter Property="CellStyle" Value="{StaticResource TestSetupCellStyle}" />
             <Setter Property="ColumnHeaderStyle" Value="{StaticResource TestSetupColumnHeaderStyle}" />

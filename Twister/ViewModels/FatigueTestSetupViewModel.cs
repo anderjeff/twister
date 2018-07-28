@@ -10,13 +10,16 @@ using Twister.Utilities;
 
 namespace Twister.ViewModels
 {
-	public class FatigueTestSetup_VM : Base_VM
+	public class FatigueTestSetupViewModel : Base_VM
 	{
 		private bool _noConditionsDefined;
 		private FatigueTest _fatigueTest;
 		private bool _canSeeNext;
+		private bool _isSimulatedAndCanSeeNext;
+		private bool _isSimulated;
+		private int _shaftStiffness;
 
-		public FatigueTestSetup_VM()
+		public FatigueTestSetupViewModel()
 		{
 			_fatigueTest = new FatigueTest();
 			
@@ -29,6 +32,8 @@ namespace Twister.ViewModels
 			AddConditionCommand = new RelayCommand(AddCondition);
 			NextCommand = new RelayCommand(GoToNextScreen);
 			RemoveConditionCommand = new RelayCommand<FatigueTestCondition>(RemoveCondition);
+
+			ShaftStiffness = 1;
 		}
 
 		/// <summary>
@@ -36,7 +41,7 @@ namespace Twister.ViewModels
 		/// </summary>
 		public bool NoConditionsDefined
 		{
-			get { return _noConditionsDefined; }
+			get => _noConditionsDefined;
 			set
 			{
 				_noConditionsDefined = value;
@@ -46,11 +51,46 @@ namespace Twister.ViewModels
 
 		public bool CanSeeNext
 		{
-			get { return _canSeeNext; }
+			get => _canSeeNext;
 			set
 			{
 				_canSeeNext = value;
 				OnPropertyChanged();
+
+				IsSimulatedAndCanSeeNext = (_isSimulated && _canSeeNext);
+			}
+		}
+
+		public bool IsSimulated
+		{
+			get => _isSimulated;
+			set
+			{
+				_isSimulated = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool IsSimulatedAndCanSeeNext
+		{
+			get => _isSimulatedAndCanSeeNext;
+			set
+			{
+				_isSimulatedAndCanSeeNext = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public int ShaftStiffness
+		{
+			get => _shaftStiffness;
+			set
+			{
+				if (value > 0)
+				{
+					_shaftStiffness = value;
+					OnPropertyChanged();
+				}
 			}
 		}
 
@@ -82,8 +122,14 @@ namespace Twister.ViewModels
 		{
 			var fatigueTestVm = MainWindow_VM.Instance.FatigueTestViewModel;
 			fatigueTestVm.FatigueTest = _fatigueTest;
+
+			fatigueTestVm.CurrentClockwiseTarget =
+				(float) _fatigueTest.TestConditions.First().ClockwiseTorque / ShaftStiffness;
+			fatigueTestVm.CurrentCounterClockwiseTarget =
+				(float) _fatigueTest.TestConditions.First().CounterclockwiseTorque / ShaftStiffness;
+
 			TestBench.Singleton.LoadTest(_fatigueTest);
-			
+			TestBench.Singleton.SetShaftStiffness(ShaftStiffness);
 			MainWindow_VM.Instance.CurrentViewModel = fatigueTestVm;
 		}
 	}

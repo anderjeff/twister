@@ -47,8 +47,10 @@ namespace Twister.ViewModels
 		    {
 				InitializeRealTestBench();
 			}
+
 		    MainWindow_VM.Instance.TestSession.Initialize(TestType.FatigueTest);
-		    MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSetupVm;
+		    MainWindow_VM.Instance.FatigueTestSetupViewModel.IsSimulated = SimulatorIsUsed;
+		    MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSetupViewModel;
 		}
 
 		// want to run a torsion test to failure

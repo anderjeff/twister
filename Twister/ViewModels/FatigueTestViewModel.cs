@@ -27,6 +27,8 @@ namespace Twister.ViewModels
 		private DispatcherTimer _updateUiTimer;
 		private Thread _monitoringThread;
 		private Thread _runningThread;
+		private float _currentCwPercent;
+		private float _currentCcwPercent;
 
 		public FatigueTestViewModel()
 		{
@@ -109,7 +111,27 @@ namespace Twister.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		
+
+		public float CurrentCwPercent
+		{
+			get => _currentCwPercent;
+			set
+			{
+				_currentCwPercent = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public float CurrentCcwPercent
+		{
+			get => _currentCcwPercent;
+			set
+			{
+				_currentCcwPercent = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public FatigueTestCondition_VM SelectedTestConditionViewModel
 		{
 			get => _selectedTestConditionViewModel;
@@ -131,6 +153,7 @@ namespace Twister.ViewModels
 		{
 			InitializeThreads();
 			TestBench.Singleton.InformReady();
+			TestBench.Singleton.BeginCurrentTest();
 		}
 		
 		private void PauseTest()
@@ -147,7 +170,7 @@ namespace Twister.ViewModels
 		{
 			// to update the UI, a timer.
 			_updateUiTimer = new System.Windows.Threading.DispatcherTimer();
-			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 100); // 100 milliseconds
+			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 10); // 100 milliseconds
 			_updateUiTimer.Tick += UpdateUiTimerOnTick;
 			_updateUiTimer.Start();
 
@@ -189,7 +212,41 @@ namespace Twister.ViewModels
 		private void UpdateUiTimerOnTick(object sender, EventArgs e)
 		{
 			CurrentAngle = _currentAngleDirect;
+			SelectedTestConditionViewModel.CyclesCompleted = CycleCount;
 			CycleCount = _cycleCountDirect;
+
+			if (CurrentAngle > 0)
+			{
+				if (CurrentClockwiseTarget == 0f)
+				{
+					CurrentCwPercent = 0f;
+				}
+				else
+				{
+					CurrentCwPercent = CurrentAngle / CurrentClockwiseTarget;
+				}
+
+				CurrentCcwPercent = 0f;
+			}
+			else if (CurrentAngle < 0)
+			{
+				if (CurrentCounterClockwiseTarget == 0f)
+				{
+					CurrentCcwPercent = 0f;
+				}
+				else
+				{
+					CurrentCcwPercent = CurrentAngle / CurrentCounterClockwiseTarget;
+				}
+
+				CurrentCwPercent = 0f;
+			}
+			else
+			{
+				CurrentCwPercent = 0f;
+				CurrentCcwPercent = 0f;
+			}
+
 		}
 	}
 }

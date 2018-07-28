@@ -155,9 +155,6 @@ namespace Twister.Business.Tests
 				}
 				CurrentTest = test;
 				SetTestType(CurrentTest.TestTemplateId);
-
-				
-
 			}
 		}
 
@@ -174,6 +171,14 @@ namespace Twister.Business.Tests
 			if (_torqueCell is SimulatedTorqueCell torqueCell)
 			{
 				torqueCell.Engine.CurrentCondition = newCondition;
+			}
+		}
+
+		public void SetShaftStiffness(int stiffness)
+		{
+			if (_acDrive is SimulatedServoDrive servoDrive)
+			{
+				servoDrive.Stiffness = stiffness;
 			}
 		}
 

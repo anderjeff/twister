@@ -34,7 +34,7 @@
             <views:FatigueTestUserControl DataContext="{Binding}" />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type viewModels:FatigueTestSetup_VM}">
+        <DataTemplate DataType="{x:Type viewModels:FatigueTestSetupViewModel}">
             <views:FatigueTestSetupUserControl DataContext="{Binding}" />
         </DataTemplate>
 

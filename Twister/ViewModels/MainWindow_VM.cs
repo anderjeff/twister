@@ -19,7 +19,7 @@ namespace Twister.ViewModels
             _availableViewModels.Add(new FullyReversedTorqueTest_VM());
             _availableViewModels.Add(new UnidirectionalTorqueTest_VM());
             _availableViewModels.Add(new Calibration_VM());
-			_availableViewModels.Add(new FatigueTestSetup_VM());
+			_availableViewModels.Add(new FatigueTestSetupViewModel());
 			_availableViewModels.Add(new FatigueTestViewModel());
 
             CurrentViewModel = _availableViewModels[0];
@@ -67,7 +67,7 @@ namespace Twister.ViewModels
 
         public Calibration_VM CalibrationVm => _availableViewModels[4] as Calibration_VM;
 
-	    public FatigueTestSetup_VM FatigueTestSetupVm => _availableViewModels[5] as FatigueTestSetup_VM;
+	    public FatigueTestSetupViewModel FatigueTestSetupViewModel => _availableViewModels[5] as FatigueTestSetupViewModel;
 
 		public FatigueTestViewModel FatigueTestViewModel => _availableViewModels[6] as FatigueTestViewModel;
 
