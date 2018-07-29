@@ -39,6 +39,10 @@ namespace Twister.Business.Hardware
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.TestType, "TestType");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.OperatorEndsTest, "OperatorEndsTest");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CycleCount, "CycleCount");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CurrentConditionCycleCount, "CurrentConditionCycleCount");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CalibrationInterval, "CalibrationInterval");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit, "ClockwiseAngleLimit");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit, "CounterClockwiseAngleLimit");
 		}
 
 		#region AKD Basic Program Custom Registers.
@@ -76,6 +80,10 @@ namespace Twister.Business.Hardware
 		private int TestType { get; set; }
 		private int OperatorEndsTest { get; set; }
 		private int CycleCount { get; set; }
+		private int CurrentConditionCycleCount { get; set; }
+		private int CalibrationInterval { get; set; }
+		private float ClockwiseAngleLimit { get; set; }
+		private float CounterClockwiseAngleLimit { get; set; }
 		
 		#endregion
 		
@@ -115,17 +123,37 @@ namespace Twister.Business.Hardware
 			if (_previousTorque > midpoint && midpoint >= currentTorque)
 			{
 				_engine.CurrentCondition.CyclesCompleted++;
+				CurrentConditionCycleCount = _engine.CurrentCondition.CyclesCompleted;
 				CycleCount++;
-			}
 
+				if (CurrentConditionCycleCount % CalibrationInterval == 0)
+				{
+					PerformCalibration();
+				}
+			}
 			_previousTorque = currentTorque;
 		}
 
-		/// <summary>
-		/// The source of the angle torque values.
-		/// </summary>
-		public SimulatorEngine Engine => _engine;
+		private void PerformCalibration()
+		{
+			// todo consider making this a public call, so the C# program can call this when it wants to.....Makes sense because it will need 
+			// to update the UI with latest CW and CCW target angles and this would be a perfect opportunity.
 
+			Runspeed = 1;
+			ReturnToZero();
+
+			// Turn in clockwise until target torque is reached, then record angle
+
+			// Turn in counterclockwise until target torque is reached, then record angle
+			
+
+		}
+
+		private void ReturnToZero()
+		{
+			
+		}
+		
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)
 		{
 			GetType().GetProperty(_addressDictionary[location], BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, value);
@@ -150,5 +178,6 @@ namespace Twister.Business.Hardware
 
 			return (int) this.DiffLimit;
 		}
+		
 	}
 }

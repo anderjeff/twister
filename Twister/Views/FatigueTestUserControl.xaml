@@ -98,6 +98,15 @@
                     Margin="0,25,15,5"
                     MinWidth="0"
                     Style="{StaticResource TestSetupDataGridStyle}">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Yellow" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
                     <DataGrid.Columns>
                         <DataGridTextColumn
                             Binding="{Binding ClockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True}"

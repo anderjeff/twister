@@ -26,7 +26,11 @@ namespace Twister.Business.Hardware
 			TorqueDirection = 5018, // USER.INT
 			TestType = 5020, // USER.INT
 			OperatorEndsTest = 5022, // USER.INT
-			CycleCount = 5024 // USER.INT
+			CycleCount = 5024, // USER.INT
+			CurrentConditionCycleCount = 5026, //USER.INT
+			CalibrationInterval = 5028, // USER.INT 
+			ClockwiseAngleLimit = 5030, // USER.FLOAT
+			CounterClockwiseAngleLimit = 5032  // USER.FLOAT
 		}
 	}
 }

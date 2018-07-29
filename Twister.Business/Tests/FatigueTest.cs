@@ -13,11 +13,6 @@ namespace Twister.Business.Tests
 			TestConditions = new List<FatigueTestCondition>();
 		}
 
-		///// <summary>
-		///// The portion of the test that is currently running.
-		///// </summary>
-		//private FatigueTestCondition CurrentCondition{ get; set; }
-
 		/// <summary>
 		/// The conditions that make up the duty cycle.
 		/// </summary>

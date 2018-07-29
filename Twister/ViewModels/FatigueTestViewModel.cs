@@ -29,6 +29,7 @@ namespace Twister.ViewModels
 		private Thread _runningThread;
 		private float _currentCwPercent;
 		private float _currentCcwPercent;
+		private int _cycleCorrectionCount;
 
 		public FatigueTestViewModel()
 		{
@@ -143,6 +144,8 @@ namespace Twister.ViewModels
 			}
 		}
 
+
+
 		public RelayCommand RunCommand { get; private set; }
 		public RelayCommand PauseCommand { get; private set; }
 		public RelayCommand FinishCommand { get; private set; }
@@ -212,9 +215,37 @@ namespace Twister.ViewModels
 		private void UpdateUiTimerOnTick(object sender, EventArgs e)
 		{
 			CurrentAngle = _currentAngleDirect;
-			SelectedTestConditionViewModel.CyclesCompleted = CycleCount;
 			CycleCount = _cycleCountDirect;
 
+			// check for correction factor.
+			SelectedTestConditionViewModel.CyclesCompleted = CycleCount - _cycleCorrectionCount;
+
+			CheckIfNextConditionShouldBeLoaded();
+
+			UpdateCyclingGraphic();
+		}
+
+		private void CheckIfNextConditionShouldBeLoaded()
+		{
+			if (SelectedTestConditionViewModel.CyclesCompleted >= SelectedTestConditionViewModel.CyclesRequired)
+			{
+				int currentIndex = TestConditions.IndexOf(SelectedTestConditionViewModel);
+				if (currentIndex + 1 < TestConditions.Count)
+				{
+					// add to the correction factor.
+					_cycleCorrectionCount += SelectedTestConditionViewModel.CyclesCompleted;
+					SelectedTestConditionViewModel = TestConditions[currentIndex + 1];
+				}
+				else
+				{
+					// shut it down, the final condition has been completed.
+					TestBench.Singleton.ManuallyCompleteTestCycle();
+				}
+			}
+		}
+
+		private void UpdateCyclingGraphic()
+		{
 			if (CurrentAngle > 0)
 			{
 				if (CurrentClockwiseTarget == 0f)
@@ -246,7 +277,6 @@ namespace Twister.ViewModels
 				CurrentCwPercent = 0f;
 				CurrentCcwPercent = 0f;
 			}
-
 		}
 	}
 }
