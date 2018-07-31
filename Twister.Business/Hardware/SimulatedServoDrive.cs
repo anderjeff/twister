@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace Twister.Business.Hardware
@@ -39,7 +34,7 @@ namespace Twister.Business.Hardware
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.TestType, "TestType");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.OperatorEndsTest, "OperatorEndsTest");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CycleCount, "CycleCount");
-			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CurrentConditionCycleCount, "CurrentConditionCycleCount");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.IsDueForCalibration, "IsDueForCalibration");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CalibrationInterval, "CalibrationInterval");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit, "ClockwiseAngleLimit");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit, "CounterClockwiseAngleLimit");
@@ -80,13 +75,18 @@ namespace Twister.Business.Hardware
 		private int TestType { get; set; }
 		private int OperatorEndsTest { get; set; }
 		private int CycleCount { get; set; }
-		private int CurrentConditionCycleCount { get; set; }
+		private int IsDueForCalibration { get; set; }
 		private int CalibrationInterval { get; set; }
 		private float ClockwiseAngleLimit { get; set; }
 		private float CounterClockwiseAngleLimit { get; set; }
 		
 		#endregion
 		
+		/// <summary>
+		/// The source of the angle torque values.
+		/// </summary>
+		public SimulatorEngine Engine => _engine;
+
 		public float Stiffness { get; set; }
 		public float GearboxAngle { get; private set; }
 
@@ -123,10 +123,9 @@ namespace Twister.Business.Hardware
 			if (_previousTorque > midpoint && midpoint >= currentTorque)
 			{
 				_engine.CurrentCondition.CyclesCompleted++;
-				CurrentConditionCycleCount = _engine.CurrentCondition.CyclesCompleted;
 				CycleCount++;
 
-				if (CurrentConditionCycleCount % CalibrationInterval == 0)
+				if (IsDueForCalibration == -1)
 				{
 					PerformCalibration();
 				}
@@ -136,23 +135,18 @@ namespace Twister.Business.Hardware
 
 		private void PerformCalibration()
 		{
-			// todo consider making this a public call, so the C# program can call this when it wants to.....Makes sense because it will need 
-			// to update the UI with latest CW and CCW target angles and this would be a perfect opportunity.
-
+			// slow it down
+			int tempRunspeed = Runspeed;
 			Runspeed = 1;
-			ReturnToZero();
 
-			// Turn in clockwise until target torque is reached, then record angle
+			ClockwiseAngleLimit = Stiffness == 0 ? 0 : CwTorqueLimit / Stiffness;
+			CounterClockwiseAngleLimit = Stiffness == 0 ? 0 : CcwTorqueLimit / Stiffness;
 
-			// Turn in counterclockwise until target torque is reached, then record angle
-			
-
+			Runspeed = tempRunspeed;
+			IsDueForCalibration = 0;
 		}
 
-		private void ReturnToZero()
-		{
-			
-		}
+		
 		
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)
 		{
@@ -178,6 +172,8 @@ namespace Twister.Business.Hardware
 
 			return (int) this.DiffLimit;
 		}
-		
+
+
+
 	}
 }

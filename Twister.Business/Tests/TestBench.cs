@@ -162,6 +162,10 @@ namespace Twister.Business.Tests
 		{
 			if (!(_currentTest is FatigueTest)) return;
 
+			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, newCondition.ClockwiseTorque);
+			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CcwTorqueLimit, newCondition.CounterclockwiseTorque);
+			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.IsDueForCalibration, -1);
+
 			// if this is a simulated test, we need to get the current test to the 
 			// engine, so it knows how to respond when the test starts.
 			if (_acDrive is SimulatedServoDrive servoDrive)
@@ -172,6 +176,8 @@ namespace Twister.Business.Tests
 			{
 				torqueCell.Engine.CurrentCondition = newCondition;
 			}
+
+			
 		}
 
 		public void SetShaftStiffness(int stiffness)
