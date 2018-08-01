@@ -43,6 +43,7 @@ namespace Twister.Business.Hardware
 		#region AKD Basic Program Custom Registers.
 
 		private int _testInProcess;
+
 		private int TestInProcess
 		{
 			get { return _testInProcess;}
@@ -66,7 +67,7 @@ namespace Twister.Business.Hardware
 		private int IsInitialized { get; set; }
 		private int TorqueValue { get; set; }
 		private int WatchdogValue { get; set; }
-		private int CwTorqueLimit { get; set; }
+		private int CwTorqueLimit { get; set; }|
 		private int CcwTorqueLimit { get; set; }
 		private int Runspeed { get; set; }
 		private int Manualspeed { get; set; }
@@ -173,7 +174,20 @@ namespace Twister.Business.Hardware
 			return (int) this.DiffLimit;
 		}
 
+		public float RetrieveClockwiseLimit()
+		{
+			var cwLimit = (float) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit],
+					BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
 
+			return cwLimit;
+		}
 
+		public float RetrieveCounterclockwiseLimit()
+		{
+			var ccwLimit = (float) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit],
+				BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+
+			return ccwLimit;
+		}
 	}
 }

@@ -161,30 +161,35 @@ namespace Twister.ViewModels
 		
 		private void PauseTest()
 		{
-			
 		}
 
 		private void FinishTest()
 		{
-			
+			TestBench.Singleton.EmergencyStop();
 		}
 
 		private void InitializeThreads()
 		{
 			// to update the UI, a timer.
-			_updateUiTimer = new System.Windows.Threading.DispatcherTimer();
-			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 10); // 100 milliseconds
+			_updateUiTimer = new System.Windows.Threading.DispatcherTimer
+			{
+				Interval = new TimeSpan(0, 0, 0, 0, 10) // 10 milliseconds
+			};
 			_updateUiTimer.Tick += UpdateUiTimerOnTick;
 			_updateUiTimer.Start();
 
 			// create a thread for monitoring current values.
-			_monitoringThread = new Thread(MonitorSensors);
-			_monitoringThread.IsBackground = true; // so the application can close without it shutting down.
+			_monitoringThread = new Thread(MonitorSensors)
+			{
+				IsBackground = true // so the application can close without it shutting down.
+			};
 			_monitoringThread.Start();
 
 			// create a thread to monitor the running test.
-			_runningThread = new Thread(MonitorTest);
-			_runningThread.IsBackground = true; // so the application can close without it shutting down.
+			_runningThread = new Thread(MonitorTest)
+			{
+				IsBackground = true // so the application can close without it shutting down.
+			};
 			_runningThread.Start();
 		}
 
@@ -204,7 +209,6 @@ namespace Twister.ViewModels
 		private void UpdateCurrentValues()
 		{
 			Sample mostRecent = TestBench.Singleton.GetState();
-
 			if (mostRecent != null)
 			{
 				_currentAngleDirect = mostRecent.Angle;
@@ -221,7 +225,6 @@ namespace Twister.ViewModels
 			SelectedTestConditionViewModel.CyclesCompleted = CycleCount - _cycleCorrectionCount;
 
 			CheckIfNextConditionShouldBeLoaded();
-
 			UpdateCyclingGraphic();
 		}
 
@@ -230,11 +233,10 @@ namespace Twister.ViewModels
 			if (SelectedTestConditionViewModel.CyclesCompleted >= SelectedTestConditionViewModel.CyclesRequired)
 			{
 				int currentIndex = TestConditions.IndexOf(SelectedTestConditionViewModel);
-				if (currentIndex + 1 < TestConditions.Count)
+				bool shouldLoadNextCondition = currentIndex + 1 < TestConditions.Count; 
+				if (shouldLoadNextCondition)
 				{
-					// add to the correction factor.
-					_cycleCorrectionCount += SelectedTestConditionViewModel.CyclesCompleted;
-					SelectedTestConditionViewModel = TestConditions[currentIndex + 1];
+					LoadNextCondition(currentIndex);
 				}
 				else
 				{
@@ -242,6 +244,19 @@ namespace Twister.ViewModels
 					TestBench.Singleton.ManuallyCompleteTestCycle();
 				}
 			}
+		}
+
+		private void LoadNextCondition(int currentIndex)
+		{
+			// add to the correction factor.
+			_cycleCorrectionCount += SelectedTestConditionViewModel.CyclesCompleted;
+			SelectedTestConditionViewModel = TestConditions[currentIndex + 1];
+
+			UpdateCurrentValues();
+
+			var tuple = TestBench.Singleton.GetCurrentAngleLimits();
+			CurrentClockwiseTarget = tuple.Item1;
+			CurrentCounterClockwiseTarget = tuple.Item2;
 		}
 
 		private void UpdateCyclingGraphic()

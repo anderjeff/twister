@@ -176,8 +176,22 @@ namespace Twister.Business.Tests
 			{
 				torqueCell.Engine.CurrentCondition = newCondition;
 			}
+		}
 
-			
+		/// <summary>
+		/// Gets the current angle limits from the test bench.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="Tuple{T1,T2}"/> where T1 is the clockwise
+		/// limit and T2 is the counterclockwise limit.
+		/// </returns>
+		public Tuple<float,float> GetCurrentAngleLimits()
+		{
+			float cwLimit = _acDrive.RetrieveClockwiseLimit();
+			float ccwLimit = _acDrive.RetrieveCounterclockwiseLimit();
+			var tuple = new Tuple<float, float>(cwLimit, ccwLimit);
+
+			return tuple;
 		}
 
 		public void SetShaftStiffness(int stiffness)

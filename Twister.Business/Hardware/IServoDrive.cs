@@ -13,5 +13,7 @@ namespace Twister.Business.Hardware
 		void StoreParameter(ServoDriveEnums.RegisterAddress location, int value);
 		void StoreParameter(ServoDriveEnums.RegisterAddress location, float value);
 		int RetrieveParameter(ServoDriveEnums.RegisterAddress location);
+		float RetrieveClockwiseLimit();
+		float RetrieveCounterclockwiseLimit();
 	}
 }

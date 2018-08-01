@@ -203,5 +203,15 @@ namespace Twister.Business.Hardware
                 return 22; // memorable value, at least today it is...
             }
         }
-    }
+
+		public float RetrieveClockwiseLimit()
+		{
+			throw new NotImplementedException();
+		}
+
+		public float RetrieveCounterclockwiseLimit()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
