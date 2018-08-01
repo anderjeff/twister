@@ -187,6 +187,12 @@ namespace Twister.Business.Tests
 		/// </returns>
 		public Tuple<float,float> GetCurrentAngleLimits()
 		{
+			// check to see that IsDueForCalibration = 0 before getting values.
+			while (_acDrive.RetrieveParameter(ServoDriveEnums.RegisterAddress.IsDueForCalibration) == -1)
+			{
+				System.Threading.Thread.Sleep(100);
+			}
+
 			float cwLimit = _acDrive.RetrieveClockwiseLimit();
 			float ccwLimit = _acDrive.RetrieveCounterclockwiseLimit();
 			var tuple = new Tuple<float, float>(cwLimit, ccwLimit);

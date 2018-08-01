@@ -251,8 +251,9 @@ namespace Twister.ViewModels
 			// add to the correction factor.
 			_cycleCorrectionCount += SelectedTestConditionViewModel.CyclesCompleted;
 			SelectedTestConditionViewModel = TestConditions[currentIndex + 1];
+			
 
-			UpdateCurrentValues();
+			
 
 			var tuple = TestBench.Singleton.GetCurrentAngleLimits();
 			CurrentClockwiseTarget = tuple.Item1;

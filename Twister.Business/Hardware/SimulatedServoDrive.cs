@@ -67,7 +67,7 @@ namespace Twister.Business.Hardware
 		private int IsInitialized { get; set; }
 		private int TorqueValue { get; set; }
 		private int WatchdogValue { get; set; }
-		private int CwTorqueLimit { get; set; }|
+		private int CwTorqueLimit { get; set; }
 		private int CcwTorqueLimit { get; set; }
 		private int Runspeed { get; set; }
 		private int Manualspeed { get; set; }
