@@ -77,8 +77,8 @@
         </Style>
 
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
-
-                <Style x:Key="TestSetupCellStyle" TargetType="{x:Type DataGridCell}">
+     
+        <Style x:Key="TestSetupCellStyle" TargetType="{x:Type DataGridCell}">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontFamily" Value="Segoe Ui" />
             <Setter Property="BorderThickness" Value="0" />
@@ -118,6 +118,11 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="LightGray" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="Purple" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="FontStretch" Value="Expanded" />
                 </Trigger>
             </Style.Triggers>
         </Style>

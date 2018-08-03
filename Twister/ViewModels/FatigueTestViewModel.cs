@@ -33,9 +33,6 @@ namespace Twister.ViewModels
 
 		public FatigueTestViewModel()
 		{
-			CurrentAngle = 2.032f;
-			CurrentClockwiseTarget = 5.25f;
-			CurrentCounterClockwiseTarget = -4.23f;
 			TestConditions = new ObservableCollection<FatigueTestCondition_VM>();
 
 			RunCommand = new RelayCommand(StartTest);
@@ -70,7 +67,6 @@ namespace Twister.ViewModels
 				_isSimulated = value;
 				OnPropertyChanged();
 			}
-
 		}
 
 		public float CurrentClockwiseTarget
@@ -218,13 +214,15 @@ namespace Twister.ViewModels
 
 		private void UpdateUiTimerOnTick(object sender, EventArgs e)
 		{
+			UpdateUi();
+			CheckIfNextConditionShouldBeLoaded();
+		}
+
+		private void UpdateUi()
+		{
 			CurrentAngle = _currentAngleDirect;
 			CycleCount = _cycleCountDirect;
-
-			// check for correction factor.
 			SelectedTestConditionViewModel.CyclesCompleted = CycleCount - _cycleCorrectionCount;
-
-			CheckIfNextConditionShouldBeLoaded();
 			UpdateCyclingGraphic();
 		}
 
@@ -232,29 +230,29 @@ namespace Twister.ViewModels
 		{
 			if (SelectedTestConditionViewModel.CyclesCompleted >= SelectedTestConditionViewModel.CyclesRequired)
 			{
-				int currentIndex = TestConditions.IndexOf(SelectedTestConditionViewModel);
-				bool shouldLoadNextCondition = currentIndex + 1 < TestConditions.Count; 
-				if (shouldLoadNextCondition)
-				{
+				var currentIndex = TestConditions.IndexOf(SelectedTestConditionViewModel);
+				var anotherConditionRemains = currentIndex + 1 < TestConditions.Count; 
+				if (anotherConditionRemains)
 					LoadNextCondition(currentIndex);
-				}
 				else
-				{
-					// shut it down, the final condition has been completed.
 					TestBench.Singleton.ManuallyCompleteTestCycle();
-				}
 			}
 		}
 
 		private void LoadNextCondition(int currentIndex)
 		{
-			// add to the correction factor.
+			// Add to the correction factor.
 			_cycleCorrectionCount += SelectedTestConditionViewModel.CyclesCompleted;
 			SelectedTestConditionViewModel = TestConditions[currentIndex + 1];
 			
+			// Let the calibration cycle complete.
+			while (TestBench.Singleton.IsDueForCalibration())
+			{
+				UpdateUi();
+				Thread.Sleep(10);
+			}
 
-			
-
+			// Update targets based on the new test condition.
 			var tuple = TestBench.Singleton.GetCurrentAngleLimits();
 			CurrentClockwiseTarget = tuple.Item1;
 			CurrentCounterClockwiseTarget = tuple.Item2;
