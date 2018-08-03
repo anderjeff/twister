@@ -37,6 +37,9 @@
     <ApplicationIcon>Images\twister.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -131,6 +134,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -211,10 +215,6 @@
     <ProjectReference Include="..\Twister.Business\Twister.Business.csproj">
       <Project>{ff410532-1e10-491a-9d7a-d0d0468f3643}</Project>
       <Name>Twister.Business</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Twister.Common\Twister.Common.csproj">
-      <Project>{36743f6b-b9eb-4dfb-85b4-a3ef29208fc3}</Project>
-      <Name>Twister.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

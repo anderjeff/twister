@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Windows.Threading;
+using log4net;
 using Twister.Business.Data;
 using Twister.Business.Tests;
-using Twister.Common;
 using Twister.Utilities;
 
 namespace Twister.ViewModels
 {
     public class UserLogin_VM : Base_VM
     {
-        private static readonly ILogger _log = new LogManager().GetLogger(typeof(UserLogin_VM));
+        private static readonly ILog _log = LogManager.GetLogger(typeof(UserLogin_VM));
         private string _clockNumber;
         private string _errorMessage;
 
