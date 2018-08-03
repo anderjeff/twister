@@ -126,11 +126,12 @@ namespace Twister.Tests
 				_servoDrive.RefreshPosition();
 				System.Threading.Thread.Sleep(1);
 			}
-
-			Assert.Greater(_servoDrive.CycleCount, 1);
+			
+			Assert.Greater(TestBench.Singleton.GetCycleCount(), 1);
 
 			float seconds = sw.ElapsedMilliseconds / 1000f;
-			Assert.AreEqual(_servoDrive.CycleCount / seconds, _engine.CurrentCondition.CyclesPerSecond, 0.1);
+			Assert.AreEqual(TestBench.Singleton.GetCycleCount() / seconds, _engine.CurrentCondition.CyclesPerSecond,
+				0.1);
 		}
 
 		[Test]
