@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Twister.Business.Data;
 
 namespace Twister.Business.Tests
 {
@@ -11,7 +12,10 @@ namespace Twister.Business.Tests
 		public FatigueTest()
 		{
 			TestConditions = new List<FatigueTestCondition>();
+			TestData = new List<FatigueTestDataPoint>();
 		}
+
+		public List<FatigueTestDataPoint> TestData { get; set; }
 
 		/// <summary>
 		/// The conditions that make up the duty cycle.

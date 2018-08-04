@@ -57,6 +57,7 @@
     <Compile Include="Database\TorqueTestDb.cs" />
     <Compile Include="Data\DataValidator.cs" />
     <Compile Include="Data\EmployeeInfo.cs" />
+    <Compile Include="Data\FatigueTestDataPoint.cs" />
     <Compile Include="Data\MatrixClient.cs" />
     <Compile Include="Data\Sample.cs" />
     <Compile Include="Data\WorkOrderInfo.cs" />

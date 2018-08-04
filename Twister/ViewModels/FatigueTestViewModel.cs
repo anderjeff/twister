@@ -22,11 +22,12 @@ namespace Twister.ViewModels
 		private int _cycleCountDirect;
 		private bool _isSimulated;
 		private float _currentAngle;
+		private int _currentTorqueDirect;
 		private float _currentAngleDirect;
 
 		private DispatcherTimer _updateUiTimer;
 		private Thread _monitoringThread;
-		private Thread _runningThread;
+		private Thread _dataThread;
 		private float _currentCwPercent;
 		private float _currentCcwPercent;
 		private int _cycleCorrectionCount;
@@ -181,19 +182,14 @@ namespace Twister.ViewModels
 			};
 			_monitoringThread.Start();
 
-			// create a thread to monitor the running test.
-			_runningThread = new Thread(MonitorTest)
+			// create a thread to get test data
+			_dataThread = new Thread(LogData)
 			{
 				IsBackground = true // so the application can close without it shutting down.
 			};
-			_runningThread.Start();
+			_dataThread.Start();
 		}
-
-		private void MonitorTest()
-		{
-			//throw new NotImplementedException();
-		}
-
+		
 		private void MonitorSensors()
 		{
 			while (true)
@@ -202,11 +198,31 @@ namespace Twister.ViewModels
 			}
 		}
 
+		private void LogData()
+		{
+			while (true)
+			{
+				CreateDataPoint();
+				System.Threading.Thread.Sleep(15); 
+			}
+		}
+
+		private void CreateDataPoint()
+		{
+			var dataPoint = new FatigueTestDataPoint(_cycleCountDirect)
+			{
+				MaxAngle = _currentAngleDirect,
+				MaxTorque = _currentTorqueDirect
+			};
+			FatigueTest.TestData.Add(dataPoint);
+		}
+
 		private void UpdateCurrentValues()
 		{
 			Sample mostRecent = TestBench.Singleton.GetState();
 			if (mostRecent != null)
 			{
+				_currentTorqueDirect = (int) mostRecent.Torque;
 				_currentAngleDirect = mostRecent.Angle;
 				_cycleCountDirect = TestBench.Singleton.GetCycleCount();
 			}
