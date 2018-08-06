@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ namespace Twister.ViewModels
 {
 	public class FatigueTestViewModel : Base_VM
 	{
+		private object _objLock = new object();
 		private float _currentCounterClockwiseTarget;
 		private float _currentClockwiseTarget;
 		private FatigueTest _fatigueTest;
@@ -27,7 +30,8 @@ namespace Twister.ViewModels
 
 		private DispatcherTimer _updateUiTimer;
 		private Thread _monitoringThread;
-		private Thread _dataThread;
+		private Thread _loadingDataThread;
+		private Thread _loggingDataThread;
 		private float _currentCwPercent;
 		private float _currentCcwPercent;
 		private int _cycleCorrectionCount;
@@ -183,13 +187,39 @@ namespace Twister.ViewModels
 			_monitoringThread.Start();
 
 			// create a thread to get test data
-			_dataThread = new Thread(LogData)
+			_loadingDataThread = new Thread(LoadData)
 			{
 				IsBackground = true // so the application can close without it shutting down.
 			};
-			_dataThread.Start();
+			_loadingDataThread.Start();
+
+			_loggingDataThread = new Thread(LogData)
+			{
+				IsBackground = true
+			};
+			_loggingDataThread.Start();
 		}
-		
+
+		private void LogData()
+		{
+			// reset data file.
+			File.Delete("C:\\temp\\twister.dat");
+			while (true)
+			{
+				Thread.Sleep(5000);
+				var temp = new List<FatigueTestDataPoint>();
+				temp.AddRange(FatigueTest.ProcessedData());
+
+				using (var writer = new StreamWriter("c:\\temp\\twister.dat", true))
+				{
+					foreach (var pt in temp)
+					{
+						writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
+					}
+				}
+			}
+		}
+
 		private void MonitorSensors()
 		{
 			while (true)
@@ -198,23 +228,31 @@ namespace Twister.ViewModels
 			}
 		}
 
-		private void LogData()
+		private void LoadData()
 		{
 			while (true)
 			{
 				CreateDataPoint();
+
+				// 15ms was a good value for generating enough data points
+				// to catch the min and max for a cycle.
 				System.Threading.Thread.Sleep(15); 
 			}
 		}
 
 		private void CreateDataPoint()
 		{
-			var dataPoint = new FatigueTestDataPoint(_cycleCountDirect)
+			FatigueTestDataPoint dataPoint;
+			lock (_objLock)
 			{
-				MaxAngle = _currentAngleDirect,
-				MaxTorque = _currentTorqueDirect
-			};
-			FatigueTest.TestData.Add(dataPoint);
+				dataPoint = new FatigueTestDataPoint(_cycleCountDirect)
+				{
+					MaxAngle = _currentAngleDirect,
+					MaxTorque = _currentTorqueDirect
+				};
+			}
+				
+			FatigueTest.AddTestData(dataPoint);
 		}
 
 		private void UpdateCurrentValues()
@@ -222,9 +260,12 @@ namespace Twister.ViewModels
 			Sample mostRecent = TestBench.Singleton.GetState();
 			if (mostRecent != null)
 			{
-				_currentTorqueDirect = (int) mostRecent.Torque;
-				_currentAngleDirect = mostRecent.Angle;
-				_cycleCountDirect = TestBench.Singleton.GetCycleCount();
+				lock (_objLock)
+				{
+					_currentTorqueDirect = (int)mostRecent.Torque;
+					_currentAngleDirect = mostRecent.Angle;
+					_cycleCountDirect = TestBench.Singleton.GetCycleCount(); 
+				}
 			}
 		}
 
@@ -236,9 +277,12 @@ namespace Twister.ViewModels
 
 		private void UpdateUi()
 		{
-			CurrentAngle = _currentAngleDirect;
-			CycleCount = _cycleCountDirect;
-			SelectedTestConditionViewModel.CyclesCompleted = CycleCount - _cycleCorrectionCount;
+			lock (_objLock)
+			{
+				CurrentAngle = _currentAngleDirect;
+				CycleCount = _cycleCountDirect;
+				SelectedTestConditionViewModel.CyclesCompleted = _cycleCountDirect - _cycleCorrectionCount; 
+			}
 			UpdateCyclingGraphic();
 		}
 
@@ -286,7 +330,6 @@ namespace Twister.ViewModels
 				{
 					CurrentCwPercent = CurrentAngle / CurrentClockwiseTarget;
 				}
-
 				CurrentCcwPercent = 0f;
 			}
 			else if (CurrentAngle < 0)
@@ -299,7 +342,6 @@ namespace Twister.ViewModels
 				{
 					CurrentCcwPercent = CurrentAngle / CurrentCounterClockwiseTarget;
 				}
-
 				CurrentCwPercent = 0f;
 			}
 			else

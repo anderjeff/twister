@@ -9,13 +9,17 @@ namespace Twister.Business.Tests
 {
 	public class FatigueTest : TorqueTest
 	{
+		private object _objLock = new object();
+
 		public FatigueTest()
 		{
 			TestConditions = new List<FatigueTestCondition>();
 			TestData = new List<FatigueTestDataPoint>();
+			IncompleteData = new Dictionary<int, List<FatigueTestDataPoint>>();
 		}
 
-		public List<FatigueTestDataPoint> TestData { get; set; }
+		private List<FatigueTestDataPoint> TestData { get; }
+		private Dictionary<int, List<FatigueTestDataPoint>> IncompleteData { get; }
 
 		/// <summary>
 		/// The conditions that make up the duty cycle.
@@ -58,6 +62,66 @@ namespace Twister.Business.Tests
 		{
 			InformInitializationComplete();
 			base.Start();
+		}
+
+		/// <summary>
+		/// Adds a piece of test data to an internal collection.
+		/// </summary>
+		/// <param name="dataPoint"></param>
+		public void AddTestData(FatigueTestDataPoint dataPoint)
+		{
+			lock(_objLock)
+			{
+				TestData.Add(dataPoint);
+			}
+		}
+
+		public IEnumerable<FatigueTestDataPoint> ProcessedData()
+		{
+			var temp = new List<FatigueTestDataPoint>();
+			lock (_objLock)
+			{
+				temp.AddRange(TestData);
+				// clear out the TestData
+				TestData.Clear();
+			}
+
+			// the last cycle may not yet be complete and we need to add it to overflow data.
+			int maxCycle = temp.Max(t => t.CycleNumber);
+			// make one list for each cycle
+			var cycleData = new List<FatigueTestDataPoint>();
+			var dataPointsInCycles = temp.GroupBy(p => p.CycleNumber, h => h);
+			foreach (var dptsInCycle in dataPointsInCycles)
+			{
+				var dptList = dptsInCycle.ToList<FatigueTestDataPoint>();
+				// use overflow data
+				if (IncompleteData.ContainsKey(dptsInCycle.Key))
+				{
+					dptList.AddRange(IncompleteData[dptsInCycle.Key]);
+					IncompleteData.Remove(dptsInCycle.Key);
+				}
+				// add overflow data
+				if (dptsInCycle.Key == maxCycle)
+				{
+					IncompleteData.Add(dptsInCycle.Key, dptList);
+					continue; // don't want to add a data point because this is incomplete data.
+				}
+
+				var maxAngle = dptList.Max(p => p.MaxAngle);
+				var maxTorque = dptList.Max(p => p.MaxTorque);
+				var minAngle = dptList.Min(p => p.MaxAngle);
+				var minTorque = dptList.Min(p => p.MaxTorque);
+
+				cycleData.Add(new FatigueTestDataPoint(dptsInCycle.Key)
+				{
+					MaxTorque = maxTorque,
+					MinTorque = minTorque,
+					MaxAngle = maxAngle,
+					MinAngle = minAngle
+				});
+			}
+
+			return cycleData;
 		}
 	}
 }
