@@ -407,13 +407,13 @@ Dim calibrationInterval as integer
 ' changing from the clockwise to counterclockwise direction when 
 ' running a fatigue test.
 '
-Dim clockwiseAngleLimit as float
+Dim clockwiseAngleLimit as long
 
 ' The angular position that the output flange will rotate to before 
 ' changing from the counterclockwise to clockwise direction when 
 ' running a fatigue test.
 '
-Dim counterClockwiseAngleLimit as float
+Dim counterClockwiseAngleLimit as long
 
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.
@@ -433,8 +433,8 @@ MBInfo
 	$MBMap32(5024, cycleCount)
 	$MBMap32(5026, isDueForCalibration)
 	$MBMap32(5028, calibrationInterval)
-	$MBMapfloat(5030, clockwiseAngleLimit)
-	$MBMapfloat(5032, counterClockwiseAngleLimit)
+	$MBMap64(5030, clockwiseAngleLimit) ' note this is a 64-bit value (needs 4 registers) and is used to hold PL.FB 
+	$MBMap64(5034, counterClockwiseAngleLimit) ' note this is a 64-bit (needs 4 registers) value and is used to hold PL.FB
 	
 End 
 
@@ -654,8 +654,7 @@ Sub PerformFatigueTest
 	' The testInProcess indicates that the user wants to start the test, 
 	' but the application has not yet reached the While loop below.  Once 
 	' execution reaches the While loop, it will stay there until completed.
-	If (testInProcess = _TRUE) Then 
-				
+	If (testInProcess = _TRUE) Then 				
 		' Home the current positon, so at the end of the test, 
 		' we can return to this position
 		MOVE.POSCOMMAND = 0
@@ -672,11 +671,10 @@ Sub PerformFatigueTest
 			If(isDueForCalibration) Then
 				Call PerformCalibration
 			End If
-						
+			
 			' -- run cycle
-			' cycle back and forth to the target clockwise and counterclockwise values, checking for flag each time.
-		Wend
-		
+			Call PerformFatigueTestCycle
+		Wend		
 	Else 
 		Call DebugMessageString("Calling StopAnReturnToHome")
 		If (cancelled = _TRUE) Then 
@@ -878,6 +876,54 @@ Sub PerformUnidirectionalTestCycle
 	
 End Sub
 
+Sub PerformFatigueTestCycle
+	Call DebugMessageInteger("runSpeed = " , runSpeed)
+	
+	If (testInProcess = _FALSE) Then 
+		Call StopAndReturnToHome
+	End If
+	
+	firstStageComplete = _FALSE
+	secondStageComplete = _FALSE
+		
+	' here is the actual test, the -191147 is 15 degrees at the flange
+	
+	If (PL.FB < clockwiseAngleLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
+		Call RotateClockwise
+	ElseIf (PL.FB > counterClockwiseAngleLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
+		firstStageComplete = _TRUE
+		Call RotateCounterClockwise
+		Print "ROTATING CCW, currentTorque: " + STR$ (currentTorque)
+	Else 		
+		secondStageComplete = _TRUE		
+	End If
+	
+	Call DebugMessageInteger("watchdogValue = " , watchdogValue)
+	
+	' decrement the timer, if you have not heard from the 
+	' watchdog in a while, shut down the test because the 
+	' application is no longer providing updates of what 
+	' the applied torque is.
+	watchdogValue = watchdogValue-1
+	
+	Call DebugMessageInteger("watchdogValue = " , watchdogValue)
+	
+	' see if motor needs to stop turning because 
+	' watchdog program is no longer making calls
+	If (watchdogValue <= 0) Then 
+		
+		' set this so the next time through, the current 
+		' While loop will not be entered.
+		testInProcess = _FALSE
+		
+		' make the motor stop turning.
+		Call StopGently
+		
+		' return to starting position of test, but test has still failed.
+		MOVE.GOHOME 
+	End If
+End Sub
+
 Function PctDiff As float 
 	If (ABS (currentTorque) + ABS (previousTorque)) > 0 Then 
 		PctDiff = (ABS (currentTorque-previousTorque) / ((ABS (currentTorque) + ABS (previousTorque)) * 0.5)) * 100
@@ -1030,21 +1076,31 @@ Function UserProvidedValidValues As Integer
 End Function
 
 Sub PerformCalibration
-    'Dim cwTarget as float = clockwiseAngleLimit
-    'Dim ccwTarget as float = counterClockwiseAngleLimit
-
     ' slow run speed and return to zero.
-    'Call StopAndReturnToHome
+    Call StopAndReturnToHome
 
     ' set the runspeed.
-    'MOVE.RUNSPEED = 10
+    MOVE.RUNSPEED = 10
+	
+	firstStageComplete = _FALSE
+	secondStageComplete = _FALSE
 
-
-    ' read clockwise and counterclockwise torque values
-
-    ' turn in clockwise direction until the clockwise torque value is reached, store the angle value
-    ' turn in counterclockwise direction until the counterclockwise torque value is reached, store the angle value
-    ' store a flag indicating that the values are ready to be read.
+	While(isDueForCalibration = _TRUE)
+		If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
+			Call RotateClockwise
+			clockwiseAngleLimit = PL.FB
+		ElseIf (currentTorque > ccwTorqueLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
+			firstStageComplete = _TRUE
+			Call RotateCounterClockwise
+			counterClockwiseAngleLimit = PL.FB
+			Print "ROTATING CCW, currentTorque: " + STR$ (currentTorque)
+		Else 
+			Call StopAndReturnToHome
+			
+			secondStageComplete = _TRUE
+			isDueForCalibration = _FALSE		
+		End If
+	End While
 End Sub
 
 ' Standardized debug messages with
