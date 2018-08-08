@@ -498,7 +498,7 @@ End If
 End Main
 
 '-------------- Subroutines and Functions ------------
-Sub RunTest()
+Sub RunTest
     If (testType = 1) Then
         Call DebugMessageString("About to run Steering shaft test.")
         Call PerformSteeringShaftTest()
@@ -515,7 +515,7 @@ End Sub
 ' Here is the actual logic for a single 
 ' loop through the test cycle.
 '-------------------------------------------------------
-Sub PerformSteeringShaftTest()
+Sub PerformSteeringShaftTest
     ' set the speed
     MOVE.RUNSPEED = runSpeed
     'MOVE.RUNSPEED = .1
@@ -561,7 +561,7 @@ End Sub
 ' Here is the actual logic for a single 
 ' loop through the test cycle.
 '-------------------------------------------------------
-Sub PerformUnidirectionalTestToFailure()
+Sub PerformUnidirectionalTestToFailure
     ' set the speed
     MOVE.RUNSPEED = runSpeed
 
@@ -607,7 +607,7 @@ End Sub
 
 '-------------- Subroutines and Functions ------------
 
-Sub StopGently()
+Sub StopGently
     ' Do not call MOVE.ABORT, this  results in an abrupt stop and a 
     ' clunking noise from gear backlash we think.
     MOVE.RUNSPEED = 0
@@ -615,8 +615,8 @@ Sub StopGently()
     MOVE.RUNSPEED = runSpeed
 End Sub
 
-Sub StopAndReturnToHome()
-    Call StopGently()
+Sub StopAndReturnToHome
+    Call StopGently
 
     ' return to position established at the start of the test.
     MOVE.GOHOME
@@ -628,33 +628,33 @@ Sub StopAndReturnToHome()
 	Wend
 End Sub
 
-Sub Rotate()
+Sub Rotate
     If (torqueDirection = 1) Then
-        Call RotateClockwise()
+        Call RotateClockwise
     ElseIf (torqueDirection = -1) Then
-        Call RotateCounterClockwise()
+        Call RotateCounterClockwise
     Else
         ' The torqueDirection can be called outside this program, so must 
         ' anticipate what to to in this case.  Otherwise, the motor will 
         ' spin continuously until power is cut, or something else sets the 
         ' torqueDirection to a 1 or -1
-        Call StopGently()
+        Call StopGently
     End If
 End Sub
 
-Sub RotateClockwise()
+Sub RotateClockwise
     ' rotate CCW as viewed from flange face.
     MOVE.DIR = 1
     MOVE.GOVEL
 End Sub
 
-Sub RotateCounterClockwise()
+Sub RotateCounterClockwise
     ' rotate CW as viewed from flange face.
     MOVE.DIR = 0
     MOVE.GOVEL
 End Sub
 
-Sub PrintCurrentUserParameterValues()
+Sub PrintCurrentUserParameterValues
     Cls
     Print "* * * PARAMETERS AT:  " + STR$(DRV.TIME)
     Print "testInProces: " + STR$(testInProcess)
@@ -671,7 +671,7 @@ End Sub
 ' Here is the actual logic for a single 
 ' loop through the test cycle.
 '-------------------------------------------------------
-Sub PerformSteeringShaftTestCycle()
+Sub PerformSteeringShaftTestCycle
     Call DebugMessageInteger("runSpeed = ", runSpeed)
 
     ' purpose of this is to not have to set it every time, 
@@ -682,19 +682,19 @@ Sub PerformSteeringShaftTestCycle()
     'End If
 
     If (testInProcess = _FALSE) Then
-        Call StopAndReturnToHome()
+        Call StopAndReturnToHome
     End If
 
     ' here is the actual test, the -191147 is 15 degrees at the flange
 
     If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then
-        Call RotateClockwise()
+        Call RotateClockwise
     ElseIf (currentTorque > ccwTorqueLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then
         firstStageComplete = _TRUE
-        Call RotateCounterClockwise()
+        Call RotateCounterClockwise
         Print "ROTATING CCW, currentTorque: " + STR$(currentTorque)
     Else
-        Call StopAndReturnToHome()
+        Call StopAndReturnToHome
 
         secondStageComplete = _TRUE
         testInProcess = _FALSE
@@ -720,7 +720,7 @@ Sub PerformSteeringShaftTestCycle()
         testInProcess = _FALSE
 
         ' make the motor stop turning.
-        Call StopGently()
+        Call StopGently
 
         ' return to starting position of test, but test has still failed.
         MOVE.GOHOME
@@ -731,7 +731,7 @@ End Sub
 ' Here is the actual logic for a single 
 ' loop through the test cycle.
 '-------------------------------------------------------
-Sub PerformUnidirectionalTestCycle()
+Sub PerformUnidirectionalTestCycle
     ' must declare local variables first.
     Dim percentDifferenceFromLast As float
 
@@ -749,7 +749,7 @@ Sub PerformUnidirectionalTestCycle()
     End If
 
     If (TorqueReachedLimit() = _TRUE) Then
-        Call StopAndReturnToHome()
+        Call StopAndReturnToHome
         cancelled = _FALSE ' the user did not cancel it
         testInProcess = _FALSE
     Else
@@ -779,7 +779,7 @@ Sub PerformUnidirectionalTestCycle()
             testInProcess = _FALSE
 
             ' make the motor stop turning.
-            Call StopGently()
+            Call StopGently
 
             ' return to starting position of test, but test has still failed.
             MOVE.GOHOME
@@ -788,7 +788,7 @@ Sub PerformUnidirectionalTestCycle()
 
 End Sub
 
-Function PctDiff() As float
+Function PctDiff As float
     If (ABS(currentTorque) + ABS(previousTorque)) > 0 Then
         PctDiff = (ABS(currentTorque - previousTorque) / ((ABS(currentTorque) + ABS(previousTorque)) * 0.5)) * 100
     Else
@@ -796,7 +796,7 @@ Function PctDiff() As float
     End If
 End Function
 
-Function TorqueReachedLimit() As Integer
+Function TorqueReachedLimit As Integer
     If (torqueDirection = 1) Then
         ' rotating CCW values increasing
         Print("Entering torqueDirection = 1")
@@ -832,7 +832,7 @@ End Function
 '-----------------------------------------
 ' Preconditions: User inputs have been validated
 '-----------------------------------------
-Sub PerformSingleManualCycle()
+Sub PerformSingleManualCycle
     ' purpose of this is to not have to set it every time, 
     ' through this While loop, but also to allow manual mode 
     ' and automatic mode to use two different run speeds.
@@ -843,11 +843,11 @@ Sub PerformSingleManualCycle()
     If (DIN4.STATE = 1) Then ' joystick up
         ' set direction to clockwise
         torqueDirection = -1
-        Call Rotate()
+        Call Rotate
     ElseIf (DIN7.STATE = 1) Then ' joystick down
         ' set direction to counter clockwise
         torqueDirection = 1
-        Call Rotate()
+        Call Rotate
     Else
         ' slow program execution down to not overwhelm the drive.
         Pause(0.2)
@@ -856,13 +856,13 @@ Sub PerformSingleManualCycle()
         ' that the CCW or CW motion had reached constant speed and 
         ' is still active.
         If (DRV.MOTIONSTAT = 65538) Then
-            Call StopGently()
+            Call StopGently
         End If
 
     End If
 End Sub
 
-Function CanEnterManualMode() As Integer
+Function CanEnterManualMode As Integer
     ' DIN3.STATE = 1 means the operation mode switch is on.
     ' watchdogValue > 0 means watchdog timer has not expired indicating the 
     '     computer and the software are still communicating with the VFD
@@ -875,7 +875,7 @@ Function CanEnterManualMode() As Integer
     End If
 End Function
 
-Function UserProvidedValidValues() As Integer
+Function UserProvidedValidValues As Integer
     ' here is where the validation takes place.  The values here should
     ' be consistent with the global variable comments for minimum and 
     ' maximum allowable values.
@@ -900,7 +900,7 @@ Function UserProvidedValidValues() As Integer
     If (currentTorque > 20000 Or currentTorque < -20000) Then
 
         ' stop immediately.
-        Call StopGently()
+        Call StopGently
 
         testInProcess = _FALSE
         UserProvidedValidValues = _FALSE
@@ -920,7 +920,7 @@ Function UserProvidedValidValues() As Integer
     ' to not set the value improperly.
     If (ccwTorqueLimit < -20000 Or cwTorqueLimit > 20000) Then
         ' stop immediately.
-        Call StopGently()
+        Call StopGently
 
         testInProcess = _FALSE
         UserProvidedValidValues = _FALSE
