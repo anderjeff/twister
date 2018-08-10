@@ -36,8 +36,8 @@ namespace Twister.Business.Hardware
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CycleCount, "CycleCount");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.IsDueForCalibration, "IsDueForCalibration");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CalibrationInterval, "CalibrationInterval");
-			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit, "ClockwiseAngleLimit");
-			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit, "CounterClockwiseAngleLimit");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit, "ClockwiseAngleTicks");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit, "CounterClockwiseAngleTicks");
 		}
 
 		#region AKD Basic Program Custom Registers.
@@ -78,6 +78,8 @@ namespace Twister.Business.Hardware
 		private int CycleCount { get; set; }
 		private int IsDueForCalibration { get; set; }
 		private int CalibrationInterval { get; set; }
+		private long ClockwiseAngleTicks { get; set; }
+		private long CounterClockwiseAngleTicks { get; set; }
 		private float ClockwiseAngleLimit { get; set; }
 		private float CounterClockwiseAngleLimit { get; set; }
 		
@@ -146,8 +148,6 @@ namespace Twister.Business.Hardware
 			Runspeed = tempRunspeed;
 			IsDueForCalibration = 0;
 		}
-
-		
 		
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)
 		{

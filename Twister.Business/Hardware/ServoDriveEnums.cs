@@ -29,8 +29,8 @@ namespace Twister.Business.Hardware
 			CycleCount = 5024, // USER.INT
 			IsDueForCalibration = 5026, //USER.INT
 			CalibrationInterval = 5028, // USER.INT 
-			ClockwiseAngleLimit = 5030, // USER.FLOAT
-			CounterClockwiseAngleLimit = 5032  // USER.FLOAT
+			ClockwiseAngleLimit = 5030, // USER.INT64
+			CounterClockwiseAngleLimit = 5034  // USER.INT64
 		}
 	}
 }

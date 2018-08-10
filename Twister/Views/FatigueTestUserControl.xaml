@@ -32,12 +32,10 @@
             <StackPanel Orientation="Vertical"
                         VerticalAlignment="Center" HorizontalAlignment="Center"
                         Grid.RowSpan="2">
-                <Button Content="Run" Padding="25" Foreground="White" Background="Green" FontSize="14"
+                <Button Content="RUN" Padding="25" Foreground="White" Background="Green" FontSize="16"
                         Command="{Binding RunCommand}" />
-                <Button Content="Pause" Padding="25" Margin="0,15" Background="Yellow" FontSize="14"
-                        Command="{Binding PauseCommand}" />
-                <Button Content="Finish" Padding="25" Foreground="White" Background="Red" FontSize="14"
-                        Command="{Binding FinishCommand}" />
+                <Button Content="STOP" Padding="25" Margin="0,10"  Foreground="White" Background="Red" FontSize="16"
+                        Command="{Binding StopCommand}" />
             </StackPanel>
 
             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="450">
@@ -89,8 +87,20 @@
                 <TextBlock Grid.Row="0" HorizontalAlignment="Center"
                            Text="CYCLES" FontWeight="Bold" />
                 <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top"
-                           Text="{Binding CycleCount}"
+                           Text="{Binding CycleCount, StringFormat=n0}"
                            FontSize="32" />
+            </Grid>
+            
+            <Grid Grid.Row="1" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center"
+                           Text="LOGGED CYCLES" FontWeight="Bold" />
+                <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top"
+                           Text="{Binding PointsLogged, StringFormat=n0}"
+                           FontSize="16" />
             </Grid>
 
             <DataGrid Grid.Row="2" Grid.Column="1"

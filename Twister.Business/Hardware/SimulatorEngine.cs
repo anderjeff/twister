@@ -17,7 +17,6 @@ namespace Twister.Business.Hardware
 			_sw = sw;
 		}
 
-		private object _objLock = new object();
 		public FatigueTestCondition CurrentCondition { get; set; }
 
 		public void StartSimulate()

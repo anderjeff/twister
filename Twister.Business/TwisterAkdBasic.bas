@@ -679,14 +679,14 @@ Sub PerformFatigueTest
 	Else 
 		Call DebugMessageString("Calling StopAnReturnToHome")
 		If (cancelled = _TRUE) Then 
-			Call StopGently()
+			Call StopAndReturnToHome
 			cancelled = _FALSE
 		End If
 		
 		' test is not in process, so see if the user
 		' wants to enter the manual mode, based on 
 		' preset criteria.
-		While (CanEnterManualMode() = _TRUE)
+		While (CanEnterManualMode = _TRUE)
 			Call DebugMessageString("Waiting for joystick to move.")
 			Call PerformSingleManualCycle()
 		Wend

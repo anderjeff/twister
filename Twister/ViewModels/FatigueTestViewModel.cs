@@ -27,22 +27,26 @@ namespace Twister.ViewModels
 		private float _currentAngle;
 		private int _currentTorqueDirect;
 		private float _currentAngleDirect;
+		private float _currentCwPercent;
+		private float _currentCcwPercent;
+		private int _cycleCorrectionCount;
+		private int _pointsLogged;
+		private string _dataLogPath;
 
 		private DispatcherTimer _updateUiTimer;
 		private Thread _monitoringThread;
 		private Thread _loadingDataThread;
 		private Thread _loggingDataThread;
-		private float _currentCwPercent;
-		private float _currentCcwPercent;
-		private int _cycleCorrectionCount;
+		private bool _threadsInitialized;
 
 		public FatigueTestViewModel()
 		{
 			TestConditions = new ObservableCollection<FatigueTestCondition_VM>();
 
 			RunCommand = new RelayCommand(StartTest);
-			PauseCommand = new RelayCommand(PauseTest);
-			FinishCommand = new RelayCommand(FinishTest);
+			StopCommand = new RelayCommand(StopTest);
+
+			DataLogPath = "C:\\temp\\twister.dat";
 		}
 
 		public FatigueTest FatigueTest
@@ -145,11 +149,34 @@ namespace Twister.ViewModels
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the number of data points logged.
+		/// </summary>
+		public int PointsLogged
+		{
+			get => _pointsLogged;
+			set
+			{
+				_pointsLogged = value;
+				OnPropertyChanged();
+			}
+		}
 
+		/// <summary>
+		/// Gets or sets the path to the file where data points are logged.
+		/// </summary>
+		public string DataLogPath
+		{
+			get => _dataLogPath;
+			set
+			{
+				_dataLogPath = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public RelayCommand RunCommand { get; private set; }
-		public RelayCommand PauseCommand { get; private set; }
-		public RelayCommand FinishCommand { get; private set; }
+		public RelayCommand StopCommand { get; private set; }
 		
 		public ObservableCollection<FatigueTestCondition_VM> TestConditions { get; set; }
 
@@ -160,17 +187,16 @@ namespace Twister.ViewModels
 			TestBench.Singleton.BeginCurrentTest();
 		}
 		
-		private void PauseTest()
-		{
-		}
-
-		private void FinishTest()
+		private void StopTest()
 		{
 			TestBench.Singleton.EmergencyStop();
 		}
-
+		
 		private void InitializeThreads()
 		{
+			// only need to do this once.
+			if (_threadsInitialized) return;
+
 			// to update the UI, a timer.
 			_updateUiTimer = new System.Windows.Threading.DispatcherTimer
 			{
@@ -198,24 +224,28 @@ namespace Twister.ViewModels
 				IsBackground = true
 			};
 			_loggingDataThread.Start();
+
+			_threadsInitialized = true;
 		}
 
 		private void LogData()
 		{
 			// reset data file.
-			File.Delete("C:\\temp\\twister.dat");
+			File.Delete(DataLogPath);
 			while (true)
 			{
 				Thread.Sleep(5000);
 				var temp = new List<FatigueTestDataPoint>();
 				temp.AddRange(FatigueTest.ProcessedData());
 
-				using (var writer = new StreamWriter("c:\\temp\\twister.dat", true))
+				using (var writer = new StreamWriter(DataLogPath, true))
 				{
 					foreach (var pt in temp)
 					{
 						writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
 					}
+
+					PointsLogged += temp.Count;
 				}
 			}
 		}

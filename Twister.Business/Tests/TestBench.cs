@@ -241,6 +241,22 @@ namespace Twister.Business.Tests
 			}
 		}
 
+		public void PauseFatigueTest(FatigueTest fatigueTest)
+		{
+			// return to zero
+
+		}
+
+		public void ResumeFatigueTest(FatigueTest fatigueTest)
+		{
+			_currentTest = fatigueTest;
+			_currentTest.Start();
+			OnTestStarted(_currentTest);
+
+			// this starts the test running
+			Singleton.TurnOn();
+		}
+
 		/// <summary>
 		///     Gets a sample representing the state of the sensors on the TestBench at the
 		///     time of the request.

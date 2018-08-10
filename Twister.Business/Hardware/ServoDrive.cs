@@ -36,8 +36,6 @@ namespace Twister.Business.Hardware
             {
 	            lock (this)
 	            {
-		            //Debug.WriteLine("Entering ServoDrive.RefreshPosition()");
-
 		            _server.Connect(IP_ADDRESS);
 
 		            // reading the loop position feedback value at index 588
@@ -56,9 +54,7 @@ namespace Twister.Business.Hardware
 			            var value = BitConverter.ToInt64(data, 0);
 
 			            if (value == 0)
-			            {
 				            GearboxAngle = 0f;
-			            }
 			            else
 			            {
 				            // represents the PL.FB from the ADK drive.
@@ -206,12 +202,55 @@ namespace Twister.Business.Hardware
 
 		public float RetrieveClockwiseLimit()
 		{
-			throw new NotImplementedException();
+			var location = ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit;
+			var cwLimit = RetrieveAngleLimits(location);
+			return cwLimit;
 		}
 
 		public float RetrieveCounterclockwiseLimit()
 		{
-			throw new NotImplementedException();
+			var location = ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit;
+			var ccwLimit = RetrieveAngleLimits(location);
+			return ccwLimit;
 		}
-	}
+
+	    private float RetrieveAngleLimits(ServoDriveEnums.RegisterAddress address)
+	    {
+		    float limit = 0f;
+		    lock (this)
+		    {
+			    _server.Connect(IP_ADDRESS);
+
+			    ushort transId = 1;
+			    ushort startAddr = (ushort) address;
+			    ushort qtyRegisters = 4; // 64 bit value.
+			    var data = new byte[16]; 
+
+			    _server.ReadHoldingRegister(transId, startAddr, qtyRegisters, ref data);
+
+			    if (data != null)
+			    {
+				    Array.Reverse(data);
+				    var value = BitConverter.ToInt64(data, 0);
+
+				    if (value == 0)
+					    GearboxAngle = 0f;
+				    else
+				    {
+					    // represents the PL.FB from the ADK drive.
+					    long count = 0;
+
+					    if (Math.Abs(value) < COUNTS_PER_REV)
+						    count = value;
+					    else
+						    count = value % COUNTS_PER_REV;
+
+					    limit = count * (360f / COUNTS_PER_REV);
+				    }
+			    }
+			    _server.Dispose();
+		    }
+		    return limit;
+	    }
+    }
 }
