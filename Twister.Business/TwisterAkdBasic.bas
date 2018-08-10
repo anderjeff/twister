@@ -499,9 +499,9 @@ Main
 			End If
 			
 			Call DebugMessageInteger("currentTorque: " , currentTorque)
+			
 			' slow the loop down just a bit, no need to 
 			' check any faster than every 200 ms
-			
 			Pause (0.2)
 			
 			' increment counter
@@ -666,7 +666,8 @@ Sub PerformFatigueTest
 		Call DebugMessageString("Checking if test in process.")
 		
 		While (testInProcess = _TRUE)
-			Call DebugMessageString("Starting the fatigue test.")
+			
+			Call DebugMessageString("Checking if due for calibration.")	
 			
 			If(isDueForCalibration) Then
 				Call PerformCalibration
@@ -877,19 +878,17 @@ Sub PerformUnidirectionalTestCycle
 End Sub
 
 Sub PerformFatigueTestCycle
-	Call DebugMessageInteger("runSpeed = " , runSpeed)
-	
-	If (testInProcess = _FALSE) Then 
-		Call StopAndReturnToHome
-	End If
+	Call DebugMessageInteger("Performing FatigueTestCycle with runSpeed = " , runSpeed)	
 	
 	firstStageComplete = _FALSE
 	secondStageComplete = _FALSE
 		
-	' here is the actual test, the -191147 is 15 degrees at the flange
-	
+	' The -191147 and 191147 are 15 degrees in their respective directions, at the flange. 
+	' The value must increase if more angle of twist is required, it is just there in order 
+	' to stop the shaft from twisting excessively.
 	If (PL.FB < clockwiseAngleLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
 		Call RotateClockwise
+		Print "ROTATING CW, currentTorque: " + STR$ (currentTorque)
 	ElseIf (PL.FB > counterClockwiseAngleLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
 		firstStageComplete = _TRUE
 		Call RotateCounterClockwise
@@ -898,13 +897,13 @@ Sub PerformFatigueTestCycle
 		secondStageComplete = _TRUE		
 	End If
 	
-	Call DebugMessageInteger("watchdogValue = " , watchdogValue)
+	Call DebugMessageInteger("Checking watchdog timer, watchdogValue = " , watchdogValue)
 	
 	' decrement the timer, if you have not heard from the 
 	' watchdog in a while, shut down the test because the 
 	' application is no longer providing updates of what 
 	' the applied torque is.
-	watchdogValue = watchdogValue-1
+	watchdogValue = watchdogValue - 1
 	
 	Call DebugMessageInteger("watchdogValue = " , watchdogValue)
 	
@@ -916,11 +915,7 @@ Sub PerformFatigueTestCycle
 		' While loop will not be entered.
 		testInProcess = _FALSE
 		
-		' make the motor stop turning.
-		Call StopGently
-		
-		' return to starting position of test, but test has still failed.
-		MOVE.GOHOME 
+		Call StopAndReturnToHome 
 	End If
 End Sub
 
@@ -1085,6 +1080,7 @@ Sub PerformCalibration
 	firstStageComplete = _FALSE
 	secondStageComplete = _FALSE
 
+	' run this loop until the calibration is complete.
 	While(isDueForCalibration = _TRUE)
 		If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
 			Call RotateClockwise
@@ -1095,12 +1091,14 @@ Sub PerformCalibration
 			counterClockwiseAngleLimit = PL.FB
 			Print "ROTATING CCW, currentTorque: " + STR$ (currentTorque)
 		Else 
-			Call StopAndReturnToHome
-			
+			Call StopAndReturnToHome			
 			secondStageComplete = _TRUE
 			isDueForCalibration = _FALSE		
 		End If
-	End While
+	Wend
+	
+	' reset the run speed to the user specified value.
+	MOVE.RUNSPEED = runSpeed
 End Sub
 
 ' Standardized debug messages with
