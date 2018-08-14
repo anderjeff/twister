@@ -294,7 +294,11 @@ namespace Twister.ViewModels
 				{
 					_currentTorqueDirect = (int)mostRecent.Torque;
 					_currentAngleDirect = mostRecent.Angle;
-					_cycleCountDirect = TestBench.Singleton.GetCycleCount(); 
+					_cycleCountDirect = TestBench.Singleton.GetCycleCount();
+					if (_cycleCountDirect % SelectedTestConditionViewModel.CalibrationInterval == 0)
+					{
+						TestBench.Singleton.InformCalibrationDue();
+					}
 				}
 			}
 		}

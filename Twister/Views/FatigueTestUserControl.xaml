@@ -16,100 +16,62 @@
             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Text="SIMULATED" FontWeight="Bold"
                        FontSize="20" />
         </Border>
+        <StackPanel DockPanel.Dock="Left" Orientation="Vertical" Margin="15,15,0,0">
+            <Button Content="RUN" Padding="25" Foreground="White" Background="Green" FontSize="16"
+                    Command="{Binding RunCommand}" />
+            <Button Content="STOP" Padding="25" Margin="0,10"  Foreground="White" Background="Red" FontSize="16"
+                    Command="{Binding StopCommand}" />
+        </StackPanel>
 
-        <Grid>
+        <Grid Margin="15">
             <Grid.RowDefinitions>
-                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Vertical"
-                        VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Grid.RowSpan="2">
-                <Button Content="RUN" Padding="25" Foreground="White" Background="Green" FontSize="16"
-                        Command="{Binding RunCommand}" />
-                <Button Content="STOP" Padding="25" Margin="0,10"  Foreground="White" Background="Red" FontSize="16"
-                        Command="{Binding StopCommand}" />
-            </StackPanel>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="CW" HorizontalAlignment="Right" FontWeight="Bold" />
+            <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Text="ACTUAL" HorizontalAlignment="Center" FontWeight="Bold" />
+            <TextBlock Grid.Column="3" Grid.Row="0" Text="CCW" HorizontalAlignment="Left" FontWeight="Bold" />
 
-            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="450">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="250" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding CurrentClockwiseTarget, StringFormat='n3'}"
+                       FontSize="20"
+                       VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0,15" />
+            <TextBlock Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding CurrentAngle, StringFormat='n3'}" FontSize="36"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,15" />
+            <TextBlock Grid.Column="3" Grid.Row="1"
+                       Text="{Binding CurrentCounterClockwiseTarget, StringFormat='n3'}" FontSize="20"
+                       VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,15" />
 
-                <TextBlock Grid.Column="0" Text="CW" HorizontalAlignment="Center"
-                           FontWeight="Bold" />
-                <TextBlock Grid.Column="1" Text="ACTUAL" HorizontalAlignment="Center"
-                           FontWeight="Bold" />
-                <TextBlock Grid.Column="2" Text="CCW" HorizontalAlignment="Center"
-                           FontWeight="Bold" />
+            <ProgressBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Height="10" BorderThickness="0" Foreground="LightGreen"
+                         Value="{Binding CurrentCwPercent}" FlowDirection="RightToLeft" Maximum="1.0" />
+            <ProgressBar Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Height="10" BorderThickness="0" Foreground="LightSalmon"
+                         Value="{Binding CurrentCcwPercent}" FlowDirection="LeftToRight" Maximum="1.0" />
 
-                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding CurrentClockwiseTarget, StringFormat='n3'}"
-                           FontSize="20"
-                           VerticalAlignment="Center" HorizontalAlignment="Center" Padding="15" />
-                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding CurrentAngle, StringFormat='n3'}" FontSize="36"
-                           VerticalAlignment="Center" HorizontalAlignment="Center" Padding="15" />
-                <TextBlock Grid.Column="2" Grid.Row="1"
-                           Text="{Binding CurrentCounterClockwiseTarget, StringFormat='n3'}" FontSize="20"
-                           VerticalAlignment="Center" HorizontalAlignment="Center" Padding="15" />
+            <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,10,0,0"
+                       Text="COMPLETED CYCLES" FontWeight="Bold" />
+            <TextBlock Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,10,0,0"
+                       Text="LOGGED CYCLES" FontWeight="Bold" />
+            <TextBlock Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding CycleCount, StringFormat=n0}" FontSize="32" />
+            <TextBlock Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding PointsLogged, StringFormat=n0}" FontSize="32" />       
 
-                <Grid Grid.Row="2" Grid.ColumnSpan="3" Height="9" VerticalAlignment="Top" Margin="0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <ProgressBar Grid.Column="0" BorderThickness="0" Foreground="LightGreen"
-                                 Value="{Binding CurrentCwPercent}" FlowDirection="RightToLeft" Maximum="1.0" />
-                    <ProgressBar Grid.Column="1" BorderThickness="0" Foreground="LightSalmon"
-                                 Value="{Binding CurrentCcwPercent}" FlowDirection="LeftToRight" Maximum="1.0" />
-                </Grid>
-            </Grid>
-
-
-            <Grid Grid.Row="1" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" HorizontalAlignment="Center"
-                           Text="CYCLES" FontWeight="Bold" />
-                <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top"
-                           Text="{Binding CycleCount, StringFormat=n0}"
-                           FontSize="32" />
-            </Grid>
-            
-            <Grid Grid.Row="1" Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" HorizontalAlignment="Center"
-                           Text="LOGGED CYCLES" FontWeight="Bold" />
-                <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top"
-                           Text="{Binding PointsLogged, StringFormat=n0}"
-                           FontSize="16" />
-            </Grid>
-
-            <DataGrid Grid.Row="2" Grid.Column="1"
+            <DataGrid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4"
+                      Margin="0,25,0,0" 
+                      BorderThickness="0"
                       HorizontalAlignment="Center" VerticalAlignment="Top"
                       SelectedItem="{Binding SelectedTestConditionViewModel}"
                       ItemsSource="{Binding TestConditions}"
                       IsReadOnly="True"
                       AutoGenerateColumns="False"
-                      Margin="0,25,15,5"
                       MinWidth="0"
                       Style="{StaticResource TestSetupDataGridStyle}">
                 <DataGrid.Columns>

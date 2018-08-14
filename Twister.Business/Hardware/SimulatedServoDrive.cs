@@ -176,18 +176,24 @@ namespace Twister.Business.Hardware
 
 		public float RetrieveClockwiseLimit()
 		{
-			var cwLimit = (float) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit],
-					BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+			long cwTicks = (long) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit],
+				BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+			//var cwLimit = 
 
-			return cwLimit;
+			//return cwLimit;
+			// todo convert ticks to angle
+			return 0f;
 		}
 
 		public float RetrieveCounterclockwiseLimit()
 		{
-			var ccwLimit = (float) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit],
+			long ccwTicks = (long) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit],
 				BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+			//var ccwLimit = 
 
-			return ccwLimit;
+			//return ccwLimit;
+			// todo convert ticks to angle
+			return 0f;
 		}
 	}
 }
