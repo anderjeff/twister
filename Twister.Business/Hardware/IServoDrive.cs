@@ -15,5 +15,7 @@ namespace Twister.Business.Hardware
 		int RetrieveParameter(ServoDriveEnums.RegisterAddress location);
 		float RetrieveClockwiseLimit();
 		float RetrieveCounterclockwiseLimit();
+		int RetrieveLastCwTorque();
+		int RetrieveLastCcwTorque();
 	}
 }

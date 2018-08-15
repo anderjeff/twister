@@ -9,8 +9,8 @@ namespace Twister.Business.Hardware
 	public class ServoDriveEnums
 	{
 		/// <summary>
-		///     An enumeration that represents the register location on the ADK BASIC
-		///     drive.  Values correspond to Figure 2 in the TT-4000 User Manual.
+		/// An enumeration that represents the register location on the ADK BASIC
+		/// drive.  Values correspond to Figure 2 in the TT-4000 User Manual.
 		/// </summary>
 		public enum RegisterAddress
 		{
@@ -30,7 +30,9 @@ namespace Twister.Business.Hardware
 			IsDueForCalibration = 5026, //USER.INT
 			CalibrationInterval = 5028, // USER.INT 
 			ClockwiseAngleLimit = 5030, // USER.INT64
-			CounterClockwiseAngleLimit = 5034  // USER.INT64
+			CounterClockwiseAngleLimit = 5034,  // USER.INT64
+			CwTorqueLastCalibration = 5038, // USER.INT
+			CcwTorqueLastCalibration = 5040 // USER.INT
 		}
 	}
 }

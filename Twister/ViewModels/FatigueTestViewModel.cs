@@ -32,6 +32,8 @@ namespace Twister.ViewModels
 		private int _cycleCorrectionCount;
 		private int _pointsLogged;
 		private string _dataLogPath;
+		private int _cwTorqueLastCalibration;
+		private int _ccwTorqueLastCalibration;
 
 		private DispatcherTimer _updateUiTimer;
 		private Thread _monitoringThread;
@@ -186,6 +188,34 @@ namespace Twister.ViewModels
 			set
 			{
 				_dataLogPath = value;
+				OnPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// The value of the torque in the clockwise direction recorded by the servo
+		/// drive at the time of the last calibration cycle.
+		/// </summary>
+		public int CwTorqueLastCalibration
+		{
+			get => _cwTorqueLastCalibration;
+			set
+			{
+				_cwTorqueLastCalibration = value;
+				OnPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// The value of the torque in the counterclockwise direction recorded by the servo
+		/// drive at the time of the last calibration cycle.
+		/// </summary>
+		public int CcwTorqueLastCalibration
+		{
+			get => _ccwTorqueLastCalibration;
+			set
+			{
+				_ccwTorqueLastCalibration = value;
 				OnPropertyChanged();
 			}
 		}
@@ -373,9 +403,11 @@ namespace Twister.ViewModels
 				PreviousCounterClockwiseTarget = CurrentCounterClockwiseTarget;
 				
 				// Update targets based on the new test condition.
-				var tuple = TestBench.Singleton.GetCurrentAngleLimits();
+				var tuple = TestBench.Singleton.GetCalibrationResults();
 				CurrentClockwiseTarget = tuple.Item1;
 				CurrentCounterClockwiseTarget = tuple.Item2;
+				CwTorqueLastCalibration = tuple.Item3;
+				CcwTorqueLastCalibration = tuple.Item4;
 
 				return true;
 			}

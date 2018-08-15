@@ -38,6 +38,8 @@ namespace Twister.Business.Hardware
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CalibrationInterval, "CalibrationInterval");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit, "ClockwiseAngleTicks");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit, "CounterClockwiseAngleTicks");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CwTorqueLastCalibration, "CwTorqueLastCalibration");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CcwTorqueLastCalibration, "CcwTorqueLastCalibration");
 		}
 
 		#region AKD Basic Program Custom Registers.
@@ -82,7 +84,9 @@ namespace Twister.Business.Hardware
 		private long CounterClockwiseAngleTicks { get; set; }
 		private float ClockwiseAngleLimit { get; set; }
 		private float CounterClockwiseAngleLimit { get; set; }
-		
+		private int CwTorqueLastCalibration { get; set; }
+		private int CcwTorqueLastCalibration { get; set; }
+
 		#endregion
 		
 		/// <summary>
@@ -148,6 +152,13 @@ namespace Twister.Business.Hardware
 			CounterClockwiseAngleTicks = (long) (COUNTS_PER_REV * CounterClockwiseAngleLimit / 360);
 			Runspeed = tempRunspeed;
 			IsDueForCalibration = 0;
+
+			// simulate getting close to torque for calibration cycle.
+			var random = new Random();
+			int next = random.Next(97, 103);
+			float multiplier = next / 100f;
+			CwTorqueLastCalibration = (int) (CwTorqueLimit * multiplier);
+			CcwTorqueLastCalibration = (int) (CcwTorqueLimit * multiplier);
 		}
 		
 		public void StoreParameter(ServoDriveEnums.RegisterAddress location, int value)
@@ -191,6 +202,16 @@ namespace Twister.Business.Hardware
 
 			var angle = (float) 360 * ccwTicks / COUNTS_PER_REV;
 			return angle;
+		}
+
+		public int RetrieveLastCwTorque()
+		{
+			return CwTorqueLastCalibration;
+		}
+
+		public int RetrieveLastCcwTorque()
+		{
+			return CcwTorqueLastCalibration;
 		}
 	}
 }

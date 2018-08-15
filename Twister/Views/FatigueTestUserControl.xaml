@@ -32,6 +32,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -45,28 +46,34 @@
             <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Text="ACTUAL" HorizontalAlignment="Center" FontWeight="Bold" />
             <TextBlock Grid.Column="3" Grid.Row="0" Text="CCW" HorizontalAlignment="Left" FontWeight="Bold" />
 
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding CurrentClockwiseTarget, StringFormat='n3'}"
-                       FontSize="20"
-                       VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0,15" />
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding CurrentClockwiseTarget, StringFormat='n3'}" FontSize="20" 
+                       VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0,10" />
             <TextBlock Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding CurrentAngle, StringFormat='n3'}" FontSize="36"
                        VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,15" />
             <TextBlock Grid.Column="3" Grid.Row="1"
                        Text="{Binding CurrentCounterClockwiseTarget, StringFormat='n3'}" FontSize="20"
-                       VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,15" />
+                       VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,10" />
 
-            <ProgressBar Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Height="10" BorderThickness="0" Foreground="LightGreen"
+            <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding CwTorqueLastCalibration, StringFormat='n0'}"
+                       FontSize="20"
+                       VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0,0,0,15" />
+            <TextBlock Grid.Column="3" Grid.Row="2"
+                       Text="{Binding CcwTorqueLastCalibration, StringFormat='n0'}" FontSize="20"
+                       VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,0,0,15" />
+
+            <ProgressBar Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Height="10" BorderThickness="0" Foreground="LightGreen"
                          Value="{Binding CurrentCwPercent}" FlowDirection="RightToLeft" Maximum="1.0" />
-            <ProgressBar Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Height="10" BorderThickness="0" Foreground="LightSalmon"
+            <ProgressBar Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" Height="10" BorderThickness="0" Foreground="LightSalmon"
                          Value="{Binding CurrentCcwPercent}" FlowDirection="LeftToRight" Maximum="1.0" />
 
-            <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,10,0,0"
+            <TextBlock Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,10,0,0"
                        Text="COMPLETED CYCLES" FontWeight="Bold" />
-            <TextBlock Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,10,0,0"
+            <TextBlock Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,10,0,0"
                        Text="LOGGED CYCLES" FontWeight="Bold" />
-            <TextBlock Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding CycleCount, StringFormat=n0}" FontSize="32" />
-            <TextBlock Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding PointsLogged, StringFormat=n0}" FontSize="32" />       
+            <TextBlock Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding CycleCount, StringFormat=n0}" FontSize="32" />
+            <TextBlock Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding PointsLogged, StringFormat=n0}" FontSize="32" />       
 
-            <DataGrid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4"
+            <DataGrid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4"
                       Margin="0,25,0,0" 
                       BorderThickness="1,0,0,0"
                       HorizontalAlignment="Center" VerticalAlignment="Top"

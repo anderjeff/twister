@@ -415,6 +415,20 @@ Dim clockwiseAngleLimit as long
 '
 Dim counterClockwiseAngleLimit as long
 
+' The value of torque in the clockwise direction recorded during 
+' the last calibration cycle.  This value is persisted because the 
+' servo drive performs the calibration internally and had access to 
+' the torque value at the time the angle is set.
+'
+Dim cwTorqueLastCalibration as integer
+
+' The value of torque in the counterclockwise direction recorded during 
+' the last calibration cycle. This value is persisted because the 
+' servo drive performs the calibration internally and had access to 
+' the torque value at the time the angle is set.
+'
+Dim ccwTorqueLastCalibration
+
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.
 MBInfo 
@@ -435,7 +449,8 @@ MBInfo
 	$MBMap32(5028, calibrationInterval)
 	$MBMap64(5030, clockwiseAngleLimit) ' note this is a 64-bit value (needs 4 registers) and is used to hold PL.FB 
 	$MBMap64(5034, counterClockwiseAngleLimit) ' note this is a 64-bit (needs 4 registers) value and is used to hold PL.FB
-	
+	$MBMap32(5038, cwTorqueLastCalibration) ' the torque value in the CW direction recorded during the last calibration cycle
+	$MBMap32(5040, ccwTorqueLastCalibration) ' the torque value in the CCW direction recorded during the last calibration cycle
 End 
 
 ' create boolean values, since it's not supported
@@ -1085,10 +1100,12 @@ Sub PerformCalibration
 		If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
 			Call RotateClockwise
 			clockwiseAngleLimit = PL.FB
+			cwTorqueLastCalibration = currentTorque
 		ElseIf (currentTorque > ccwTorqueLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
 			firstStageComplete = _TRUE
 			Call RotateCounterClockwise
 			counterClockwiseAngleLimit = PL.FB
+			ccwTorqueLastCalibration = currentTorque
 			Print "ROTATING CCW, currentTorque: " + STR$ (currentTorque)
 		Else 
 			Call StopAndReturnToHome			

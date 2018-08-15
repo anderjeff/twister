@@ -252,5 +252,19 @@ namespace Twister.Business.Hardware
 		    }
 		    return limit;
 	    }
-    }
+
+		public int RetrieveLastCwTorque()
+		{
+			var location = ServoDriveEnums.RegisterAddress.CwTorqueLastCalibration;
+			var cwTorqueLastCalibration = RetrieveParameter(location);
+			return cwTorqueLastCalibration;
+		}
+
+		public int RetrieveLastCcwTorque()
+		{
+			var location = ServoDriveEnums.RegisterAddress.CcwTorqueLastCalibration;
+			var ccwTorqueLastCalibration = RetrieveParameter(location);
+			return ccwTorqueLastCalibration;
+		}
+	}
 }
