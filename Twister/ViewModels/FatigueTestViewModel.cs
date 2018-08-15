@@ -43,10 +43,21 @@ namespace Twister.ViewModels
 		{
 			TestConditions = new ObservableCollection<FatigueTestCondition_VM>();
 
+			BackCommand = new RelayCommand(GoBack, CanGoBack);
 			RunCommand = new RelayCommand(StartTest);
 			StopCommand = new RelayCommand(StopTest);
 
 			DataLogPath = "C:\\temp\\twister.dat";
+		}
+
+		private bool CanGoBack()
+		{
+			return !_threadsInitialized;
+		}
+
+		private void GoBack()
+		{
+			MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSetupViewModel;
 		}
 
 		public FatigueTest FatigueTest
@@ -78,6 +89,8 @@ namespace Twister.ViewModels
 			}
 		}
 
+		public float PreviousClockwiseTarget { get; set; }
+
 		public float CurrentClockwiseTarget
 		{
 			get => _currentClockwiseTarget;
@@ -87,6 +100,8 @@ namespace Twister.ViewModels
 				OnPropertyChanged();
 			}
 		}
+
+		public float PreviousCounterClockwiseTarget { get; set; }
 
 		public float CurrentCounterClockwiseTarget
 		{
@@ -145,7 +160,7 @@ namespace Twister.ViewModels
 			{
 				_selectedTestConditionViewModel = value;
 				OnPropertyChanged();
-				TestBench.Singleton.UpdateCurrentCondition(_selectedTestConditionViewModel.Condition);
+				TestBench.Singleton.UpdateCurrentCondition(_selectedTestConditionViewModel?.Condition);
 			}
 		}
 
@@ -175,6 +190,7 @@ namespace Twister.ViewModels
 			}
 		}
 
+		public RelayCommand BackCommand { get; private set; }
 		public RelayCommand RunCommand { get; private set; }
 		public RelayCommand StopCommand { get; private set; }
 		
@@ -198,31 +214,23 @@ namespace Twister.ViewModels
 			if (_threadsInitialized) return;
 
 			// to update the UI, a timer.
-			_updateUiTimer = new System.Windows.Threading.DispatcherTimer
-			{
-				Interval = new TimeSpan(0, 0, 0, 0, 10) // 10 milliseconds
-			};
+			_updateUiTimer = new System.Windows.Threading.DispatcherTimer();
+			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 10); // 10 milliseconds
 			_updateUiTimer.Tick += UpdateUiTimerOnTick;
 			_updateUiTimer.Start();
 
 			// create a thread for monitoring current values.
-			_monitoringThread = new Thread(MonitorSensors)
-			{
-				IsBackground = true // so the application can close without it shutting down.
-			};
+			_monitoringThread = new Thread(MonitorSensors);
+			_monitoringThread.IsBackground = true; // so the application can close without it shutting down.
 			_monitoringThread.Start();
 
 			// create a thread to get test data
-			_loadingDataThread = new Thread(LoadData)
-			{
-				IsBackground = true // so the application can close without it shutting down.
-			};
+			_loadingDataThread = new Thread(LoadData);
+			_loadingDataThread.IsBackground = true; // so the application can close without it shutting down.
 			_loadingDataThread.Start();
 
-			_loggingDataThread = new Thread(LogData)
-			{
-				IsBackground = true
-			};
+			_loggingDataThread = new Thread(LogData);
+			_loggingDataThread.IsBackground = true;
 			_loggingDataThread.Start();
 
 			_threadsInitialized = true;
@@ -255,6 +263,7 @@ namespace Twister.ViewModels
 			while (true)
 			{
 				UpdateCurrentValues();
+				TestBench.Singleton.VerifyAlive();
 			}
 		}
 
@@ -295,7 +304,8 @@ namespace Twister.ViewModels
 					_currentTorqueDirect = (int)mostRecent.Torque;
 					_currentAngleDirect = mostRecent.Angle;
 					_cycleCountDirect = TestBench.Singleton.GetCycleCount();
-					if (_cycleCountDirect % SelectedTestConditionViewModel.CalibrationInterval == 0)
+					if (_cycleCountDirect % SelectedTestConditionViewModel.CalibrationInterval == 0 &&
+					    SelectedTestConditionViewModel.CyclesRequired - SelectedTestConditionViewModel.CyclesCompleted > 0)
 					{
 						TestBench.Singleton.InformCalibrationDue();
 					}
@@ -307,6 +317,12 @@ namespace Twister.ViewModels
 		{
 			UpdateUi();
 			CheckIfNextConditionShouldBeLoaded();
+			if (CalibrationOccurred())
+			{
+				CheckIfShutdownRequired(
+					PreviousClockwiseTarget, CurrentClockwiseTarget, 
+					PreviousCounterClockwiseTarget, CurrentCounterClockwiseTarget);
+			}
 		}
 
 		private void UpdateUi()
@@ -338,18 +354,38 @@ namespace Twister.ViewModels
 			// Add to the correction factor.
 			_cycleCorrectionCount += SelectedTestConditionViewModel.CyclesCompleted;
 			SelectedTestConditionViewModel = TestConditions[currentIndex + 1];
-			
-			// Let the calibration cycle complete.
+		}
+
+		private bool CalibrationOccurred()
+		{
+			bool wasDue = TestBench.Singleton.IsDueForCalibration();
 			while (TestBench.Singleton.IsDueForCalibration())
 			{
+				// Let the calibration cycle complete.
 				UpdateUi();
 				Thread.Sleep(10);
 			}
 
-			// Update targets based on the new test condition.
-			var tuple = TestBench.Singleton.GetCurrentAngleLimits();
-			CurrentClockwiseTarget = tuple.Item1;
-			CurrentCounterClockwiseTarget = tuple.Item2;
+			if (wasDue)
+			{
+				// verify that a shutdown is not required.
+				PreviousClockwiseTarget = CurrentClockwiseTarget;
+				PreviousCounterClockwiseTarget = CurrentCounterClockwiseTarget;
+				
+				// Update targets based on the new test condition.
+				var tuple = TestBench.Singleton.GetCurrentAngleLimits();
+				CurrentClockwiseTarget = tuple.Item1;
+				CurrentCounterClockwiseTarget = tuple.Item2;
+
+				return true;
+			}
+
+			return false;
+		}
+
+		private void CheckIfShutdownRequired(float previousCw, float currentCw, float previousCcw, float currentCcw)
+		{
+			// todo, figure out what to use for shutdown criteria.  Tim wants to use torque, I am not monitoring torque.
 		}
 
 		private void UpdateCyclingGraphic()

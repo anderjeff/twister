@@ -6,7 +6,7 @@ namespace Twister.Business.Hardware
 {
 	public class SimulatedServoDrive : IServoDrive
 	{
-		
+        private const int COUNTS_PER_REV = 65536 * 70;
 		private int? _previousTorque = null;
 
 		private SimulatorEngine _engine;
@@ -143,8 +143,9 @@ namespace Twister.Business.Hardware
 			Runspeed = 1;
 
 			ClockwiseAngleLimit = Stiffness == 0 ? 0 : CwTorqueLimit / Stiffness;
+			ClockwiseAngleTicks = (long) (COUNTS_PER_REV * ClockwiseAngleLimit / 360);
 			CounterClockwiseAngleLimit = Stiffness == 0 ? 0 : CcwTorqueLimit / Stiffness;
-
+			CounterClockwiseAngleTicks = (long) (COUNTS_PER_REV * CounterClockwiseAngleLimit / 360);
 			Runspeed = tempRunspeed;
 			IsDueForCalibration = 0;
 		}
@@ -178,22 +179,18 @@ namespace Twister.Business.Hardware
 		{
 			long cwTicks = (long) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.ClockwiseAngleLimit],
 				BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
-			//var cwLimit = 
 
-			//return cwLimit;
-			// todo convert ticks to angle
-			return 0f;
+			var angle = (float) 360 * cwTicks / COUNTS_PER_REV;
+			return angle;
 		}
 
 		public float RetrieveCounterclockwiseLimit()
 		{
 			long ccwTicks = (long) GetType().GetProperty(_addressDictionary[ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit],
 				BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
-			//var ccwLimit = 
 
-			//return ccwLimit;
-			// todo convert ticks to angle
-			return 0f;
+			var angle = (float) 360 * ccwTicks / COUNTS_PER_REV;
+			return angle;
 		}
 	}
 }

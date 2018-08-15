@@ -52,6 +52,7 @@
                   AutoGenerateColumns="False"
                   HorizontalScrollBarVisibility="Auto"
                   Margin="0,5,15,5"
+                  BorderThickness="1,0,0,0"
                   MinWidth="0"
                   Style="{StaticResource TestSetupDataGridStyle}"
                   Visibility="{Binding Path=CanSeeNext, Converter={StaticResource BoolToVisConverter}}">

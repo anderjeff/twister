@@ -161,6 +161,7 @@ namespace Twister.Business.Tests
 		public void UpdateCurrentCondition(FatigueTestCondition newCondition)
 		{
 			if (!(_currentTest is FatigueTest)) return;
+			if (newCondition == null) return;
 
 			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, newCondition.ClockwiseTorque);
 			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CcwTorqueLimit, newCondition.CounterclockwiseTorque);

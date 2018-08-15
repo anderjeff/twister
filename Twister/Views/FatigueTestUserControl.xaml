@@ -17,6 +17,8 @@
                        FontSize="20" />
         </Border>
         <StackPanel DockPanel.Dock="Left" Orientation="Vertical" Margin="15,15,0,0">
+            <Button Content="BACK" Padding="25,10" Margin="0,0,0,10" Foreground="Black" Background="LightBlue" FontSize="16"
+                    Command="{Binding BackCommand}" />
             <Button Content="RUN" Padding="25" Foreground="White" Background="Green" FontSize="16"
                     Command="{Binding RunCommand}" />
             <Button Content="STOP" Padding="25" Margin="0,10"  Foreground="White" Background="Red" FontSize="16"
@@ -66,7 +68,7 @@
 
             <DataGrid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4"
                       Margin="0,25,0,0" 
-                      BorderThickness="0"
+                      BorderThickness="1,0,0,0"
                       HorizontalAlignment="Center" VerticalAlignment="Top"
                       SelectedItem="{Binding SelectedTestConditionViewModel}"
                       ItemsSource="{Binding TestConditions}"
