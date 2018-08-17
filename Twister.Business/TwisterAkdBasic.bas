@@ -401,33 +401,33 @@ Dim isDueForCalibration as integer
 ' The number of cycles that must be completed before a calibration 
 ' cycle must occur.
 '
-Dim calibrationInterval as integer
+Dim calibrationInterval as integer 
 
 ' The angular position that the output flange will rotate to before 
 ' changing from the clockwise to counterclockwise direction when 
 ' running a fatigue test.
 '
-Dim clockwiseAngleLimit as long
+Dim clockwiseAngleLimit as long 
 
 ' The angular position that the output flange will rotate to before 
 ' changing from the counterclockwise to clockwise direction when 
 ' running a fatigue test.
 '
-Dim counterClockwiseAngleLimit as long
+Dim counterClockwiseAngleLimit as long 
 
 ' The value of torque in the clockwise direction recorded during 
 ' the last calibration cycle.  This value is persisted because the 
 ' servo drive performs the calibration internally and had access to 
 ' the torque value at the time the angle is set.
 '
-Dim cwTorqueLastCalibration as integer
+Dim cwTorqueLastCalibration as integer 
 
 ' The value of torque in the counterclockwise direction recorded during 
 ' the last calibration cycle. This value is persisted because the 
 ' servo drive performs the calibration internally and had access to 
 ' the torque value at the time the angle is set.
 '
-Dim ccwTorqueLastCalibration as integer
+Dim ccwTorqueLastCalibration as integer 
 
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.
@@ -447,10 +447,10 @@ MBInfo
 	$MBMap32(5024, cycleCount)
 	$MBMap32(5026, isDueForCalibration)
 	$MBMap32(5028, calibrationInterval)
-	$MBMap64(5030, clockwiseAngleLimit) ' note this is a 64-bit value (needs 4 registers) and is used to hold PL.FB 
-	$MBMap64(5034, counterClockwiseAngleLimit) ' note this is a 64-bit (needs 4 registers) value and is used to hold PL.FB
-	$MBMap32(5038, cwTorqueLastCalibration) ' the torque value in the CW direction recorded during the last calibration cycle
-	$MBMap32(5040, ccwTorqueLastCalibration) ' the torque value in the CCW direction recorded during the last calibration cycle
+	$MBMap64(5030, clockwiseAngleLimit)' note this is a 64-bit value (needs 4 registers) and is used to hold PL.FB 
+	$MBMap64(5034, counterClockwiseAngleLimit)' note this is a 64-bit (needs 4 registers) value and is used to hold PL.FB
+	$MBMap32(5038, cwTorqueLastCalibration)' the torque value in the CW direction recorded during the last calibration cycle
+	$MBMap32(5040, ccwTorqueLastCalibration)' the torque value in the CCW direction recorded during the last calibration cycle
 End 
 
 ' create boolean values, since it's not supported
@@ -669,10 +669,12 @@ Sub PerformFatigueTest
 	' The testInProcess indicates that the user wants to start the test, 
 	' but the application has not yet reached the While loop below.  Once 
 	' execution reaches the While loop, it will stay there until completed.
-	If (testInProcess = _TRUE) Then 				
+	If (testInProcess = _TRUE) Then 
 		' Home the current positon, so at the end of the test, 
 		' we can return to this position
+		Print "About to reset current position, PL.FB = " + STR$ (PL.FB )
 		MOVE.POSCOMMAND = 0
+		Print "Reset current position, PL.FB = " + STR$ (PL.FB )
 		
 		' if the code reaches this point, the user has started a test, this 
 		' allows the Else section to call StopAnReturnToHome once.  
@@ -682,18 +684,19 @@ Sub PerformFatigueTest
 		
 		While (testInProcess = _TRUE)
 			
-			Call DebugMessageString("Checking if due for calibration.")	
+			Call DebugMessageString("Checking if due for calibration.")
 			
-			If(isDueForCalibration) Then
+			If (isDueForCalibration = _TRUE) Then 
 				Call PerformCalibration
 			End If
 			
 			' -- run cycle
 			Call PerformFatigueTestCycle
-		Wend		
+		Wend
 	Else 
-		Call DebugMessageString("Calling StopAnReturnToHome")
+		Print "Fatigue test no longer in process." 
 		If (cancelled = _TRUE) Then 
+			Print "Test was cancelled, returning home." 
 			Call StopAndReturnToHome
 			cancelled = _FALSE
 		End If
@@ -705,7 +708,7 @@ Sub PerformFatigueTest
 			Call DebugMessageString("Waiting for joystick to move.")
 			Call PerformSingleManualCycle()
 		Wend
-	End If	
+	End If
 End Sub
 
 
@@ -722,14 +725,20 @@ End Sub
 Sub StopAndReturnToHome
 	Call StopGently
 	
+	If (MOVE.RUNSPEED > 50) Then
+		MOVE.RUNSPEED = 50
+	End If
+	
 	' return to position established at the start of the test.
 	MOVE.GOHOME 
 	
 	' let the test get back to zero before finishing.
 	While (ABS (MOVE.POSCOMMAND ) > 0)
-		Call DebugMessageString("StopAndReturnToHome")
+		Print "Returning home, PL.FB = " + STR$ (PL.FB ) + ", runSpeed = " + STR$ (runSpeed)
 		Pause (0.1)
 	Wend
+	
+	MOVE.RUNSPEED = runSpeed
 End Sub
 
 Sub Rotate
@@ -893,45 +902,48 @@ Sub PerformUnidirectionalTestCycle
 End Sub
 
 Sub PerformFatigueTestCycle
-	Call DebugMessageInteger("Performing FatigueTestCycle with runSpeed = " , runSpeed)	
+	Call DebugMessageInteger("Performing FatigueTestCycle with runSpeed = " , runSpeed)
 	
 	firstStageComplete = _FALSE
 	secondStageComplete = _FALSE
+	
+	While (secondStageComplete = _FALSE AND testInProcess = _TRUE)
+		' The -191147 and 191147 are 15 degrees in their respective directions, at the flange. 
+		' The value must increase if more angle of twist is required, it is just there in order 
+		' to stop the shaft from twisting excessively.
+		If (PL.FB > clockwiseAngleLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
+			Call RotateClockwise
+			Print "Performing fatigue test, ROTATING CW, PL.FB = " + STR$ (PL.FB ) + ", currentTorque: " + STR$ (currentTorque)
+		ElseIf (PL.FB < counterClockwiseAngleLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
+			firstStageComplete = _TRUE
+			Call RotateCounterClockwise
+			Print "Performing fatigue test, ROTATING CCW, PL.FB = " + STR$ (PL.FB ) + ", currentTorque: " + STR$ (currentTorque)
+		Else 
+			secondStageComplete = _TRUE
+			cycleCount = cycleCount + 1
+		End If
 		
-	' The -191147 and 191147 are 15 degrees in their respective directions, at the flange. 
-	' The value must increase if more angle of twist is required, it is just there in order 
-	' to stop the shaft from twisting excessively.
-	If (PL.FB < clockwiseAngleLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
-		Call RotateClockwise
-		Print "ROTATING CW, currentTorque: " + STR$ (currentTorque)
-	ElseIf (PL.FB > counterClockwiseAngleLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
-		firstStageComplete = _TRUE
-		Call RotateCounterClockwise
-		Print "ROTATING CCW, currentTorque: " + STR$ (currentTorque)
-	Else 		
-		secondStageComplete = _TRUE		
-	End If
-	
-	Call DebugMessageInteger("Checking watchdog timer, watchdogValue = " , watchdogValue)
-	
-	' decrement the timer, if you have not heard from the 
-	' watchdog in a while, shut down the test because the 
-	' application is no longer providing updates of what 
-	' the applied torque is.
-	watchdogValue = watchdogValue - 1
-	
-	Call DebugMessageInteger("watchdogValue = " , watchdogValue)
-	
-	' see if motor needs to stop turning because 
-	' watchdog program is no longer making calls
-	If (watchdogValue <= 0) Then 
+		Call DebugMessageInteger("Checking watchdog timer, watchdogValue = " , watchdogValue)
 		
-		' set this so the next time through, the current 
-		' While loop will not be entered.
-		testInProcess = _FALSE
+		' decrement the timer, if you have not heard from the 
+		' watchdog in a while, shut down the test because the 
+		' application is no longer providing updates of what 
+		' the applied torque is.
+		watchdogValue = watchdogValue-1
 		
-		Call StopAndReturnToHome 
-	End If
+		Call DebugMessageInteger("Decremented watchdog timer by 1, watchdogValue = " , watchdogValue)
+		
+		' see if motor needs to stop turning because 
+		' watchdog program is no longer making calls
+		If (watchdogValue <= 0) Then 
+			
+			' set this so the next time through, the current 
+			' While loop will not be entered.
+			testInProcess = _FALSE
+			
+			Call StopAndReturnToHome
+		End If		
+	Wend	
 End Sub
 
 Function PctDiff As float 
@@ -1077,8 +1089,8 @@ Function UserProvidedValidValues As Integer
 	' a value, just disallow it, don't worry about telling them.
 	If (runSpeed < 1) Then 
 		runSpeed = 1
-	ElseIf (runSpeed > 500) Then 
-		runSpeed = 500
+	ElseIf (runSpeed > 1000) Then 
+		runSpeed = 1000
 	End If
 	
 	' if you get here, it's valid
@@ -1086,31 +1098,34 @@ Function UserProvidedValidValues As Integer
 End Function
 
 Sub PerformCalibration
-    ' slow run speed and return to zero.
-    Call StopAndReturnToHome
-
-    ' set the runspeed.
-    MOVE.RUNSPEED = 10
+	' slow run speed and return to zero.
+	Call StopAndReturnToHome
+	
+	' set the runspeed.
+	MOVE.RUNSPEED = 100
 	
 	firstStageComplete = _FALSE
 	secondStageComplete = _FALSE
-
+	
 	' run this loop until the calibration is complete.
-	While(isDueForCalibration = _TRUE)
+	While (isDueForCalibration = _TRUE)
 		If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
 			Call RotateClockwise
-			clockwiseAngleLimit = PL.FB
+			clockwiseAngleLimit = PL.FB 
 			cwTorqueLastCalibration = currentTorque
+			Print "Performing calibration, ROTATING CW...PL.FB = " + STR$ (clockwiseAngleLimit) + " currentTorque = " + STR$ (cwTorqueLastCalibration)
+			Print "currentTorque = " + STR$ (currentTorque) + ", cwTorqueLimit = " + STR$ (cwTorqueLimit) + ", ccwTorqueLimit = " + STR$ (ccwTorqueLimit)
 		ElseIf (currentTorque > ccwTorqueLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
 			firstStageComplete = _TRUE
 			Call RotateCounterClockwise
-			counterClockwiseAngleLimit = PL.FB
+			counterClockwiseAngleLimit = PL.FB 
 			ccwTorqueLastCalibration = currentTorque
-			Print "ROTATING CCW, currentTorque: " + STR$ (currentTorque)
+			Print "Performing calibration, ROTATING CCW... PL.FB = " + STR$ (counterClockwiseAngleLimit) + " currentTorque = " + STR$ (ccwTorqueLastCalibration)
+			Print "currentTorque = " + STR$ (currentTorque) + ", cwTorqueLimit = " + STR$ (cwTorqueLimit) + ", ccwTorqueLimit = " + STR$ (ccwTorqueLimit)
 		Else 
-			Call StopAndReturnToHome			
 			secondStageComplete = _TRUE
-			isDueForCalibration = _FALSE		
+			isDueForCalibration = _FALSE
+			Call StopAndReturnToHome
 		End If
 	Wend
 	
