@@ -21,8 +21,11 @@ namespace Twister.ViewModels
 
 		public FatigueTestSetupViewModel()
 		{
-			_fatigueTest = new FatigueTest();
-			
+			_fatigueTest = new FatigueTest
+			{
+				TestTemplateId = (int)TestType.FatigueTest
+			};
+
 			NoConditionsDefined = true;
 			CanSeeNext = false;
 			
