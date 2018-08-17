@@ -427,7 +427,7 @@ Dim cwTorqueLastCalibration as integer
 ' servo drive performs the calibration internally and had access to 
 ' the torque value at the time the angle is set.
 '
-Dim ccwTorqueLastCalibration
+Dim ccwTorqueLastCalibration as integer
 
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.

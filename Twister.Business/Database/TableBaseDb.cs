@@ -5,11 +5,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Configuration;
 using Msg = Twister.Business.Shared.Messages;
+using log4net;
 
 namespace Twister.Business.Database
 {
     internal class TableBaseDb
     {
+        private static ILog _log = LogManager.GetLogger(typeof(TableBaseDb));
+
         private static readonly string vjsPath = @"G:\Engineering\Programs\Shared\Connections\vjs.txt";
         private static readonly string twisterPath = @"G:\Engineering\Programs\Shared\Connections\Twister2015.txt";
 
@@ -36,7 +39,7 @@ namespace Twister.Business.Database
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(Msg.GeneralExceptionMessage(ex, "TwisterConnection"));
+                _log.Error(ex);
                 return null;
             }
         }
@@ -60,7 +63,7 @@ namespace Twister.Business.Database
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(Msg.GeneralExceptionMessage(ex, "VjsConnection"));
+                _log.Error(ex);
                 return null;
             }
         }
@@ -76,7 +79,7 @@ namespace Twister.Business.Database
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                _log.Error(ex);
                 throw ex;
             }
         }
@@ -92,7 +95,7 @@ namespace Twister.Business.Database
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(Msg.GeneralExceptionMessage(ex, "TwisterConnectionString"));
+                _log.Error(ex);
                 throw ex;
             }
         }
@@ -110,7 +113,7 @@ namespace Twister.Business.Database
             }
             catch (InvalidOperationException opexcep)
             {
-                Debug.WriteLine(Msg.GeneralExceptionMessage(opexcep, "CreateCommand"));
+                _log.Error(opexcep);
                 return null;
             }
         }
@@ -133,7 +136,7 @@ namespace Twister.Business.Database
                 }
                 catch (SqlException ex)
                 {
-                    Debug.WriteLine(Msg.GeneralExceptionMessage(ex, "CloseConnection"));
+                    _log.Error(ex);
                 }
         }
     }
