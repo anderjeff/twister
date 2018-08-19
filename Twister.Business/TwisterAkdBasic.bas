@@ -341,6 +341,9 @@ Dim cwTorqueLimit As Integer
 ' Minimum Value = 10 (0.86 deg/s)
 ' Maximum Value = 500 (43 deg/s)
 '
+' A more accurate name for this variable could be motorRpm, I just 
+' don't want to change it right now.
+'
 Dim runSpeed As Integer 
 
 ' Manual speed allows the operator to use the joystick to make 
@@ -429,6 +432,12 @@ Dim cwTorqueLastCalibration as integer
 '
 Dim ccwTorqueLastCalibration as integer 
 
+' The number of cycles per second. This value is used for the fatigue 
+' test and is used to set run speed after a calibration cycle has determined 
+' the target cw and ccw angles.
+'
+Dim cyclesPerSecond as integer
+
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.
 MBInfo 
@@ -451,6 +460,7 @@ MBInfo
 	$MBMap64(5034, counterClockwiseAngleLimit)' note this is a 64-bit (needs 4 registers) value and is used to hold PL.FB
 	$MBMap32(5038, cwTorqueLastCalibration)' the torque value in the CW direction recorded during the last calibration cycle
 	$MBMap32(5040, ccwTorqueLastCalibration)' the torque value in the CCW direction recorded during the last calibration cycle
+	$MBMap32(5042, cyclesPerSecond) ' used for the fatigue test, lets the user specify the number of cycles per second, then the program can set run speed based off the angles in calibration cycle.
 End 
 
 ' create boolean values, since it's not supported
@@ -1125,12 +1135,20 @@ Sub PerformCalibration
 		Else 
 			secondStageComplete = _TRUE
 			isDueForCalibration = _FALSE
+			Call CalculateRunSpeed
+			
 			Call StopAndReturnToHome
 		End If
 	Wend
 	
 	' reset the run speed to the user specified value.
 	MOVE.RUNSPEED = runSpeed
+End Sub
+
+Sub CalculateRunSpeed
+	' determine how far we have to travel each cycle
+	Dim distance = ABS(ccwTorqueLastCalibration - cwTorqueLastCalibration)
+	
 End Sub
 
 ' Standardized debug messages with

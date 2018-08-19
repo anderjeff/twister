@@ -40,6 +40,7 @@ namespace Twister.Business.Hardware
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CounterClockwiseAngleLimit, "CounterClockwiseAngleTicks");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CwTorqueLastCalibration, "CwTorqueLastCalibration");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CcwTorqueLastCalibration, "CcwTorqueLastCalibration");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CyclesPerSecond, "CyclesPerSecond");
 		}
 
 		#region AKD Basic Program Custom Registers.
@@ -86,6 +87,7 @@ namespace Twister.Business.Hardware
 		private float CounterClockwiseAngleLimit { get; set; }
 		private int CwTorqueLastCalibration { get; set; }
 		private int CcwTorqueLastCalibration { get; set; }
+		private int CyclesPerSecond { get; set; }
 
 		#endregion
 		

@@ -32,7 +32,8 @@ namespace Twister.Business.Hardware
 			ClockwiseAngleLimit = 5030, // USER.INT64
 			CounterClockwiseAngleLimit = 5034,  // USER.INT64
 			CwTorqueLastCalibration = 5038, // USER.INT
-			CcwTorqueLastCalibration = 5040 // USER.INT
+			CcwTorqueLastCalibration = 5040, // USER.INT
+			CyclesPerSecond = 5042 // USER.INT
 		}
 	}
 }
