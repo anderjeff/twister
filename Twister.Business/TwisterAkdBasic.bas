@@ -436,7 +436,7 @@ Dim ccwTorqueLastCalibration as integer
 ' test and is used to set run speed after a calibration cycle has determined 
 ' the target cw and ccw angles.
 '
-Dim cyclesPerSecond as integer
+Dim cyclesPerSecond as integer 
 
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.
@@ -460,7 +460,7 @@ MBInfo
 	$MBMap64(5034, counterClockwiseAngleLimit)' note this is a 64-bit (needs 4 registers) value and is used to hold PL.FB
 	$MBMap32(5038, cwTorqueLastCalibration)' the torque value in the CW direction recorded during the last calibration cycle
 	$MBMap32(5040, ccwTorqueLastCalibration)' the torque value in the CCW direction recorded during the last calibration cycle
-	$MBMap32(5042, cyclesPerSecond) ' used for the fatigue test, lets the user specify the number of cycles per second, then the program can set run speed based off the angles in calibration cycle.
+	$MBMap32(5042, cyclesPerSecond)' used for the fatigue test, lets the user specify the number of cycles per second, then the program can set run speed based off the angles in calibration cycle.
 End 
 
 ' create boolean values, since it's not supported
@@ -734,19 +734,10 @@ End Sub
 
 Sub StopAndReturnToHome
 	Call StopGently
-	
-	If (MOVE.RUNSPEED > 50) Then 
-		MOVE.RUNSPEED = 50
-	End If
-	
+		
 	' return to position established at the start of the test.
 	MOVE.GOHOME 
-	
-	' let the test get back to zero before finishing.
-	While (ABS (MOVE.POSCOMMAND ) > 0)
-		Print "Returning home, PL.FB = " + STR$ (PL.FB ) + ", runSpeed = " + STR$ (runSpeed)
-		Pause (0.1)
-	Wend
+	When PL.FB = 0, continue
 	
 	MOVE.RUNSPEED = runSpeed
 End Sub
@@ -1137,7 +1128,11 @@ End Sub
 
 Sub CalculateRunSpeed
 	' determine how far we have to travel each cycle
-	Dim distance = ABS(ccwTorqueLastCalibration - cwTorqueLastCalibration)
+	Dim distance as integer 
+	distance = ABS (counterClockwiseAngleLimit - clockwiseAngleLimit)
+	
+	' 65536 ticks per motor revolution
+	runSpeed = (distance * 2 * 70 * cyclesPerSecond) / 65536
 	
 End Sub
 
