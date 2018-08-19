@@ -725,7 +725,7 @@ End Sub
 Sub StopAndReturnToHome
 	Call StopGently
 	
-	If (MOVE.RUNSPEED > 50) Then
+	If (MOVE.RUNSPEED > 50) Then 
 		MOVE.RUNSPEED = 50
 	End If
 	
@@ -904,46 +904,36 @@ End Sub
 Sub PerformFatigueTestCycle
 	Call DebugMessageInteger("Performing FatigueTestCycle with runSpeed = " , runSpeed)
 	
-	firstStageComplete = _FALSE
-	secondStageComplete = _FALSE
+	MOVE.TARGETPOS = clockwiseAngleLimit
+	MOVE.RUNSPEED = runSpeed
+	MOVE.GOABS 
+	MOVE.TARGETPOS = counterClockwiseAngleLimit
+	When PL.FB > clockwiseAngleLimit, MOVE.GOABS 
 	
-	While (secondStageComplete = _FALSE AND testInProcess = _TRUE)
-		' The -191147 and 191147 are 15 degrees in their respective directions, at the flange. 
-		' The value must increase if more angle of twist is required, it is just there in order 
-		' to stop the shaft from twisting excessively.
-		If (PL.FB > clockwiseAngleLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
-			Call RotateClockwise
-			Print "Performing fatigue test, ROTATING CW, PL.FB = " + STR$ (PL.FB ) + ", currentTorque: " + STR$ (currentTorque)
-		ElseIf (PL.FB < counterClockwiseAngleLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
-			firstStageComplete = _TRUE
-			Call RotateCounterClockwise
-			Print "Performing fatigue test, ROTATING CCW, PL.FB = " + STR$ (PL.FB ) + ", currentTorque: " + STR$ (currentTorque)
-		Else 
-			secondStageComplete = _TRUE
-			cycleCount = cycleCount + 1
-		End If
+	When PL.FB < counterClockwiseAngleLimit, continue 
+	
+	MOVE.TARGETPOS = 0
+	MOVE.GOABS 
+	
+	cycleCount = cycleCount + 1
+	Print "Current cycle count = " + STR$ (cycleCount)
+	
+	' decrement the timer, if you have not heard from the 
+	' watchdog in a while, shut down the test because the 
+	' application is no longer providing updates of what 
+	' the applied torque is.
+	watchdogValue = watchdogValue-1
+	
+	Call DebugMessageInteger("Decremented watchdog timer by 1, watchdogValue = " , watchdogValue)
+	
+	' see if motor needs to stop turning because 
+	' watchdog program is no longer making calls
+	If (watchdogValue <= 0) Then 
 		
-		Call DebugMessageInteger("Checking watchdog timer, watchdogValue = " , watchdogValue)
-		
-		' decrement the timer, if you have not heard from the 
-		' watchdog in a while, shut down the test because the 
-		' application is no longer providing updates of what 
-		' the applied torque is.
-		watchdogValue = watchdogValue-1
-		
-		Call DebugMessageInteger("Decremented watchdog timer by 1, watchdogValue = " , watchdogValue)
-		
-		' see if motor needs to stop turning because 
-		' watchdog program is no longer making calls
-		If (watchdogValue <= 0) Then 
-			
-			' set this so the next time through, the current 
-			' While loop will not be entered.
-			testInProcess = _FALSE
-			
-			Call StopAndReturnToHome
-		End If		
-	Wend	
+		' set this so the next time through, the current 
+		' While loop will not be entered.
+		testInProcess = _FALSE
+	End If
 End Sub
 
 Function PctDiff As float 
@@ -1089,8 +1079,8 @@ Function UserProvidedValidValues As Integer
 	' a value, just disallow it, don't worry about telling them.
 	If (runSpeed < 1) Then 
 		runSpeed = 1
-	ElseIf (runSpeed > 1000) Then 
-		runSpeed = 1000
+	ElseIf (runSpeed > 5000) Then 
+		runSpeed = 5000
 	End If
 	
 	' if you get here, it's valid
