@@ -734,10 +734,11 @@ End Sub
 
 Sub StopAndReturnToHome
 	Call StopGently
-		
+	
 	' return to position established at the start of the test.
 	MOVE.GOHOME 
-	When PL.FB = 0, continue
+	When PL.FB < 1, continue 
+	When PL.FB > -1, continue 
 	
 	MOVE.RUNSPEED = runSpeed
 End Sub
@@ -907,14 +908,15 @@ Sub PerformFatigueTestCycle
 	
 	MOVE.TARGETPOS = clockwiseAngleLimit
 	MOVE.RUNSPEED = runSpeed
+	MOVE.ACC = 40000
+	MOVE.DEC = 40000
 	MOVE.GOABS 
 	MOVE.TARGETPOS = counterClockwiseAngleLimit
-	When PL.FB > clockwiseAngleLimit, MOVE.GOABS 
+	When PL.FB < clockwiseAngleLimit, MOVE.GOABS 
 	
-	When PL.FB < counterClockwiseAngleLimit, continue 
+	When PL.FB > counterClockwiseAngleLimit, continue 
 	
-	MOVE.TARGETPOS = 0
-	MOVE.GOABS 
+	Call StopAndReturnToHome
 	
 	cycleCount = cycleCount + 1
 	Print "Current cycle count = " + STR$ (cycleCount)
@@ -1129,7 +1131,7 @@ End Sub
 Sub CalculateRunSpeed
 	' determine how far we have to travel each cycle
 	Dim distance as integer 
-	distance = ABS (counterClockwiseAngleLimit - clockwiseAngleLimit)
+	distance = ABS (counterClockwiseAngleLimit-clockwiseAngleLimit)
 	
 	' 65536 ticks per motor revolution
 	runSpeed = (distance * 2 * 70 * cyclesPerSecond) / 65536
