@@ -38,6 +38,10 @@
             <views:FatigueTestSetupUserControl DataContext="{Binding}" />
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type viewModels:FatigueTestSummaryViewModel}">
+            <views:FatigueTestSummaryUserControl DataContext="{Binding}" />
+        </DataTemplate>
+
     </Window.Resources>
 
     <Grid x:Name="layoutRoot">

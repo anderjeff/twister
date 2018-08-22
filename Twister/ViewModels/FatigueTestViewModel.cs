@@ -34,6 +34,7 @@ namespace Twister.ViewModels
 		private string _dataLogPath;
 		private int _cwTorqueLastCalibration;
 		private int _ccwTorqueLastCalibration;
+		private bool _backButtonVisible;
 
 		private DispatcherTimer _updateUiTimer;
 		private Thread _monitoringThread;
@@ -45,16 +46,12 @@ namespace Twister.ViewModels
 		{
 			TestConditions = new ObservableCollection<FatigueTestCondition_VM>();
 
-			BackCommand = new RelayCommand(GoBack, CanGoBack);
+			BackCommand = new RelayCommand(GoBack);
 			RunCommand = new RelayCommand(StartTest);
 			StopCommand = new RelayCommand(StopTest);
 
 			DataLogPath = "C:\\temp\\twister.dat";
-		}
-
-		private bool CanGoBack()
-		{
-			return !_threadsInitialized;
+			BackButtonVisible = true;
 		}
 
 		private void GoBack()
@@ -87,6 +84,16 @@ namespace Twister.ViewModels
 			set
 			{
 				_isSimulated = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool BackButtonVisible
+		{
+			get => _backButtonVisible;
+			set
+			{
+				_backButtonVisible = value;
 				OnPropertyChanged();
 			}
 		}
@@ -264,27 +271,37 @@ namespace Twister.ViewModels
 			_loggingDataThread.Start();
 
 			_threadsInitialized = true;
+			BackButtonVisible = false;
 		}
 
 		private void LogData()
 		{
 			// reset data file.
-			File.Delete(DataLogPath);
+			if (File.Exists(DataLogPath))
+			{
+				File.Copy(DataLogPath, $"{DataLogPath}_{DateTime.Now.Ticks}");
+				File.Delete(DataLogPath);
+			}
 			while (true)
 			{
 				Thread.Sleep(5000);
-				var temp = new List<FatigueTestDataPoint>();
-				temp.AddRange(FatigueTest.ProcessedData());
+				LogAvailableData();
+			}
+		}
 
-				using (var writer = new StreamWriter(DataLogPath, true))
+		private void LogAvailableData()
+		{
+			var temp = new List<FatigueTestDataPoint>();
+			temp.AddRange(FatigueTest.ProcessedData());
+
+			using (var writer = new StreamWriter(DataLogPath, true))
+			{
+				foreach (var pt in temp)
 				{
-					foreach (var pt in temp)
-					{
-						writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
-					}
-
-					PointsLogged += temp.Count;
+					writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
 				}
+
+				PointsLogged += temp.Count;
 			}
 		}
 
@@ -377,7 +394,15 @@ namespace Twister.ViewModels
 				if (anotherConditionRemains)
 					LoadNextCondition(currentIndex);
 				else
+				{
 					TestBench.Singleton.ManuallyCompleteTestCycle();
+
+					// let the threads wrap up.
+					LogAvailableData();
+
+					// load final view.
+					MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSummaryViewModel;
+				}
 			}
 		}
 
