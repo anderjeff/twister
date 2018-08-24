@@ -252,7 +252,7 @@ namespace Twister.ViewModels
 
 			// to update the UI, a timer.
 			_updateUiTimer = new System.Windows.Threading.DispatcherTimer();
-			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 100); // 10 milliseconds
+			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 50); // 10 milliseconds
 			_updateUiTimer.Tick += UpdateUiTimerOnTick;
 			_updateUiTimer.Start();
 
@@ -309,7 +309,7 @@ namespace Twister.ViewModels
 		{
 			while (true)
 			{
-                Thread.Sleep(50);
+                Thread.Sleep(25);
                 UpdateCurrentValues();
 				TestBench.Singleton.VerifyAlive();
 			}
@@ -323,7 +323,7 @@ namespace Twister.ViewModels
 
 				// 15ms was a good value for generating enough data points
 				// to catch the min and max for a cycle.
-				System.Threading.Thread.Sleep(40); 
+				System.Threading.Thread.Sleep(15); 
 			}
 		}
 
