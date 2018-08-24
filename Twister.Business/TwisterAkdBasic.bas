@@ -904,6 +904,7 @@ Sub PerformUnidirectionalTestCycle
 End Sub
 
 Sub PerformFatigueTestCycle
+
 	Call DebugMessageInteger("Performing FatigueTestCycle with runSpeed = " , runSpeed)
 	
 	MOVE.TARGETPOS = clockwiseAngleLimit
@@ -913,10 +914,6 @@ Sub PerformFatigueTestCycle
 	MOVE.GOABS 
 	MOVE.TARGETPOS = counterClockwiseAngleLimit
 	When PL.FB < clockwiseAngleLimit, MOVE.GOABS 
-	
-	When PL.FB > counterClockwiseAngleLimit, continue 
-	
-	Call StopAndReturnToHome
 	
 	cycleCount = cycleCount + 1
 	Print "Current cycle count = " + STR$ (cycleCount)
@@ -937,6 +934,8 @@ Sub PerformFatigueTestCycle
 		' While loop will not be entered.
 		testInProcess = _FALSE
 	End If
+	
+	When PL.FB > counterClockwiseAngleLimit, continue 
 End Sub
 
 Function PctDiff As float 
