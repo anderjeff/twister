@@ -163,10 +163,10 @@ namespace Twister.Business.Tests
 			if (!(_currentTest is FatigueTest)) return;
 			if (newCondition == null) return;
 
+            Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CalibrationInterval, newCondition.CalibrationInterval);
             Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CyclesPerSecond, newCondition.CyclesPerSecond);
 			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, newCondition.ClockwiseTorque);
 			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CcwTorqueLimit, newCondition.CounterclockwiseTorque);
-			InformCalibrationDue();
 
 			// if this is a simulated test, we need to get the current test to the 
 			// engine, so it knows how to respond when the test starts.

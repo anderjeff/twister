@@ -252,7 +252,7 @@ namespace Twister.ViewModels
 
 			// to update the UI, a timer.
 			_updateUiTimer = new System.Windows.Threading.DispatcherTimer();
-			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 50); // 10 milliseconds
+			_updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 100); // 20 milliseconds
 			_updateUiTimer.Tick += UpdateUiTimerOnTick;
 			_updateUiTimer.Start();
 
@@ -309,7 +309,7 @@ namespace Twister.ViewModels
 		{
 			while (true)
 			{
-                Thread.Sleep(25);
+                Thread.Sleep(5);
                 UpdateCurrentValues();
 				TestBench.Singleton.VerifyAlive();
 			}
@@ -352,12 +352,12 @@ namespace Twister.ViewModels
 					_currentTorqueDirect = (int)mostRecent.Torque;
 					_currentAngleDirect = mostRecent.Angle;
 					_cycleCountDirect = TestBench.Singleton.GetCycleCount();
-					if (_cycleCountDirect > 0 && 
-					    _cycleCountDirect % SelectedTestConditionViewModel.CalibrationInterval == 0 &&
-					    SelectedTestConditionViewModel.CyclesRequired - SelectedTestConditionViewModel.CyclesCompleted > 0)
-					{
-						TestBench.Singleton.InformCalibrationDue();
-					}
+					//if (_cycleCountDirect > 0 && 
+					//    _cycleCountDirect % SelectedTestConditionViewModel.CalibrationInterval == 0 &&
+					//    SelectedTestConditionViewModel.CyclesRequired - SelectedTestConditionViewModel.CyclesCompleted > 0)
+					//{
+					//	TestBench.Singleton.InformCalibrationDue();
+					//}
 				}
 			}
 		}

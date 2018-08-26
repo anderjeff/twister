@@ -454,7 +454,7 @@ MBInfo
 	$MBMap32(5020, testType)
 	$MBMap32(5022, operatorEndsTest)
 	$MBMap32(5024, cycleCount)
-	$MBMap32(5026, isDueForCalibration)
+	$MBMap32(5026, isDueForCalibration)' not used.
 	$MBMap32(5028, calibrationInterval)
 	$MBMap64(5030, clockwiseAngleLimit)' note this is a 64-bit value (needs 4 registers) and is used to hold PL.FB 
 	$MBMap64(5034, counterClockwiseAngleLimit)' note this is a 64-bit (needs 4 registers) value and is used to hold PL.FB
@@ -496,6 +496,13 @@ Dim cancelled As Integer
 
 ' The last torque reading that was recorded
 Dim previousTorque As Integer 
+
+' when the test reaches this cycle, calibration will be due on the next cycle.
+Dim nextCalibrationCycle as integer 
+
+' used in the calibration cycle to determine how fast the motor should spin.
+Dim startingSpeed as integer 
+
 
 '-------------- Main Program -------------------------
 Main 
@@ -696,8 +703,10 @@ Sub PerformFatigueTest
 			
 			Call DebugMessageString("Checking if due for calibration.")
 			
-			If (isDueForCalibration = _TRUE) Then 
+			If (cycleCount = nextCalibrationCycle) Then 
+				isDueForCalibration = _TRUE
 				Call PerformCalibration
+				isDueForCalibration = _FALSE
 			End If
 			
 			' -- run cycle
@@ -720,7 +729,6 @@ Sub PerformFatigueTest
 		Wend
 	End If
 End Sub
-
 
 '-------------- Subroutines and Functions ------------
 
@@ -904,13 +912,13 @@ Sub PerformUnidirectionalTestCycle
 End Sub
 
 Sub PerformFatigueTestCycle
-
+	
 	Call DebugMessageInteger("Performing FatigueTestCycle with runSpeed = " , runSpeed)
 	
 	MOVE.TARGETPOS = clockwiseAngleLimit
 	MOVE.RUNSPEED = runSpeed
-	MOVE.ACC = 40000
-	MOVE.DEC = 40000
+	MOVE.ACC = 10000
+	MOVE.DEC = 10000
 	MOVE.GOABS 
 	MOVE.TARGETPOS = counterClockwiseAngleLimit
 	When PL.FB < clockwiseAngleLimit, MOVE.GOABS 
@@ -1094,13 +1102,13 @@ Sub PerformCalibration
 	Call StopAndReturnToHome
 	
 	' set the runspeed.
-	MOVE.RUNSPEED = 100
+	MOVE.RUNSPEED = 1.0
 	
 	firstStageComplete = _FALSE
 	secondStageComplete = _FALSE
 	
 	' run this loop until the calibration is complete.
-	While (isDueForCalibration = _TRUE)
+	While (secondStageComplete = _FALSE)
 		If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
 			Call RotateClockwise
 			clockwiseAngleLimit = PL.FB 
@@ -1115,10 +1123,10 @@ Sub PerformCalibration
 			Print "Performing calibration, ROTATING CCW... PL.FB = " + STR$ (counterClockwiseAngleLimit) + " currentTorque = " + STR$ (ccwTorqueLastCalibration)
 			Print "currentTorque = " + STR$ (currentTorque) + ", cwTorqueLimit = " + STR$ (cwTorqueLimit) + ", ccwTorqueLimit = " + STR$ (ccwTorqueLimit)
 		Else 
+			Print "Ending calibration cycle" 
 			secondStageComplete = _TRUE
-			isDueForCalibration = _FALSE
+			nextCalibrationCycle = cycleCount + calibrationInterval
 			Call CalculateRunSpeed
-			
 			Call StopAndReturnToHome
 		End If
 	Wend

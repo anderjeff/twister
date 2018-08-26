@@ -86,8 +86,10 @@ namespace Twister.Business.Tests
 				TestData.Clear();
 			}
 
-			// the last cycle may not yet be complete and we need to add it to overflow data.
-			int maxCycle = temp.Max(t => t.CycleNumber);
+            if (temp.Count == 0) new List<FatigueTestDataPoint>();
+
+            // the last cycle may not yet be complete and we need to add it to overflow data.
+            int maxCycle = temp.Max(t => t.CycleNumber);
 			// make one list for each cycle
 			var cycleData = new List<FatigueTestDataPoint>();
 			var dataPointsInCycles = temp.GroupBy(p => p.CycleNumber, h => h);
