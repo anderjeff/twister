@@ -47,20 +47,31 @@
             <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Text="ACTUAL" HorizontalAlignment="Center" FontWeight="Bold" />
             <TextBlock Grid.Column="3" Grid.Row="0" Text="CCW" HorizontalAlignment="Left" FontWeight="Bold" />
 
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding CurrentClockwiseTarget, StringFormat='n3'}" FontSize="20" 
-                       VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0,10" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding CurrentAngle, StringFormat='n3'}" FontSize="36"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0,15" />
-            <TextBlock Grid.Column="3" Grid.Row="1"
-                       Text="{Binding CurrentCounterClockwiseTarget, StringFormat='n3'}" FontSize="20"
-                       VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,10" />
+            <!-- Angle Values -->
+            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" >
+                <TextBlock Text="{Binding CurrentClockwiseTarget, StringFormat='n3'}" FontSize="20" />
+                <TextBlock Text="°" FontSize="20"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                <TextBlock Text="{Binding CurrentAngle, StringFormat='n3'}" FontSize="36" />
+                <TextBlock Text="°" FontSize="36"/>
+            </StackPanel >
+            <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" >
+                <TextBlock Text="{Binding CurrentCounterClockwiseTarget, StringFormat='n3'}" FontSize="20" />
+                <TextBlock Text="°" FontSize="20"/>
+            </StackPanel>
+            
 
-            <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding CwTorqueLastCalibration, StringFormat='n0'}"
-                       FontSize="20"
-                       VerticalAlignment="Center" HorizontalAlignment="Right" Padding="0,0,0,15" />
-            <TextBlock Grid.Column="3" Grid.Row="2"
-                       Text="{Binding CcwTorqueLastCalibration, StringFormat='n0'}" FontSize="20"
-                       VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,0,0,15" />
+            <!-- Toque Values -->
+
+            <StackPanel Grid.Column="0" Grid.Row="2"  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" >
+                <TextBlock Text="{Binding CwTorqueLastCalibration, StringFormat='n0'}" FontSize="20" />
+                <TextBlock Text="in-lb" FontSize="20" Padding="5,0,0,0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="3" Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" >
+                <TextBlock Text="{Binding CcwTorqueLastCalibration, StringFormat='n0'}" FontSize="20" />
+                <TextBlock Text="in-lb" FontSize="20" Padding="5,0,0,0"/>
+            </StackPanel>
 
             <ProgressBar Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Height="10" BorderThickness="0" Foreground="LightGreen"
                          Value="{Binding CurrentCwPercent}" FlowDirection="RightToLeft" Maximum="1.0" 

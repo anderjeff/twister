@@ -126,10 +126,15 @@ namespace Twister.ViewModels
 			var fatigueTestVm = MainWindow_VM.Instance.FatigueTestViewModel;
 			fatigueTestVm.FatigueTest = _fatigueTest;
 
-			fatigueTestVm.CurrentClockwiseTarget =
-				(float) _fatigueTest.TestConditions.First().ClockwiseTorque / ShaftStiffness;
-			fatigueTestVm.CurrentCounterClockwiseTarget =
-				(float) _fatigueTest.TestConditions.First().CounterclockwiseTorque / ShaftStiffness;
+			// if this is a real test, the target CW and CCW will show up as zero degrees until 
+			// after the first calibration cycle has been completed.
+			if (IsSimulated)
+			{
+				fatigueTestVm.CurrentClockwiseTarget =
+					(float) _fatigueTest.TestConditions.First().ClockwiseTorque / ShaftStiffness;
+				fatigueTestVm.CurrentCounterClockwiseTarget =
+					(float) _fatigueTest.TestConditions.First().CounterclockwiseTorque / ShaftStiffness;
+			}
 
 			TestBench.Singleton.LoadTest(_fatigueTest);
 			TestBench.Singleton.SetShaftStiffness(ShaftStiffness);
