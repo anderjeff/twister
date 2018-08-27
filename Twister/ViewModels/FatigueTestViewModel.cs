@@ -266,6 +266,7 @@ namespace Twister.ViewModels
 			_loadingDataThread.IsBackground = true; // so the application can close without it shutting down.
 			_loadingDataThread.Start();
 
+			// created to persist data
 			_loggingDataThread = new Thread(LogData);
 			_loggingDataThread.IsBackground = true;
 			_loggingDataThread.Start();
@@ -309,7 +310,7 @@ namespace Twister.ViewModels
 		{
 			while (true)
 			{
-                Thread.Sleep(5);
+                Thread.Sleep(1);
                 UpdateCurrentValues();
 				TestBench.Singleton.VerifyAlive();
 			}
@@ -323,7 +324,7 @@ namespace Twister.ViewModels
 
 				// 15ms was a good value for generating enough data points
 				// to catch the min and max for a cycle.
-				System.Threading.Thread.Sleep(15); 
+				System.Threading.Thread.Sleep(5); 
 			}
 		}
 
@@ -352,12 +353,6 @@ namespace Twister.ViewModels
 					_currentTorqueDirect = (int)mostRecent.Torque;
 					_currentAngleDirect = mostRecent.Angle;
 					_cycleCountDirect = TestBench.Singleton.GetCycleCount();
-					//if (_cycleCountDirect > 0 && 
-					//    _cycleCountDirect % SelectedTestConditionViewModel.CalibrationInterval == 0 &&
-					//    SelectedTestConditionViewModel.CyclesRequired - SelectedTestConditionViewModel.CyclesCompleted > 0)
-					//{
-					//	TestBench.Singleton.InformCalibrationDue();
-					//}
 				}
 			}
 		}
@@ -382,7 +377,8 @@ namespace Twister.ViewModels
 				CycleCount = _cycleCountDirect;
 				SelectedTestConditionViewModel.CyclesCompleted = _cycleCountDirect - _cycleCorrectionCount; 
 			}
-			UpdateCyclingGraphic();
+
+			if (IsSimulated) UpdateCyclingGraphic();
 		}
 
 		private void CheckIfNextConditionShouldBeLoaded()
