@@ -681,6 +681,7 @@ End Sub
 Sub PerformFatigueTest
 	' set the speed
 	MOVE.RUNSPEED = runSpeed
+	cycleCount = 0 ' reset
 	
 	' The testInProcess indicates that the user wants to start the test, 
 	' but the application has not yet reached the While loop below.  Once 
