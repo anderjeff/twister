@@ -503,7 +503,6 @@ Dim nextCalibrationCycle as integer
 ' used in the calibration cycle to determine how fast the motor should spin.
 Dim startingSpeed as integer 
 
-
 '-------------- Main Program -------------------------
 Main 
 	
@@ -917,8 +916,8 @@ Sub PerformFatigueTestCycle
 	
 	MOVE.TARGETPOS = clockwiseAngleLimit
 	MOVE.RUNSPEED = runSpeed
-	MOVE.ACC = 10000
-	MOVE.DEC = 10000
+	MOVE.ACC = 20000
+	MOVE.DEC = 20000
 	MOVE.GOABS 
 	MOVE.TARGETPOS = counterClockwiseAngleLimit
 	When PL.FB < clockwiseAngleLimit, MOVE.GOABS 
@@ -926,20 +925,12 @@ Sub PerformFatigueTestCycle
 	cycleCount = cycleCount + 1
 	Print "Current cycle count = " + STR$ (cycleCount)
 	
-	' decrement the timer, if you have not heard from the 
-	' watchdog in a while, shut down the test because the 
-	' application is no longer providing updates of what 
-	' the applied torque is.
+	' If you have not heard from the watchdog in a while, 
+	' shutdown the test because the application is no longer 
+	' providing updates of what the applied torque is.
 	watchdogValue = watchdogValue-1
-	
 	Call DebugMessageInteger("Decremented watchdog timer by 1, watchdogValue = " , watchdogValue)
-	
-	' see if motor needs to stop turning because 
-	' watchdog program is no longer making calls
 	If (watchdogValue <= 0) Then 
-		
-		' set this so the next time through, the current 
-		' While loop will not be entered.
 		testInProcess = _FALSE
 	End If
 	
@@ -1102,7 +1093,7 @@ Sub PerformCalibration
 	Call StopAndReturnToHome
 	
 	' set the runspeed.
-	MOVE.RUNSPEED = 1.0
+	MOVE.RUNSPEED = 2.0
 	
 	firstStageComplete = _FALSE
 	secondStageComplete = _FALSE
