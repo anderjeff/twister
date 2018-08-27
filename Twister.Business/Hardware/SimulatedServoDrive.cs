@@ -215,5 +215,10 @@ namespace Twister.Business.Hardware
 		{
 			return CcwTorqueLastCalibration;
 		}
+
+		public void RefreshLatestWhenPosition()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

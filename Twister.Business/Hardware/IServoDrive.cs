@@ -17,5 +17,6 @@ namespace Twister.Business.Hardware
 		float RetrieveCounterclockwiseLimit();
 		int RetrieveLastCwTorque();
 		int RetrieveLastCcwTorque();
+		void RefreshLatestWhenPosition();
 	}
 }

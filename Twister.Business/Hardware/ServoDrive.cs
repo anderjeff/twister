@@ -266,5 +266,61 @@ namespace Twister.Business.Hardware
 			var ccwTorqueLastCalibration = RetrieveParameter(location);
 			return ccwTorqueLastCalibration;
 		}
+
+		/// <summary>
+		/// Very similar to RefreshPosition, only this method returns the current value
+		/// of the WHEN.PLFB.  This should be the max or min value during the fatigue test
+		/// as it is cycling back and forth.
+		/// </summary>
+	    public void RefreshLatestWhenPosition()
+	    {
+		    try
+		    {
+			    lock (this)
+			    {
+				    _server.Connect(IP_ADDRESS);
+
+				    // reading the loop position feedback value at index 1178
+				    // see Modbus Parameter Table, pg 344 of user guide.
+
+				    var data = new byte[16];
+				    ushort transId = 1;
+				    ushort startAddr = 1178;
+				    ushort numInputs = 4;
+
+				    _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
+
+				    if (data != null)
+				    {
+					    Array.Reverse(data);
+					    var value = BitConverter.ToInt64(data, 0);
+
+					    if (value == 0)
+						    GearboxAngle = 0f;
+					    else
+					    {
+						    // represents the WHEN.PLFB from the ADK drive.
+						    long count = 0;
+
+						    if (Math.Abs(value) < COUNTS_PER_REV)
+							    count = value;
+						    else
+							    count = value % COUNTS_PER_REV;
+
+						    GearboxAngle = count * (360f / COUNTS_PER_REV);
+					    }
+				    }
+
+				    _server.Dispose();
+			    }
+		    }
+		    catch (Exception ex)
+		    {
+			    Debug.WriteLine(
+				    "** EXCEPTION ** \n\tLocation: ServoDrive.RefreshLatestWhenPosition() \n\tLine:100 \n\t{0} \n\tServoDrive values:\n\t\tGearboxAngle: {1:n2}°",
+				    ex.Message, GearboxAngle);
+		    }
+	    }
+
 	}
 }

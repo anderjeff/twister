@@ -345,7 +345,7 @@ namespace Twister.ViewModels
 
 		private void UpdateCurrentValues()
 		{
-			Sample mostRecent = TestBench.Singleton.GetState();
+			Sample mostRecent = TestBench.Singleton.GetFatigueTestState();
 			if (mostRecent != null)
 			{
 				lock (_objLock)

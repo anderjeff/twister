@@ -278,15 +278,31 @@ namespace Twister.Business.Tests
 		/// </returns>
 		public Sample GetState()
 		{
-			/* update the current state of the TestBench.  Updating the state of the TestBench
-             * should be done by the TorqueTest, because only the TorqueTest will have a feel 
-             * for how often the state needs to be updated.  For example, a fast moving test will 
-             * need to be updated more often.
-             */
+			// update the current state of the TestBench.  
 			lock (_objLock)
 			{
 				_torqueCell.RefreshTorque();
 				_acDrive.RefreshPosition();
+
+				/* give the ServoDrive an updated torque value, this needs to go here because 
+                 * of the access to _torqueCell, and to _acDrive, which I am trying to 
+                 * restrict to inside this class only.
+                 */
+				LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);
+			}
+
+			// now create and return the data point
+			Sample sample = new Sample(_torqueCell.Torque, _acDrive.GearboxAngle);
+			return sample;
+		}
+
+		public Sample GetFatigueTestState()
+		{
+			// update the current state of the TestBench.  
+			lock (_objLock)
+			{
+				_torqueCell.RefreshTorque();
+				_acDrive.RefreshLatestWhenPosition();
 
 				/* give the ServoDrive an updated torque value, this needs to go here because 
                  * of the access to _torqueCell, and to _acDrive, which I am trying to 
