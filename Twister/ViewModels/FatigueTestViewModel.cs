@@ -336,9 +336,9 @@ namespace Twister.ViewModels
 			{
 				dataPoint = new FatigueTestDataPoint(_cycleCountDirect)
 				{
-					MaxAngle = _currentAngleDirect,
-					MaxTorque = _currentTorqueDirect
-				};
+					MaxAngle = TestBench.Singleton.GetMaxCwAngleLastCycle(),
+                    MinAngle = TestBench.Singleton.GetMaxCcwAngleLastCycle()
+                };
 			}
 				
 			FatigueTest.AddTestData(dataPoint);

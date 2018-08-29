@@ -18,7 +18,7 @@ namespace Twister.Business.Hardware
 		int RetrieveLastCwTorque();
 		int RetrieveLastCcwTorque();
 		void RefreshLatestWhenPosition();
-        long RetrieveLastCwMaxPosition();
-        long RetrieveLastCcwMaxPosition();
+        float RetrieveLastCwMaxPosition();
+        float RetrieveLastCcwMaxPosition();
     }
 }

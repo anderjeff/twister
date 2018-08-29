@@ -278,41 +278,11 @@ namespace Twister.Business.Hardware
 		    {
 			    lock (this)
 			    {
-				    _server.Connect(IP_ADDRESS);
-
-				    // reading the loop position feedback value at index 1178
-				    // see Modbus Parameter Table, pg 344 of user guide.
-
-				    var data = new byte[16];
-				    ushort transId = 1;
-				    ushort startAddr = 1178;
-				    ushort numInputs = 4;
-
-				    _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
-
-				    if (data != null)
-				    {
-					    Array.Reverse(data);
-					    var value = BitConverter.ToInt64(data, 0);
-
-					    if (value == 0)
-						    GearboxAngle = 0f;
-					    else
-					    {
-						    // represents the WHEN.PLFB from the ADK drive.
-						    long count = 0;
-
-						    if (Math.Abs(value) < COUNTS_PER_REV)
-							    count = value;
-						    else
-							    count = value % COUNTS_PER_REV;
-
-						    GearboxAngle = count * (360f / COUNTS_PER_REV);
-					    }
-				    }
-
-				    _server.Dispose();
-			    }
+                    // reading the loop position feedback value at index 1178
+                    // see Modbus Parameter Table, pg 344 of user guide.
+                    var value = GetPosition(1178);
+                    GearboxAngle = ConvertToAngle(value);
+                }
 		    }
 		    catch (Exception ex)
 		    {
@@ -322,14 +292,77 @@ namespace Twister.Business.Hardware
 		    }
 	    }
 
-        public long RetrieveLastCwMaxPosition()
+        /// <summary>
+        /// Gets the maximum position for the last
+        /// </summary>
+        /// <returns></returns>
+        public float RetrieveLastCwMaxPosition()
         {
-            throw new NotImplementedException();
+            var location = (ushort)ServoDriveEnums.RegisterAddress.CwMaxLastCycle;
+            long position = GetPosition(location);
+            float angle = ConvertToAngle(position);
+            return angle;
         }
 
-        public long RetrieveLastCcwMaxPosition()
+        public float RetrieveLastCcwMaxPosition()
         {
-            throw new NotImplementedException();
+            var location = (ushort)ServoDriveEnums.RegisterAddress.CcwMaxLastCycle;
+            long position = GetPosition(location);
+            float angle = ConvertToAngle(position);
+            return angle;
+        }
+
+        /// <summary>
+        /// Gets a 64-bit integer representing the encoder position.
+        /// </summary>
+        /// <param name="registerLocation">The location of the register that contains the value</param>
+        /// <returns>A value representing the position.</returns>
+        private long GetPosition(ushort registerLocation)
+        {
+            _server.Connect(IP_ADDRESS);
+
+            var data = new byte[16];
+            ushort transId = 1;
+            ushort startAddr = registerLocation;
+            ushort numInputs = 4;
+
+            _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
+
+            long value = 0;
+            if (data != null)
+            {
+                Array.Reverse(data);
+                value = BitConverter.ToInt64(data, 0);               
+            }
+
+            _server.Dispose();
+            return value;
+        }
+
+        /// <summary>
+        /// Converts a number representing the number of tick on an encoder to the output 
+        /// angle on the gearbox flange.
+        /// </summary>
+        /// <param name="value">The number of ticks.</param>
+        /// <returns>The flange angle.</returns>
+        private float ConvertToAngle(long value)
+        {
+            float angle = 0f;
+            if(value != 0)
+            {
+                long count = 0;
+                if (Math.Abs(value) < COUNTS_PER_REV)
+                {
+                    count = value;
+                }
+                else
+                {
+                    count = value % COUNTS_PER_REV;
+                }
+
+                angle = count * (360f / COUNTS_PER_REV);
+            }
+            return angle;           
         }
     }
 }

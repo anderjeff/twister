@@ -268,15 +268,15 @@ namespace Twister.Business.Tests
 			// this starts the test running
 			Singleton.TurnOn();
 		}
-
-		/// <summary>
-		///     Gets a sample representing the state of the sensors on the TestBench at the
-		///     time of the request.
-		/// </summary>
-		/// <returns>
-		///     An object of type Sample, that contains the current value from certain sensors.
-		/// </returns>
-		public Sample GetState()
+                
+        /// <summary>
+        ///     Gets a sample representing the state of the sensors on the TestBench at the
+        ///     time of the request.
+        /// </summary>
+        /// <returns>
+        ///     An object of type Sample, that contains the current value from certain sensors.
+        /// </returns>
+        public Sample GetState()
 		{
 			// update the current state of the TestBench.  
 			lock (_objLock)
@@ -305,24 +305,42 @@ namespace Twister.Business.Tests
 		///  A <see cref="Sample"/>, that contains the current value from certain sensors.
 		/// </returns>
 		public Sample GetFatigueTestState()
-		{
-			// update the current state of the TestBench.  
-			lock (_objLock)
-			{
-				_torqueCell.RefreshTorque();
-				_acDrive.RefreshLatestWhenPosition();
-
-               
-                
+        {
+            // update the current state of the TestBench.  
+            lock (_objLock)
+            {
+                _torqueCell.RefreshTorque();
+                _acDrive.RefreshLatestWhenPosition();
 
                 // Let the servo drive know.
-				LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);
-			}
-			Sample sample = new Sample(_torqueCell.Torque, _acDrive.GearboxAngle);
-			return sample;
-		}
+                LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);
+            }
+            Sample sample = new Sample(_torqueCell.Torque, _acDrive.GearboxAngle);
+            return sample;
+        }
 
-		public int GetCycleCount()
+        public float GetMaxCwAngleLastCycle()
+        {
+            float angle = 0f;
+            lock (_objLock)
+            {
+                angle = _acDrive.RetrieveLastCwMaxPosition();
+            }
+            return angle;
+        }
+
+        public float GetMaxCcwAngleLastCycle()
+        {
+            float angle = 0f;
+            lock (_objLock)
+            {
+                angle = _acDrive.RetrieveLastCcwMaxPosition();
+            }
+            return angle;
+        }
+
+
+        public int GetCycleCount()
 		{
 			int cycleCount = _acDrive.RetrieveParameter(ServoDriveEnums.RegisterAddress.CycleCount);
 			return cycleCount;

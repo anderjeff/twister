@@ -218,7 +218,17 @@ namespace Twister.Business.Hardware
 
 		public void RefreshLatestWhenPosition()
 		{
-			throw new NotImplementedException();
+            Console.WriteLine("Calling RefreshLatestWhenPosition");
 		}
-	}
+
+        public float RetrieveLastCwMaxPosition()
+        {
+            return 0f;
+        }
+
+        public float RetrieveLastCcwMaxPosition()
+        {
+            return 0f;
+        }
+    }
 }
