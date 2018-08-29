@@ -322,5 +322,14 @@ namespace Twister.Business.Hardware
 		    }
 	    }
 
-	}
+        public long RetrieveLastCwMaxPosition()
+        {
+            throw new NotImplementedException();
+        }
+
+        public long RetrieveLastCcwMaxPosition()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

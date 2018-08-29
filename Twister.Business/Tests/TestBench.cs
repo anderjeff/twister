@@ -296,6 +296,14 @@ namespace Twister.Business.Tests
 			return sample;
 		}
 
+        /// <summary>
+		/// Gets a sample representing the state of the sensors on the TestBench at the
+		/// time of the request.  The position is representative of the position at the time 
+        /// the When condition was satisfied, see AKD Basic programming manual.
+		/// </summary>
+		/// <returns>
+		///  A <see cref="Sample"/>, that contains the current value from certain sensors.
+		/// </returns>
 		public Sample GetFatigueTestState()
 		{
 			// update the current state of the TestBench.  
@@ -304,14 +312,12 @@ namespace Twister.Business.Tests
 				_torqueCell.RefreshTorque();
 				_acDrive.RefreshLatestWhenPosition();
 
-				/* give the ServoDrive an updated torque value, this needs to go here because 
-                 * of the access to _torqueCell, and to _acDrive, which I am trying to 
-                 * restrict to inside this class only.
-                 */
+               
+                
+
+                // Let the servo drive know.
 				LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);
 			}
-
-			// now create and return the data point
 			Sample sample = new Sample(_torqueCell.Torque, _acDrive.GearboxAngle);
 			return sample;
 		}

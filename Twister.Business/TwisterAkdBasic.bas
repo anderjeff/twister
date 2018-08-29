@@ -438,6 +438,10 @@ Dim ccwTorqueLastCalibration as integer
 '
 Dim cyclesPerSecond as integer 
 
+' The maximum values achieved last torsional cycle.
+Dim cwMaxLastCycle as long 
+Dim ccwMaxLastCycle as long 
+
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.
 MBInfo 
@@ -461,6 +465,8 @@ MBInfo
 	$MBMap32(5038, cwTorqueLastCalibration)' the torque value in the CW direction recorded during the last calibration cycle
 	$MBMap32(5040, ccwTorqueLastCalibration)' the torque value in the CCW direction recorded during the last calibration cycle
 	$MBMap32(5042, cyclesPerSecond)' used for the fatigue test, lets the user specify the number of cycles per second, then the program can set run speed based off the angles in calibration cycle.
+	$MBMap64(5044, cwMaxLastCycle)' the max position (MOVE.PLFB) in CW direction achieved last cycle
+	$MBMap64(5048, ccwMaxLastCycle)' the max position (MOVE.PLFB) in CCW direction achieved last cycle
 End 
 
 ' create boolean values, since it's not supported
@@ -681,7 +687,7 @@ End Sub
 Sub PerformFatigueTest
 	' set the speed
 	MOVE.RUNSPEED = runSpeed
-	cycleCount = 0 ' reset
+	cycleCount = 0' reset
 	
 	' The testInProcess indicates that the user wants to start the test, 
 	' but the application has not yet reached the While loop below.  Once 

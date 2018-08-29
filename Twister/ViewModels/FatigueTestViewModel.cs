@@ -299,7 +299,8 @@ namespace Twister.ViewModels
 			{
 				foreach (var pt in temp)
 				{
-					writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
+					//writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
+                    writer.WriteLine($"{pt.CycleNumber},{pt.MaxAngle:n3},{pt.MinAngle:n3}");
 				}
 
 				PointsLogged += temp.Count;
@@ -310,7 +311,7 @@ namespace Twister.ViewModels
 		{
 			while (true)
 			{
-                Thread.Sleep(1);
+                Thread.Sleep(10);
                 UpdateCurrentValues();
 				TestBench.Singleton.VerifyAlive();
 			}
@@ -324,7 +325,7 @@ namespace Twister.ViewModels
 
 				// 15ms was a good value for generating enough data points
 				// to catch the min and max for a cycle.
-				System.Threading.Thread.Sleep(5); 
+				System.Threading.Thread.Sleep(15); 
 			}
 		}
 
