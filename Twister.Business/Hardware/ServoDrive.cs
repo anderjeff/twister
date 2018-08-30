@@ -34,7 +34,7 @@ namespace Twister.Business.Hardware
         {
             try
             {
-	            lock (this)
+	            lock (_objLock)
 	            {
 		            _server.Connect(IP_ADDRESS);
 
@@ -93,7 +93,7 @@ namespace Twister.Business.Hardware
         {
             try
             {
-                lock (this)
+                lock (_objLock)
                 {
                     //Debug.WriteLine("Entering ServoDrive.StoreParameter() \n\t value: {0}\n\t RegisterLocation: {1}", new object[] { value, location.ToString() });
 
@@ -130,7 +130,7 @@ namespace Twister.Business.Hardware
         {
             try
             {
-                lock (this)
+                lock (_objLock)
                 {
                     _server.Connect(IP_ADDRESS);
 
@@ -169,7 +169,7 @@ namespace Twister.Business.Hardware
                 // in case the value is not retrieved, I will know with this insane number.
                 var value = -5000;
 
-                lock (this)
+                lock (_objLock)
                 {
                     _server.Connect(IP_ADDRESS);
 
@@ -217,7 +217,7 @@ namespace Twister.Business.Hardware
 	    private float RetrieveAngleLimits(ServoDriveEnums.RegisterAddress address)
 	    {
 		    float limit = 0f;
-		    lock (this)
+		    lock (_objLock)
 		    {
 			    _server.Connect(IP_ADDRESS);
 
@@ -274,23 +274,53 @@ namespace Twister.Business.Hardware
 		/// </summary>
 	    public void RefreshLatestWhenPosition()
 	    {
-		    try
-		    {
-			    lock (this)
-			    {
+            try
+            {
+                lock (_objLock)
+                {
+                    _server.Connect(IP_ADDRESS);
+
                     // reading the loop position feedback value at index 1178
                     // see Modbus Parameter Table, pg 344 of user guide.
-                    var value = GetPosition(1178);
-                    GearboxAngle = ConvertToAngle(value);
+
+                    var data = new byte[16];
+                    ushort transId = 1;
+                    ushort startAddr = 1178;
+                    ushort numInputs = 4;
+
+                    _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
+
+                    if (data != null)
+                    {
+                        Array.Reverse(data);
+                        var value = BitConverter.ToInt64(data, 0);
+
+                        if (value == 0)
+                            GearboxAngle = 0f;
+                        else
+                        {
+                            // represents the WHEN.PLFB from the ADK drive.
+                            long count = 0;
+
+                            if (Math.Abs(value) < COUNTS_PER_REV)
+                                count = value;
+                            else
+                                count = value % COUNTS_PER_REV;
+
+                            GearboxAngle = count * (360f / COUNTS_PER_REV);
+                        }
+                    }
+
+                    _server.Dispose();
                 }
-		    }
-		    catch (Exception ex)
-		    {
-			    Debug.WriteLine(
-				    "** EXCEPTION ** \n\tLocation: ServoDrive.RefreshLatestWhenPosition() \n\tLine:100 \n\t{0} \n\tServoDrive values:\n\t\tGearboxAngle: {1:n2}°",
-				    ex.Message, GearboxAngle);
-		    }
-	    }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    "** EXCEPTION ** \n\tLocation: ServoDrive.RefreshLatestWhenPosition() \n\tLine:100 \n\t{0} \n\tServoDrive values:\n\t\tGearboxAngle: {1:n2}°",
+                    ex.Message, GearboxAngle);
+            }
+        }
 
         /// <summary>
         /// Gets the maximum position for the last
@@ -298,71 +328,100 @@ namespace Twister.Business.Hardware
         /// <returns></returns>
         public float RetrieveLastCwMaxPosition()
         {
-            var location = (ushort)ServoDriveEnums.RegisterAddress.CwMaxLastCycle;
-            long position = GetPosition(location);
-            float angle = ConvertToAngle(position);
-            return angle;
+            float retPosition = 0f;
+            try
+            {
+                lock (_objLock)
+                {
+                    _server.Connect(IP_ADDRESS);
+
+                    var data = new byte[16];
+                    ushort transId = 1;
+                    ushort startAddr = (ushort)ServoDriveEnums.RegisterAddress.CwMaxLastCycle;
+                    ushort numInputs = 4;
+
+                    _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
+
+                    if (data != null)
+                    {
+                        Array.Reverse(data);
+                        var value = BitConverter.ToInt64(data, 0);
+
+                        if (value == 0)
+                            retPosition = 0f;
+                        else
+                        {
+                            // represents the WHEN.PLFB from the ADK drive.
+                            long count = 0;
+
+                            if (Math.Abs(value) < COUNTS_PER_REV)
+                                count = value;
+                            else
+                                count = value % COUNTS_PER_REV;
+
+                            retPosition = count * (360f / COUNTS_PER_REV);
+                        }
+                    }
+
+                    _server.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    "** EXCEPTION ** \n\tLocation: ServoDrive.RefreshLatestWhenPosition() \n\tLine:100 \n\t{0} \n\tServoDrive values:\n\t\tGearboxAngle: {1:n2}°",
+                    ex.Message, GearboxAngle);
+            }
+            return retPosition;
         }
 
         public float RetrieveLastCcwMaxPosition()
         {
-            var location = (ushort)ServoDriveEnums.RegisterAddress.CcwMaxLastCycle;
-            long position = GetPosition(location);
-            float angle = ConvertToAngle(position);
-            return angle;
-        }
-
-        /// <summary>
-        /// Gets a 64-bit integer representing the encoder position.
-        /// </summary>
-        /// <param name="registerLocation">The location of the register that contains the value</param>
-        /// <returns>A value representing the position.</returns>
-        private long GetPosition(ushort registerLocation)
-        {
-            _server.Connect(IP_ADDRESS);
-
-            var data = new byte[16];
-            ushort transId = 1;
-            ushort startAddr = registerLocation;
-            ushort numInputs = 4;
-
-            _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
-
-            long value = 0;
-            if (data != null)
+            float retPosition = 0f;
+            try
             {
-                Array.Reverse(data);
-                value = BitConverter.ToInt64(data, 0);               
+                lock (_objLock)
+                {
+                    _server.Connect(IP_ADDRESS);
+
+                    var data = new byte[16];
+                    ushort transId = 1;
+                    ushort startAddr = (ushort)ServoDriveEnums.RegisterAddress.CcwMaxLastCycle;
+                    ushort numInputs = 4;
+
+                    _server.ReadHoldingRegister(transId, startAddr, numInputs, ref data);
+
+                    if (data != null)
+                    {
+                        Array.Reverse(data);
+                        var value = BitConverter.ToInt64(data, 0);
+
+                        if (value == 0)
+                            retPosition = 0f;
+                        else
+                        {
+                            // represents the WHEN.PLFB from the ADK drive.
+                            long count = 0;
+
+                            if (Math.Abs(value) < COUNTS_PER_REV)
+                                count = value;
+                            else
+                                count = value % COUNTS_PER_REV;
+
+                            retPosition = count * (360f / COUNTS_PER_REV);
+                        }
+                    }
+
+                    _server.Dispose();
+                }
             }
-
-            _server.Dispose();
-            return value;
-        }
-
-        /// <summary>
-        /// Converts a number representing the number of tick on an encoder to the output 
-        /// angle on the gearbox flange.
-        /// </summary>
-        /// <param name="value">The number of ticks.</param>
-        /// <returns>The flange angle.</returns>
-        private float ConvertToAngle(long value)
-        {
-            float angle = 0f;
-            if(value != 0)
+            catch (Exception ex)
             {
-                long count = 0;
-                if (Math.Abs(value) < COUNTS_PER_REV)
-                {
-                    count = value;
-                }
-                else
-                {
-                    count = value % COUNTS_PER_REV;
-                }
-
-                angle = count * (360f / COUNTS_PER_REV);
+                Debug.WriteLine(
+                    "** EXCEPTION ** \n\tLocation: ServoDrive.RefreshLatestWhenPosition() \n\tLine:100 \n\t{0} \n\tServoDrive values:\n\t\tGearboxAngle: {1:n2}°",
+                    ex.Message, GearboxAngle);
             }
-            return angle;           
+            return retPosition;
         }
-    }
+     }
 }

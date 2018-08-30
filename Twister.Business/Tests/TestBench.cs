@@ -310,7 +310,7 @@ namespace Twister.Business.Tests
             lock (_objLock)
             {
                 _torqueCell.RefreshTorque();
-                _acDrive.RefreshLatestWhenPosition();
+                _acDrive.RefreshPosition();
 
                 // Let the servo drive know.
                 LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueValue, (int)_torqueCell.Torque);

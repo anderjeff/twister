@@ -26,7 +26,9 @@ namespace Twister.ViewModels
 		private bool _isSimulated;
 		private float _currentAngle;
 		private int _currentTorqueDirect;
-		private float _currentAngleDirect;
+        private float _maxCwAngleLastCycle;
+        private float _maxCcwAngleLastCycle;
+        private float _currentAngleDirect;
 		private float _currentCwPercent;
 		private float _currentCcwPercent;
 		private int _cycleCorrectionCount;
@@ -323,9 +325,9 @@ namespace Twister.ViewModels
 			{
 				CreateDataPoint();
 
-				// 15ms was a good value for generating enough data points
+				// 50ms was a good value for generating enough data points
 				// to catch the min and max for a cycle.
-				System.Threading.Thread.Sleep(15); 
+				System.Threading.Thread.Sleep(50); 
 			}
 		}
 
@@ -354,7 +356,7 @@ namespace Twister.ViewModels
 					_currentTorqueDirect = (int)mostRecent.Torque;
 					_currentAngleDirect = mostRecent.Angle;
 					_cycleCountDirect = TestBench.Singleton.GetCycleCount();
-				}
+                }
 			}
 		}
 

@@ -688,6 +688,8 @@ Sub PerformFatigueTest
 	' set the speed
 	MOVE.RUNSPEED = runSpeed
 	cycleCount = 0' reset
+	cwMaxLastCycle = 0
+	ccwMaxLastCycle = 0
 	
 	' The testInProcess indicates that the user wants to start the test, 
 	' but the application has not yet reached the While loop below.  Once 
@@ -923,11 +925,14 @@ Sub PerformFatigueTestCycle
 	
 	MOVE.TARGETPOS = clockwiseAngleLimit
 	MOVE.RUNSPEED = runSpeed
-	MOVE.ACC = 20000
-	MOVE.DEC = 20000
+	MOVE.ACC = 10000
+	MOVE.DEC = 10000
 	MOVE.GOABS 
 	MOVE.TARGETPOS = counterClockwiseAngleLimit
 	When PL.FB < clockwiseAngleLimit, MOVE.GOABS 
+	
+	' capture the saved value.
+	cwMaxLastCycle = WHEN.PLFB 
 	
 	cycleCount = cycleCount + 1
 	Print "Current cycle count = " + STR$ (cycleCount)
@@ -936,12 +941,18 @@ Sub PerformFatigueTestCycle
 	' shutdown the test because the application is no longer 
 	' providing updates of what the applied torque is.
 	watchdogValue = watchdogValue-1
-	Call DebugMessageInteger("Decremented watchdog timer by 1, watchdogValue = " , watchdogValue)
+	'Call DebugMessageInteger("Decremented watchdog timer by 1, watchdogValue = " , watchdogValue)
 	If (watchdogValue <= 0) Then 
 		testInProcess = _FALSE
 	End If
 	
 	When PL.FB > counterClockwiseAngleLimit, continue 
+	
+	' capture the saved value.
+	ccwMaxLastCycle = WHEN.PLFB 
+	
+	Print "cwMaxLastCycle =  " + STR$ (cwMaxLastCycle)
+	Print "ccwMaxLastCycle =  " + STR$ (ccwMaxLastCycle)
 End Sub
 
 Function PctDiff As float 

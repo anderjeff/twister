@@ -86,7 +86,7 @@ namespace Twister.Business.Tests
 				TestData.Clear();
 			}
 
-            if (temp.Count == 0) new List<FatigueTestDataPoint>();
+            if (temp.Count == 0) return new List<FatigueTestDataPoint>();
 
             // the last cycle may not yet be complete and we need to add it to overflow data.
             int maxCycle = temp.Max(t => t.CycleNumber);
@@ -111,8 +111,8 @@ namespace Twister.Business.Tests
 
 				var maxAngle = dptList.Max(p => p.MaxAngle);
 				var maxTorque = dptList.Max(p => p.MaxTorque);
-				var minAngle = dptList.Min(p => p.MaxAngle);
-				var minTorque = dptList.Min(p => p.MaxTorque);
+				var minAngle = dptList.Min(p => p.MinAngle);
+				var minTorque = dptList.Min(p => p.MinTorque);
 
 				cycleData.Add(new FatigueTestDataPoint(dptsInCycle.Key)
 				{
