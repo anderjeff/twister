@@ -43,6 +43,8 @@ namespace Twister.ViewModels
 		private Thread _loadingDataThread;
 		private Thread _loggingDataThread;
 		private bool _threadsInitialized;
+		private FatigueTestCalibration _currentCalibration;
+		public List<FatigueTestCalibration> TestCalibrations;
 
 		public FatigueTestViewModel()
 		{
@@ -54,6 +56,9 @@ namespace Twister.ViewModels
 
 			DataLogPath = "C:\\temp\\twister.dat";
 			BackButtonVisible = true;
+
+			// for persisting the calibrations used throughout the test.
+			TestCalibrations = new List<FatigueTestCalibration>();
 		}
 
 		private void GoBack()
@@ -284,6 +289,12 @@ namespace Twister.ViewModels
 			{
 				File.Copy(DataLogPath, $"{DataLogPath}_{DateTime.Now.Ticks}");
 				File.Delete(DataLogPath);
+
+				// write the header for the new data file.
+				using (var writer = new StreamWriter(DataLogPath, true))
+				{
+					writer.WriteLine("CycleNumber,MaxTorque,MaxAngle,MinTorque,MinAngle");
+				}
 			}
 			while (true)
 			{
@@ -301,8 +312,9 @@ namespace Twister.ViewModels
 			{
 				foreach (var pt in temp)
 				{
-					//writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
-                    writer.WriteLine($"{pt.CycleNumber},{pt.MaxAngle:n3},{pt.MinAngle:n3}");
+					pt.MaxTorque = _currentCalibration.CalculatedTorqueFromAngle(pt.MaxAngle);
+					pt.MinTorque = _currentCalibration.CalculatedTorqueFromAngle(pt.MinAngle);
+					writer.WriteLine($"{pt.CycleNumber},{pt.MaxTorque},{pt.MaxAngle:n3},{pt.MinTorque},{pt.MinAngle:n3}");
 				}
 
 				PointsLogged += temp.Count;
@@ -434,6 +446,10 @@ namespace Twister.ViewModels
 				CurrentCounterClockwiseTarget = tuple.Item2;
 				CwTorqueLastCalibration = tuple.Item3;
 				CcwTorqueLastCalibration = tuple.Item4;
+
+				_currentCalibration = new FatigueTestCalibration(
+						CurrentClockwiseTarget, CurrentCounterClockwiseTarget, 
+						CwTorqueLastCalibration, CcwTorqueLastCalibration);
 
 				return true;
 			}
