@@ -28,6 +28,34 @@ namespace Twister.Business.Tests
 		public int ClockwiseTorque { get; }
 		public int CounterClockwiseTorque { get; }
 
+		private float Slope
+		{
+			get
+			{
+				float x1 = ClockwiseAngle;
+				float x2 = CounterClockwiseAngle;
+				int y1 = ClockwiseTorque;
+				int y2 = CounterClockwiseTorque;
+
+				float slope = (y2 - y1) / (x2 - x1);
+				return slope;
+			}
+		}
+
+		private int YIntercept
+		{
+			get
+			{
+				// use a known point.
+				var y = ClockwiseTorque;
+				var x = ClockwiseAngle;
+
+				// b = y - mx
+				int yIntercept = y - (int) (Slope * x);
+				return yIntercept;
+			}
+		}
+
 		/// <summary>
 		/// Gets a torque value for a given angle, based on the last
 		/// set of calibration results.
@@ -38,16 +66,7 @@ namespace Twister.Business.Tests
 		/// </returns>
 		public int CalculatedTorqueFromAngle(float angle)
 		{
-			float x1 = ClockwiseAngle;
-			float x2 = CounterClockwiseAngle;
-			int y1 = ClockwiseTorque;
-			int y2 = CounterClockwiseTorque;
-
-			float slope = (y2 - y1) / (x2 - x1);
-			int yIntercept = 0; // assumption
-
-			int angleTemp = (int) (slope * angle) + yIntercept;
-
+			int angleTemp = (int) (Slope * angle) + YIntercept;
 			return angleTemp;
 		}
 	}
