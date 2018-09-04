@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Twister.Views"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel>
@@ -28,6 +29,7 @@
 
         <Grid Margin="15">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -85,9 +87,14 @@
             <TextBlock Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,10,0,0"
                        Text="LOGGED CYCLES" FontWeight="Bold" />
             <TextBlock Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding CycleCount, StringFormat=n0}" FontSize="32" />
-            <TextBlock Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding PointsLogged, StringFormat=n0}" FontSize="32" />       
+            <TextBlock Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding PointsLogged, StringFormat=n0}" FontSize="32" />
 
-            <DataGrid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4"
+            <StackPanel Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding Path=IsCalibrating, Converter={StaticResource BoolToVisConverter}}">
+                <TextBlock Text="Calibrating..." VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"></TextBlock>
+                <Image gif:ImageBehavior.AnimatedSource="../Images/spinner.gif" Height="64" Width="64" VerticalAlignment="Center"/>
+            </StackPanel>
+            
+            <DataGrid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4"
                       Margin="0,25,0,0" 
                       BorderThickness="1,0,0,0"
                       HorizontalAlignment="Center" VerticalAlignment="Top"

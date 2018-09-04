@@ -45,8 +45,9 @@ namespace Twister.ViewModels
 		private bool _threadsInitialized;
 		private FatigueTestCalibration _currentCalibration;
 		public List<FatigueTestCalibration> TestCalibrations;
+        private bool _isCalibrating;
 
-		public FatigueTestViewModel()
+        public FatigueTestViewModel()
 		{
 			TestConditions = new ObservableCollection<FatigueTestCondition_VM>();
 
@@ -59,6 +60,7 @@ namespace Twister.ViewModels
 
 			// for persisting the calibrations used throughout the test.
 			TestCalibrations = new List<FatigueTestCalibration>();
+		    IsCalibrating = true;
 		}
 
 		private void GoBack()
@@ -234,7 +236,21 @@ namespace Twister.ViewModels
 			}
 		}
 
-		public RelayCommand BackCommand { get; private set; }
+        /// <summary>
+        /// Gets or sets whether calibration is in process.
+        /// </summary>
+	    public bool IsCalibrating
+	    {
+	        get => _isCalibrating;
+	        set
+	        {
+	            _isCalibrating = value;
+                OnPropertyChanged();
+	        }
+	    }
+
+
+	    public RelayCommand BackCommand { get; private set; }
 		public RelayCommand RunCommand { get; private set; }
 		public RelayCommand StopCommand { get; private set; }
 		
@@ -427,6 +443,8 @@ namespace Twister.ViewModels
 		private bool CalibrationOccurred()
 		{
 			bool wasDue = TestBench.Singleton.IsDueForCalibration();
+		    IsCalibrating = wasDue;
+
 			while (TestBench.Singleton.IsDueForCalibration())
 			{
 				// Let the calibration cycle complete.
@@ -451,6 +469,7 @@ namespace Twister.ViewModels
 						CurrentClockwiseTarget, CurrentCounterClockwiseTarget, 
 						CwTorqueLastCalibration, CcwTorqueLastCalibration);
 
+			    IsCalibrating = false;
 				return true;
 			}
 
