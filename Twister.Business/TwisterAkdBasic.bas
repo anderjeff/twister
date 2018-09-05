@@ -442,6 +442,11 @@ Dim cyclesPerSecond as integer
 Dim cwMaxLastCycle as long 
 Dim ccwMaxLastCycle as long 
 
+' In case the test bench initiates a shutdown, this value means the following
+' 1 = Angle in the CW direction is greater than or equal to 1.25X the previous value. 
+' 2 = Angle in the CCW direction is greater than or equal to 1.25X the previous value. 
+Dim shutdownCode as integer 
+
 ' this section maps the variables to an input register 
 ' location where they can be written to and read from.
 MBInfo 
@@ -467,6 +472,7 @@ MBInfo
 	$MBMap32(5042, cyclesPerSecond)' used for the fatigue test, lets the user specify the number of cycles per second, then the program can set run speed based off the angles in calibration cycle.
 	$MBMap64(5044, cwMaxLastCycle)' the max position (MOVE.PLFB) in CW direction achieved last cycle
 	$MBMap64(5048, ccwMaxLastCycle)' the max position (MOVE.PLFB) in CCW direction achieved last cycle
+	$MBMap32(5052, shutdownCode)
 End 
 
 ' create boolean values, since it's not supported
@@ -506,8 +512,11 @@ Dim previousTorque As Integer
 ' when the test reaches this cycle, calibration will be due on the next cycle.
 Dim nextCalibrationCycle as integer 
 
-' used in the calibration cycle to determine how fast the motor should spin.
-Dim startingSpeed as integer 
+' the reference angles are used to compare percent difference between 
+' calibration cycles
+Dim previousCalibrationCycleAngleCw as float 
+Dim previousCalibrationCycleAngleCcw as float 
+Dim hasPreviousCalibrationCycle as integer 
 
 '-------------- Main Program -------------------------
 Main 
@@ -690,6 +699,8 @@ Sub PerformFatigueTest
 	cycleCount = 0' reset
 	cwMaxLastCycle = 0
 	ccwMaxLastCycle = 0
+	hasPreviousCalibrationCycle = _FALSE
+	shutdownCode = 0
 	
 	' The testInProcess indicates that the user wants to start the test, 
 	' but the application has not yet reached the While loop below.  Once 
@@ -1135,6 +1146,9 @@ Sub PerformCalibration
 			Print "Ending calibration cycle" 
 			secondStageComplete = _TRUE
 			nextCalibrationCycle = cycleCount + calibrationInterval
+			
+			Call CheckIfShutdownRequired
+			
 			Call CalculateRunSpeed
 			Call StopAndReturnToHome
 		End If
@@ -1143,6 +1157,25 @@ Sub PerformCalibration
 	' reset the run speed to the user specified value.
 	MOVE.RUNSPEED = runSpeed
 End Sub
+
+
+Sub CheckIfShutdownRequired
+	If (hasPreviousCalibrationCycle = _TRUE) Then 
+		' shut it down if it's too twisty
+		If (clockwiseAngleLimit >= 1.25 * previousCalibrationCycleAngleCw) Then 
+			shutdownCode = 1
+			testInProcess = _FALSE
+		ElseIf (counterClockwiseAngleLimit <= 1.25 * previousCalibrationCycleAngleCcw) Then 
+			shutdownCode = 2
+			testInProcess = _FALSE
+		End If
+	Else 
+		previousCalibrationCycleAngleCw = clockwiseAngleLimit
+		previousCalibrationCycleAngleCcw = counterClockwiseAngleLimit
+		hasPreviousCalibrationCycle = _TRUE
+	End If
+End Sub
+
 
 Sub CalculateRunSpeed
 	' determine how far we have to travel each cycle
