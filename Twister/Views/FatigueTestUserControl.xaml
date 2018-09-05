@@ -33,10 +33,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="26*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="29*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -62,7 +62,7 @@
                 <TextBlock Text="{Binding CurrentCounterClockwiseTarget, StringFormat='n3'}" FontSize="20" />
                 <TextBlock Text="°" FontSize="20"/>
             </StackPanel>
-
+            
 
             <!-- Toque Values -->
 
@@ -91,9 +91,9 @@
 
             <StackPanel Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding Path=IsCalibrating, Converter={StaticResource BoolToVisConverter}}">
                 <TextBlock Text="Calibrating..." VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"></TextBlock>
-                <!--<Image gif:ImageBehavior.AnimatedSource="../Images/spinner.gif" Height="64" Width="64" VerticalAlignment="Center"/>-->
+                <Image gif:ImageBehavior.AnimatedSource="../Images/spinner.gif" Height="64" Width="64" VerticalAlignment="Center"/>
             </StackPanel>
-
+            
             <DataGrid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4"
                       Margin="0,25,0,0" 
                       BorderThickness="1,0,0,0"
