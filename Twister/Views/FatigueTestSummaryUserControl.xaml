@@ -8,7 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Test is complete" FontSize="32" />
+            <TextBlock Text="Test is complete" FontSize="32" VerticalAlignment="Center" />
             <Button Content="Close" Command="{Binding CloseCommand}" Padding="10" Margin="10,0,0,0" FontSize="32"/>
         </StackPanel>   
 

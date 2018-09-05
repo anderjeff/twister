@@ -700,6 +700,7 @@ Sub PerformFatigueTest
 	cwMaxLastCycle = 0
 	ccwMaxLastCycle = 0
 	hasPreviousCalibrationCycle = _FALSE
+	isDueForCalibration = _TRUE
 	shutdownCode = 0
 	
 	' The testInProcess indicates that the user wants to start the test, 
@@ -746,6 +747,9 @@ Sub PerformFatigueTest
 			Call DebugMessageString("Waiting for joystick to move.")
 			Call PerformSingleManualCycle()
 		Wend
+		
+		' This will get us out of the fatigue test mode.
+		controllerInitialized = _FALSE
 	End If
 End Sub
 
@@ -1147,10 +1151,10 @@ Sub PerformCalibration
 			secondStageComplete = _TRUE
 			nextCalibrationCycle = cycleCount + calibrationInterval
 			
-			Call CheckIfShutdownRequired
-			
 			Call CalculateRunSpeed
 			Call StopAndReturnToHome
+			
+			Call CheckIfShutdownRequired
 		End If
 	Wend
 	
@@ -1162,10 +1166,10 @@ End Sub
 Sub CheckIfShutdownRequired
 	If (hasPreviousCalibrationCycle = _TRUE) Then 
 		' shut it down if it's too twisty
-		If (clockwiseAngleLimit >= 1.25 * previousCalibrationCycleAngleCw) Then 
+		If (clockwiseAngleLimit <= 1.25 * previousCalibrationCycleAngleCw) Then 
 			shutdownCode = 1
 			testInProcess = _FALSE
-		ElseIf (counterClockwiseAngleLimit <= 1.25 * previousCalibrationCycleAngleCcw) Then 
+		ElseIf (counterClockwiseAngleLimit >= 1.25 * previousCalibrationCycleAngleCcw) Then 
 			shutdownCode = 2
 			testInProcess = _FALSE
 		End If

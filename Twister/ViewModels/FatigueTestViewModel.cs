@@ -260,6 +260,9 @@ namespace Twister.ViewModels
             InitializeThreads();
             TestBench.Singleton.InformReady();
             TestBench.Singleton.BeginCurrentTest();
+
+            // always start the test with a calibration.
+            IsCalibrating = true;
         }
 
         private void StopTest()
@@ -274,7 +277,7 @@ namespace Twister.ViewModels
 
             // to update the UI, a timer.
             _updateUiTimer = new System.Windows.Threading.DispatcherTimer();
-            _updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 100); // 100 milliseconds
+            _updateUiTimer.Interval = new TimeSpan(0, 0, 0, 0, 200); // 200 milliseconds
             _updateUiTimer.Tick += UpdateUiTimerOnTick;
             _updateUiTimer.Start();
 
@@ -313,13 +316,16 @@ namespace Twister.ViewModels
             }
             while (true)
             {
-                Thread.Sleep(3000);
+                Thread.Sleep(10000);
                 LogAvailableData();
             }
         }
 
         private void LogAvailableData()
         {
+            // must have a calibration before we can log.
+            if (_currentCalibration == null) return;
+
             var temp = new List<FatigueTestDataPoint>();
             temp.AddRange(FatigueTest.ProcessedData());
 
@@ -393,9 +399,9 @@ namespace Twister.ViewModels
             CheckIfNextConditionShouldBeLoaded();
             if (CalibrationOccurred())
             {
-                CheckIfShutdownRequired(
-                    PreviousClockwiseTarget, CurrentClockwiseTarget,
-                    PreviousCounterClockwiseTarget, CurrentCounterClockwiseTarget);
+                IsCalibrating = false;
+                //_updateUiTimer.Start();
+
             }
         }
 
@@ -441,14 +447,22 @@ namespace Twister.ViewModels
 
         private bool CalibrationOccurred()
         {
+            Console.WriteLine("Checking if calibration ocurred.");
+
             bool wasDue = TestBench.Singleton.IsDueForCalibration();
 
+            // Let the calibration cycle complete
             while (TestBench.Singleton.IsDueForCalibration())
             {
-                IsCalibrating = true;
-                // Let the calibration cycle complete
+                // because we are doing the same thing inside this loop.
+                //_updateUiTimer.Stop();
+
+                if (!IsCalibrating)
+                {
+                    IsCalibrating = true;
+                }
+                Thread.Sleep(200);
                 UpdateUi();
-                Thread.Sleep(100);
             }
 
             if (wasDue)
@@ -468,7 +482,6 @@ namespace Twister.ViewModels
                         CurrentClockwiseTarget, CurrentCounterClockwiseTarget,
                         CwTorqueLastCalibration, CcwTorqueLastCalibration);
 
-                IsCalibrating = false;
                 return true;
             }
 
