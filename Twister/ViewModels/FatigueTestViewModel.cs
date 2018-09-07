@@ -243,6 +243,11 @@ namespace Twister.ViewModels
             get => _isCalibrating;
             set
             {
+                if(_isCalibrating && value == false)
+                {
+                    UpdateValuesFromCalibration();
+                }
+
                 _isCalibrating = value;
                 OnPropertyChanged();
             }
@@ -397,12 +402,7 @@ namespace Twister.ViewModels
         {
             UpdateUi();
             CheckIfNextConditionShouldBeLoaded();
-            if (CalibrationOccurred())
-            {
-                IsCalibrating = false;
-                //_updateUiTimer.Start();
-
-            }
+            IsCalibrating = TestBench.Singleton.IsDueForCalibration();        
         }
 
         private void UpdateUi()
@@ -424,15 +424,14 @@ namespace Twister.ViewModels
                 var currentIndex = TestConditions.IndexOf(SelectedTestConditionViewModel);
                 var anotherConditionRemains = currentIndex + 1 < TestConditions.Count;
                 if (anotherConditionRemains)
+                {
                     LoadNextCondition(currentIndex);
+                }
                 else
                 {
-                    TestBench.Singleton.ManuallyCompleteTestCycle();
-
-                    // let the threads wrap up.
+                    // clean up and load next view.
+                    TestBench.Singleton.ManuallyCompleteTestCycle();                   
                     LogAvailableData();
-
-                    // load final view.
                     MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSummaryViewModel;
                 }
             }
@@ -445,47 +444,22 @@ namespace Twister.ViewModels
             SelectedTestConditionViewModel = TestConditions[currentIndex + 1];
         }
 
-        private bool CalibrationOccurred()
+        private void UpdateValuesFromCalibration()
         {
-            Console.WriteLine("Checking if calibration ocurred.");
+            // verify that a shutdown is not required.
+            PreviousClockwiseTarget = CurrentClockwiseTarget;
+            PreviousCounterClockwiseTarget = CurrentCounterClockwiseTarget;
 
-            bool wasDue = TestBench.Singleton.IsDueForCalibration();
+            // Update targets based on the new test condition.
+            var tuple = TestBench.Singleton.GetCalibrationResults();
+            CurrentClockwiseTarget = tuple.Item1;
+            CurrentCounterClockwiseTarget = tuple.Item2;
+            CwTorqueLastCalibration = tuple.Item3;
+            CcwTorqueLastCalibration = tuple.Item4;
 
-            // Let the calibration cycle complete
-            while (TestBench.Singleton.IsDueForCalibration())
-            {
-                // because we are doing the same thing inside this loop.
-                //_updateUiTimer.Stop();
-
-                if (!IsCalibrating)
-                {
-                    IsCalibrating = true;
-                }
-                Thread.Sleep(200);
-                UpdateUi();
-            }
-
-            if (wasDue)
-            {
-                // verify that a shutdown is not required.
-                PreviousClockwiseTarget = CurrentClockwiseTarget;
-                PreviousCounterClockwiseTarget = CurrentCounterClockwiseTarget;
-
-                // Update targets based on the new test condition.
-                var tuple = TestBench.Singleton.GetCalibrationResults();
-                CurrentClockwiseTarget = tuple.Item1;
-                CurrentCounterClockwiseTarget = tuple.Item2;
-                CwTorqueLastCalibration = tuple.Item3;
-                CcwTorqueLastCalibration = tuple.Item4;
-
-                _currentCalibration = new FatigueTestCalibration(
-                        CurrentClockwiseTarget, CurrentCounterClockwiseTarget,
-                        CwTorqueLastCalibration, CcwTorqueLastCalibration);
-
-                return true;
-            }
-
-            return false;
+            _currentCalibration = new FatigueTestCalibration(
+                    CurrentClockwiseTarget, CurrentCounterClockwiseTarget,
+                    CwTorqueLastCalibration, CcwTorqueLastCalibration);
         }
 
         private void CheckIfShutdownRequired(float previousCw, float currentCw, float previousCcw, float currentCcw)
