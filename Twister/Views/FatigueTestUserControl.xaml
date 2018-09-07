@@ -89,12 +89,14 @@
             <TextBlock Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding CycleCount, StringFormat=n0}" FontSize="32" />
             <TextBlock Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding PointsLogged, StringFormat=n0}" FontSize="32" />
 
-            <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" 
+            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Padding="5" Margin="0,5,0,0"
                        Visibility="{Binding IsCalibrating, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisConverter}}" 
-                       Text="Calibrating..." VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"></TextBlock>
+                       Text="Calibrating..."
+                       VerticalAlignment="Center" HorizontalAlignment="Stretch" 
+                       FontSize="16" Foreground="Green" Background="Yellow" FontWeight="SemiBold"></TextBlock>
 
             <DataGrid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4"
-                      Margin="0,25,0,0" 
+                      Margin="0,5" 
                       BorderThickness="1,0,0,0"
                       HorizontalAlignment="Center" VerticalAlignment="Top"
                       SelectedItem="{Binding SelectedTestConditionViewModel}"
@@ -106,19 +108,19 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn
                         Binding="{Binding ClockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True}"
-                        Header="CW Torque (in-lbs)"
+                        Header="CW Torque"
                         Width="auto" />
                     <DataGridTextColumn
                         Binding="{Binding CounterclockwiseTorque, StringFormat='n0', ValidatesOnExceptions=True}"
-                        Header="CCW Torque (in-lbs)"
+                        Header="CCW Torque"
                         Width="auto" />
                     <DataGridTextColumn
                         Binding="{Binding CyclesPerSecond, StringFormat='n0', ValidatesOnExceptions=True}"
-                        Header="Cycles Per Second"
+                        Header="Cycle/Sec"
                         Width="auto" />
                     <DataGridTextColumn
                         Binding="{Binding CalibrationInterval, StringFormat='n0'}"
-                        Header="Calibration Interval"
+                        Header="Cal Interval"
                         Width="auto" />
                     <DataGridTextColumn
                         Binding="{Binding CyclesRequired, StringFormat='n0'}"

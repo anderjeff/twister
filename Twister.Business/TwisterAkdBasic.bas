@@ -702,6 +702,7 @@ Sub PerformFatigueTest
 	hasPreviousCalibrationCycle = _FALSE
 	isDueForCalibration = _TRUE
 	shutdownCode = 0
+	nextCalibrationCycle = 0
 	
 	' The testInProcess indicates that the user wants to start the test, 
 	' but the application has not yet reached the While loop below.  Once 
