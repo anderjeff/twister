@@ -263,8 +263,8 @@ namespace Twister.ViewModels
         private void StartTest()
         {
             InitializeThreads();
-            TestBench.Singleton.InformReady();
             TestBench.Singleton.BeginCurrentTest();
+            TestBench.Singleton.InformReady();
 
             // always start the test with a calibration.
             IsCalibrating = true;
@@ -351,7 +351,7 @@ namespace Twister.ViewModels
         {
             while (true)
             {
-                Thread.Sleep(20);
+                Thread.Sleep(30);
                 UpdateCurrentValues();
                 TestBench.Singleton.VerifyAlive();
             }
@@ -361,27 +361,19 @@ namespace Twister.ViewModels
         {
             while (true)
             {
-                CreateDataPoint();
-
-                // 50ms was a good value for generating enough data points
-                // to catch the min and max for a cycle.
-                System.Threading.Thread.Sleep(40);
-            }
-        }
-
-        private void CreateDataPoint()
-        {
-            FatigueTestDataPoint dataPoint;
-            lock (_objLock)
-            {
-                dataPoint = new FatigueTestDataPoint(_cycleCountDirect)
+                FatigueTestDataPoint dataPoint;
+                lock (_objLock)
                 {
-                    MaxAngle = TestBench.Singleton.GetMaxCwAngleLastCycle(),
-                    MinAngle = TestBench.Singleton.GetMaxCcwAngleLastCycle()
-                };
-            }
+                    dataPoint = new FatigueTestDataPoint(_cycleCountDirect)
+                    {
+                        MaxAngle = TestBench.Singleton.GetMaxCwAngleLastCycle(),
+                        MinAngle = TestBench.Singleton.GetMaxCcwAngleLastCycle()
+                    };
+                }
+                FatigueTest.AddTestData(dataPoint);
 
-            FatigueTest.AddTestData(dataPoint);
+                Thread.Sleep(105);
+            }
         }
 
         private void UpdateCurrentValues()
@@ -430,8 +422,19 @@ namespace Twister.ViewModels
                 else
                 {
                     // clean up and load next view.
-                    TestBench.Singleton.ManuallyCompleteTestCycle();                   
+                    TestBench.Singleton.ManuallyCompleteTestCycle();
+
+                    _loggingDataThread.Abort();
+                    while (_loggingDataThread.ThreadState == ThreadState.Running)
+                    {
+                        Thread.Sleep(50);
+                    }
+                    
                     LogAvailableData();
+
+                    // just so we can see what is happening to the data points.
+                    Thread.Sleep(1000);
+
                     MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSummaryViewModel;
                 }
             }

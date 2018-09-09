@@ -1133,7 +1133,7 @@ Sub PerformCalibration
 	secondStageComplete = _FALSE
 	
 	' run this loop until the calibration is complete.
-	While (secondStageComplete = _FALSE)
+	While (secondStageComplete = _FALSE AND testInProcess = _TRUE)
 		If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
 			Call RotateClockwise
 			clockwiseAngleLimit = PL.FB 

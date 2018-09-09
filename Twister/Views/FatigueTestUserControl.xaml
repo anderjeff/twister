@@ -89,11 +89,11 @@
             <TextBlock Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding CycleCount, StringFormat=n0}" FontSize="32" />
             <TextBlock Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding PointsLogged, StringFormat=n0}" FontSize="32" />
 
-            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Padding="5" Margin="0,5,0,0"
+            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Padding="5" Margin="0,5,0,0"
                        Visibility="{Binding IsCalibrating, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisConverter}}" 
-                       Text="Calibrating..."
-                       VerticalAlignment="Center" HorizontalAlignment="Stretch" 
-                       FontSize="16" Foreground="Green" Background="Yellow" FontWeight="SemiBold"></TextBlock>
+                       Content="Calibrating..."
+                       VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                       FontSize="16" Foreground="Green" Background="Yellow" FontWeight="SemiBold"></Label>
 
             <DataGrid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4"
                       Margin="0,5" 
