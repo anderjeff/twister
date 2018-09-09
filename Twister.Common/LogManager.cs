@@ -9,7 +9,7 @@ namespace Twister.Common
         {
             //log4net.Config.XmlConfigurator.Configure();
             log4net.Config.XmlConfigurator.Configure(
-                new FileInfo(@"G:\Engineering\Programs\Twister 2015\log4net.config"));
+                new FileInfo(@"G:\Programs\Twister 2015\log4net.config"));
         }
 
         public ILogger GetLogger(Type type)
