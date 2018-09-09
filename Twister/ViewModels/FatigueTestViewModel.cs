@@ -37,6 +37,7 @@ namespace Twister.ViewModels
         private int _cwTorqueLastCalibration;
         private int _ccwTorqueLastCalibration;
         private bool _backButtonVisible;
+        private bool _testInProcess;
 
         private DispatcherTimer _updateUiTimer;
         private Thread _monitoringThread;
@@ -52,8 +53,8 @@ namespace Twister.ViewModels
             TestConditions = new ObservableCollection<FatigueTestCondition_VM>();
 
             BackCommand = new RelayCommand(GoBack);
-            RunCommand = new RelayCommand(StartTest);
-            StopCommand = new RelayCommand(StopTest);
+            RunCommand = new RelayCommand(StartTest, CanStartTest);
+            StopCommand = new RelayCommand(StopTest, CanStopTest);
 
             DataLogPath = "C:\\temp\\twister.dat";
             BackButtonVisible = true;
@@ -268,11 +269,27 @@ namespace Twister.ViewModels
 
             // always start the test with a calibration.
             IsCalibrating = true;
+
+            // don't let the user press Run when it's running or Stop until it's running.
+            _testInProcess = true;
+            RunCommand.RaiseCanExecuteChanged();
+            StopCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool CanStartTest()
+        {
+            return !_testInProcess;
         }
 
         private void StopTest()
         {
             TestBench.Singleton.EmergencyStop();
+            LogDataAndSwitchViews();
+        }
+
+        private bool CanStopTest()
+        {
+            return _testInProcess;
         }
 
         private void InitializeThreads()
@@ -424,20 +441,24 @@ namespace Twister.ViewModels
                     // clean up and load next view.
                     TestBench.Singleton.ManuallyCompleteTestCycle();
 
-                    _loggingDataThread.Abort();
-                    while (_loggingDataThread.ThreadState == ThreadState.Running)
-                    {
-                        Thread.Sleep(50);
-                    }
-                    
-                    LogAvailableData();
-
-                    // just so we can see what is happening to the data points.
-                    Thread.Sleep(1000);
-
-                    MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSummaryViewModel;
+                    LogDataAndSwitchViews();
                 }
             }
+        }
+
+        private void LogDataAndSwitchViews()
+        {
+            _loggingDataThread.Abort();
+            while (_loggingDataThread.ThreadState == ThreadState.Running)
+            {
+                Thread.Sleep(50);
+            }
+            LogAvailableData();
+
+            // just so we can see what is happening to the data points.
+            Thread.Sleep(1000);
+
+            MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSummaryViewModel;
         }
 
         private void LoadNextCondition(int currentIndex)
@@ -463,11 +484,6 @@ namespace Twister.ViewModels
             _currentCalibration = new FatigueTestCalibration(
                     CurrentClockwiseTarget, CurrentCounterClockwiseTarget,
                     CwTorqueLastCalibration, CcwTorqueLastCalibration);
-        }
-
-        private void CheckIfShutdownRequired(float previousCw, float currentCw, float previousCcw, float currentCcw)
-        {
-            // todo, figure out what to use for shutdown criteria.  Tim wants to use torque, I am not monitoring torque.
         }
 
         private void UpdateCyclingGraphic()
