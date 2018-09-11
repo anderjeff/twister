@@ -22,46 +22,6 @@ namespace Twister.Business.Tests
         public int MinTorque { get; set; }
         public int MaxTorque { get; set; }
 
-        public float MaxTorqueRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Max(t => t.Torque);
-                return 0;
-            }
-        }
-
-        public float MaximumAngleRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Max(s => s.Angle);
-                return 0;
-            }
-        }
-
-        public float MinTorqueRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Min(t => t.Torque);
-                return 0;
-            }
-        }
-
-        public float MinimumAngleRecorded
-        {
-            get
-            {
-                if (Data.Count > 0)
-                    return Data.Min(s => s.Angle);
-                return 0;
-            }
-        }
-
         /// <summary>
         ///     A unique identifier for the test, linking it to a type of Torque
         ///     Test defined elsewhere.
@@ -155,44 +115,31 @@ namespace Twister.Business.Tests
         public bool WasShutDownEarly { get; set; }
 
 
-        /// <summary>
-        ///     Sets the test variables from a TestTemplate.  Each test can decide
-        ///     how to use the TestTemplate.
-        /// </summary>
-        /// <param name="testTemplate"></param>
-        public abstract void LoadTestParameters(TestTemplate testTemplate);
+	    /// <summary>
+	    ///     Sets the test variables from a TestTemplate.  Each test can decide
+	    ///     how to use the TestTemplate.
+	    /// </summary>
+	    /// <param name="testTemplate"></param>
+	    public virtual void LoadTestParameters(TestTemplate testTemplate)
+	    {
+			// no default behavior.
+	    }
 
-        protected void InformInitializationComplete()
+	    protected void InformInitializationComplete()
         {
-            try
-            {
-                // at this point, the test has been initialized and it is free to start.
-                Initialized = true;
-                TestBench.Singleton.VerifyAlive();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            // at this point, the test has been initialized and it is free to start.
+	        Initialized = true;
+	        TestBench.Singleton.VerifyAlive();
         }
-
 
         /// <summary>
         ///     Begins the TorqueTest.
         /// </summary>
-        internal void Start()
+        internal virtual void Start()
         {
-            try
-            {
-                // it's important to initialize the test first.
-                if (!Initialized)
-                    throw new Exception(Messages.UninitializedTest());
-                InProcess = true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+			// it's important to initialize the test first.
+	        if (!Initialized) throw new Exception(Messages.UninitializedTest());
+	        InProcess = true;
+		}
     }
 }

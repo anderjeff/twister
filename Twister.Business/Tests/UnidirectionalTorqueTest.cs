@@ -35,10 +35,10 @@ namespace Twister.Business.Tests
             {
                 _direction = value;
                 if (_direction == TestDirection.Clockwise)
-                    TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.TorqueDirection, 1);
+                    TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueDirection, 1);
                 else if (_direction == TestDirection.Counterclockwise)
-                    TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.TorqueDirection, -1);
-                else TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.TorqueDirection, 0);
+                    TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueDirection, -1);
+                else TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.TorqueDirection, 0);
             }
         }
 
@@ -54,7 +54,7 @@ namespace Twister.Business.Tests
                 if (value > 0)
                 {
                     _allowablePctChange = value;
-                    TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.DiffLimit, _allowablePctChange);
+                    TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.DiffLimit, _allowablePctChange);
                 }
                 else
                 {
@@ -72,14 +72,14 @@ namespace Twister.Business.Tests
                 // that value was 20,000 in-lbs.
                 MaxTorque = testTemplate.ClockwiseTorque;
                 MinTorque = testTemplate.CounterclockwiseTorque;
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.CwTorqueLimit, MaxTorque);
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.CcwTorqueLimit, MinTorque);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, MaxTorque);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CcwTorqueLimit, MinTorque);
 
                 // set run speed
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.Runspeed, testTemplate.RunSpeed);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Runspeed, testTemplate.RunSpeed);
 
                 // set manual speed
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.Manualspeed, testTemplate.MoveSpeed);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Manualspeed, testTemplate.MoveSpeed);
 
                 InformInitializationComplete();
             }

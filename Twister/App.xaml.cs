@@ -3,7 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Twister.Common;
+using log4net;
+using log4net.Config;
 
 namespace Twister
 {
@@ -16,9 +17,8 @@ namespace Twister
     /// 
     /// </summary>
     public partial class App : Application
-    {
-        LogManager _logManager = new LogManager();
-        ILogger _log;
+    {	    
+	    private static readonly ILog _log = LogManager.GetLogger(typeof(App));
 
         [System.STAThreadAttribute()]
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -33,10 +33,7 @@ namespace Twister
         {
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
 
-            // set up logging.
-            _log = _logManager.GetLogger(typeof(App));
             string msg = $"Application started by {Environment.UserName}.";
-
             _log.Info(msg);
 
             // Select the text in a TextBox when it receives focus.

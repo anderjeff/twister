@@ -55,19 +55,19 @@ namespace Twister.Business.Tests
                 MinTorque = testTemplate.CounterclockwiseTorque;
 
                 // set clockwise torque
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.CwTorqueLimit, MaxTorque);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, MaxTorque);
 
                 /* set counterclockwise torque to be the same value, this is, after all,
                  * a fully reversed torque test, so by definition the values need to be 
                  * equal and opposite (thus the -1 multiplier). 
                  */
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.CcwTorqueLimit, MinTorque);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CcwTorqueLimit, MinTorque);
 
                 // set run speed
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.Runspeed, testTemplate.RunSpeed);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Runspeed, testTemplate.RunSpeed);
 
                 // set manual speed
-                TestBench.Singleton.LoadTestParameter(ServoDrive.RegisterAddress.Manualspeed, testTemplate.MoveSpeed);
+                TestBench.Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.Manualspeed, testTemplate.MoveSpeed);
 
                 InformInitializationComplete();
             }

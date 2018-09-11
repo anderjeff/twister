@@ -22,7 +22,12 @@ namespace Twister.Business.Data
             SampleTime = offsetCentralTime.TimeOfDay;
         }
 
-        public float Torque { get; private set; }
+	    public Sample(float torque, float angle, double elapsedTime) : this(torque, angle)
+	    {
+		    ElapsedTime = elapsedTime;
+	    }
+
+	    public float Torque { get; private set; }
 
         public float Angle { get; private set; }
 
@@ -31,13 +36,19 @@ namespace Twister.Business.Data
         /// </summary>
         public TimeSpan SampleTime { get; private set; }
 
-        public object Clone()
+		/// <summary>
+		/// The elapsed time, from some reference point, that the sample was recorded.
+		/// </summary>
+	    public double ElapsedTime { get; private set; }
+
+	    public object Clone()
         {
             Sample copy = new Sample
             {
                 Angle = Angle,
                 SampleTime = SampleTime,
-                Torque = Torque
+                Torque = Torque,
+				ElapsedTime = ElapsedTime
             };
 
             return copy;
@@ -46,11 +57,7 @@ namespace Twister.Business.Data
 
         public override string ToString()
         {
-            return string.Format(
-                "Torque [{0:n0}] Angle [{1:n3}] Time [{2:o}]",
-                Torque,
-                Angle,
-                SampleTime);
+            return $"Torque [{Torque:n0}] Angle [{Angle:n3}] Time [{SampleTime:o}] ElapsedTime[{ElapsedTime:0}]";
         }
     }
 }

@@ -8,8 +8,8 @@ namespace Twister.Business.Data
     public class DataValidator
     {
         /// <summary>
-        ///     Determines if the workId provided is a number that has been used
-        ///     for a work order.
+        ///     Determines if the workId is null or whitespace and if the value
+        ///     provided is a number that has been used for another work order.
         /// </summary>
         /// <param name="workId">The work order indentification number.</param>
         /// <param name="message">
@@ -20,6 +20,12 @@ namespace Twister.Business.Data
         /// <returns></returns>
         public bool ValidWorkOrder(string workId, out string message)
         {
+	        if (string.IsNullOrWhiteSpace(workId))
+	        {
+		        message = Messages.WorkOrderCannotBeNullOrEmpty();
+		        return false;
+	        }
+
             try
             {
                 var workIdFound = ShopfloorWorkOrderDb.WorkIdExists(workId);
@@ -40,7 +46,13 @@ namespace Twister.Business.Data
 
         public bool ValidEmployeeNumber(string clockNumber, out string message)
         {
-            try
+	        if (string.IsNullOrWhiteSpace(clockNumber))
+	        {
+		        message = Messages.ClockNumberCannotBeNullOrEmpty();
+		        return false;
+	        }
+
+			try
             {
                 var employeeFound = false;
                 BenchOperator bo = BenchOperatorDb.GetEmployeeById(clockNumber);
@@ -64,5 +76,35 @@ namespace Twister.Business.Data
                 return false;
             }
         }
-    }
+
+		/// <summary>
+		///     Verifies that the test id has not already been used, is not null,
+		///     and is not an empty value.  If the number is verified, this call
+		///     will also save the _testToSave, and indicate that in the response
+		///     to the caller.
+		/// </summary>
+		/// <param name="testId">
+		///     The testId the user is trying to assign to the test that just completed.
+		/// </param>
+		/// <returns>
+		///     If the testId is null, whitespace, or a duplicate testId, an error
+		///     will be returned to the user.  If no error is detected, null will be
+		///     returned
+		/// </returns>
+		public static string VerifyTestId(string testId)
+		{
+			try
+			{
+				// verification of number provided
+
+				if (string.IsNullOrWhiteSpace(testId)) return Messages.BlankTorqueTestId();
+				if (TorqueTestDb.InvalidTestId(testId)) return Messages.DuplicateTestId(testId);
+				return null;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+	}
 }

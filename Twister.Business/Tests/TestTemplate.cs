@@ -10,7 +10,8 @@ namespace Twister.Business.Tests
     public enum TestType
     {
         SteeringShaftTest_4000_inlbs = 1,
-        TorsionTestToFailure = 2
+        TorsionTestToFailure = 2,
+		FatigueTest = 3
     }
 
     /// <summary>
@@ -151,6 +152,12 @@ namespace Twister.Business.Tests
                     t.TestTemplateId = Id;
                     t.LoadTestParameters(this);
                     break;
+				case (int)TestType.FatigueTest:
+					Load();
+					t = new FatigueTest();
+					t.TestTemplateId = Id;
+					t.LoadTestParameters(this);
+					break;
                 default:
                     throw new Exception("Unsupported test type");
             }
@@ -163,15 +170,8 @@ namespace Twister.Business.Tests
         /// </summary>
         public void Load()
         {
-            try
-            {
-                TestTemplateDb.LoadTemplateThatHasId(this);
-                _templateLoaded = true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+			TestTemplateDb.LoadTemplateThatHasId(this);
+	        _templateLoaded = true;
+		}
     }
 }

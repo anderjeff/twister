@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Windows.Threading;
+using log4net;
 using Twister.Business.Data;
 using Twister.Business.Tests;
-using Twister.Common;
 using Twister.Utilities;
 
 namespace Twister.ViewModels
 {
     public class UserLogin_VM : Base_VM
     {
-        private static readonly ILogger _log = new LogManager().GetLogger(typeof(UserLogin_VM));
+        private static readonly ILog _log = LogManager.GetLogger(typeof(UserLogin_VM));
         private string _clockNumber;
         private string _errorMessage;
 
@@ -119,14 +119,12 @@ namespace Twister.ViewModels
                     if (MainWindow_VM.Instance.TestSession.TestTemplate.Id == (int) TestType.TorsionTestToFailure)
                     {
                         MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.UnidirectionalToFailureTestVm;
-                        UnidirectionalTorqueTest_VM vm =
-                            MainWindow_VM.Instance.CurrentViewModel as UnidirectionalTorqueTest_VM;
+	                    var vm = (UnidirectionalTorqueTest_VM) MainWindow_VM.Instance.CurrentViewModel;
 
                         // starts up the test monitoring.
                         vm.PrepareToTest(MainWindow_VM.Instance.TestSession);
                     }
-                    else if (MainWindow_VM.Instance.TestSession.TestTemplate.Id ==
-                             (int) TestType.SteeringShaftTest_4000_inlbs)
+                    else if (MainWindow_VM.Instance.TestSession.TestTemplate.Id == (int) TestType.SteeringShaftTest_4000_inlbs)
                     {
                         // if this is a brand new part number with no calibration information, this shaft will need to be calibrated.
                         WorkOrderInfo woInfo = new WorkOrderInfo(WorkOrder);
@@ -135,15 +133,14 @@ namespace Twister.ViewModels
                         if (HasBeenCalibrated(woInfo.PartNumber, woInfo.Revision))
                         {
                             MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.SteeringShaftTestVm;
-                            FullyReversedTorqueTest_VM vm =
-                                MainWindow_VM.Instance.CurrentViewModel as FullyReversedTorqueTest_VM;
+	                        var vm = (FullyReversedTorqueTest_VM) MainWindow_VM.Instance.CurrentViewModel;
 
                             // starts up the test monitoring.
                             vm.PrepareToTest(MainWindow_VM.Instance.TestSession);
                         }
                         else
                         {
-                            MainWindow_VM.Instance.CalibrationVm.PartNumber = woInfo.PartNumber;
+							MainWindow_VM.Instance.CalibrationVm.PartNumber = woInfo.PartNumber;
                             MainWindow_VM.Instance.CalibrationVm.Revision = woInfo.Revision;
 
                             MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.CalibrationVm;
@@ -173,30 +170,14 @@ namespace Twister.ViewModels
 
         private void SelectTest()
         {
-            MainWindow_VM.Instance.CurrentViewModel =
-                MainWindow_VM.Instance.TestSelectionVm;
+            MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.TestSelectionVm;
         }
 
         private bool PassedValidation()
         {
-            // do the easy one's first.
-            if (string.IsNullOrEmpty(_clockNumber))
-            {
-                ErrorMessage = "Must enter a valid clock number";
-                return false;
-            }
-            if (string.IsNullOrEmpty(_workOrder))
-            {
-                ErrorMessage = "Must enter a valid work order number.";
-                return false;
-            }
-            // now validate with the system to make sure the employee and 
-            // work order numbers are real things.
-            // setup code.
             DataValidator validator = new DataValidator();
-            var message = "";
 
-            // test.
+            var message = "";
             if (!validator.ValidWorkOrder(WorkOrder, out message))
             {
                 ErrorMessage = message;

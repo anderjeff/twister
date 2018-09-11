@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Text;
-using Twister.Common;
+using log4net;
 
 namespace Twister.Business.Shared
 {
-    /// <summary>
-    ///     A central location for messages for this project.
-    /// </summary>
-    public class Messages
+	/// <summary>
+	///     A central location for messages for this project.
+	/// </summary>
+	public class Messages
     {
-        private static readonly ILogger _log = new LogManager().GetLogger(typeof(Messages));
+        private static readonly ILog _log = LogManager.GetLogger(typeof(Messages));
 
         private static string UserThatGotMessage()
         {
@@ -99,7 +99,17 @@ namespace Twister.Business.Shared
             return message;
         }
 
-        public static string WorkOrderDoesNotExist(string workId)
+	    public static string WorkOrderCannotBeNullOrEmpty()
+	    {
+		    return "Work order cannot be an empty value.";
+	    }
+
+	    public static string ClockNumberCannotBeNullOrEmpty()
+	    {
+		    return "Clock number cannot be an empty value.";
+	    }
+
+		public static string WorkOrderDoesNotExist(string workId)
         {
             return string.Format("Work order {0} does not exist, please try a different number.", workId);
         }

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Data.SqlClient;
+using log4net;
 using Twister.Business.Data;
-using Twister.Common;
 
 namespace Twister.Business.Database
 {
     internal class ShopfloorWorkOrderDb : TableBaseDb
     {
-        private static readonly ILogger _log = new LogManager().GetLogger(typeof(ShopfloorWorkOrderDb));
+        private static readonly ILog _log = LogManager.GetLogger(typeof(ShopfloorWorkOrderDb));
 
         internal static void GetWorkOrderInfo(WorkOrderInfo workOrderInfo)
         {

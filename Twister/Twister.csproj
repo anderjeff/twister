@@ -110,6 +110,10 @@
     <Compile Include="ViewModels\AvailableTests_VM.cs" />
     <Compile Include="ViewModels\Base_VM.cs" />
     <Compile Include="ViewModels\Calibration_VM.cs" />
+    <Compile Include="ViewModels\FatigueTestCondition_VM.cs" />
+    <Compile Include="ViewModels\FatigueTestSummaryViewModel.cs" />
+    <Compile Include="ViewModels\FatigueTestViewModel.cs" />
+    <Compile Include="ViewModels\FatigueTestSetupViewModel.cs" />
     <Compile Include="ViewModels\FullyReversedTorqueTest_VM.cs" />
     <Compile Include="ViewModels\MainWindow_VM.cs" />
     <Compile Include="ViewModels\RunSpeedSettings_VM.cs" />
@@ -124,6 +128,15 @@
     </Compile>
     <Compile Include="Views\EnterTestIdUserControl.xaml.cs">
       <DependentUpon>EnterTestIdUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FatigueTestSetupUserControl.xaml.cs">
+      <DependentUpon>FatigueTestSetupUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FatigueTestSummaryUserControl.xaml.cs">
+      <DependentUpon>FatigueTestSummaryUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FatigueTestUserControl.xaml.cs">
+      <DependentUpon>FatigueTestUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FullyReversedTestSettingsUserControl.xaml.cs">
       <DependentUpon>FullyReversedTestSettingsUserControl.xaml</DependentUpon>
@@ -176,6 +189,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\FatigueTestSetupUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FatigueTestSummaryUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FatigueTestUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FullyReversedTestSettingsUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -216,18 +241,25 @@
     <Resource Include="Images\twister3.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\twister.ico" />
+    <Resource Include="Images\twister.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Twister.Business\Twister.Business.csproj">
       <Project>{ff410532-1e10-491a-9d7a-d0d0468f3643}</Project>
       <Name>Twister.Business</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Twister.Common\Twister.Common.csproj">
-      <Project>{36743F6B-B9EB-4DFB-85B4-A3EF29208FC3}</Project>
-      <Name>Twister.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\twister.ico" />
-    <Resource Include="Images\twister.png" />
+    <Resource Include="Images\spinner.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
+    <PackageReference Include="WpfAnimatedGif">
+      <Version>1.4.17</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

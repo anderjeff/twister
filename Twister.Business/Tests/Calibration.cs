@@ -54,64 +54,57 @@ namespace Twister.Business.Tests
             return CalibratedPartsDb.Delete(this);
         }
 
-        /// <summary>
-        ///     Takes the data from a test and runs it through an algorithm to determine the
-        ///     values that will be either saved to disk, or compared against other tests to
-        ///     determine pass and fail criteria.
-        /// </summary>
-        /// <param name="testSamples"></param>
-        public void CalculateCalibrationValues(List<Sample> testSamples, float targetTorqueMax, float targetTorqueMin)
-        {
-            try
-            {
-                // get two points in the positive quadrant (Quadrant II) to calculate 
-                // slope and interpolate an angle at the targetTorqueMax.
-                var positiveValues = testSamples.Where(t => t.Torque > 0).OrderBy(t => t.SampleTime).ToList();
+	    /// <summary>
+	    ///     Takes the data from a test and runs it through an algorithm to determine the
+	    ///     values that will be either saved to disk, or compared against other tests to
+	    ///     determine pass and fail criteria.
+	    /// </summary>
+	    /// <param name="testSamples"></param>
+	    public void CalculateCalibrationValues(List<Sample> testSamples, float targetTorqueMax, float targetTorqueMin)
+	    {
+		    // get two points in the positive quadrant (Quadrant II) to calculate 
+		    // slope and interpolate an angle at the targetTorqueMax.
+		    var positiveValues = testSamples.Where(t => t.Torque > 0).OrderBy(t => t.SampleTime).ToList();
 
-                Sample maxTorqueSample = positiveValues.OrderByDescending(s => s.Torque).First();
-                var maxSampleIdx = positiveValues.IndexOf(maxTorqueSample);
-                Sample oneBeforeMaxTorqueSample = positiveValues[maxSampleIdx - 1];
+		    Sample maxTorqueSample = positiveValues.OrderByDescending(s => s.Torque).First();
+		    var maxSampleIdx = positiveValues.IndexOf(maxTorqueSample);
+		    Sample oneBeforeMaxTorqueSample = positiveValues[maxSampleIdx - 1];
 
-                // get two points in the positive quadrant (Quadrant IV) to calculate 
-                // slope and interpolate an angle at the targetTorqueMin.
-                var negativeValues = testSamples.Where(t => t.Torque < 0).OrderBy(t => t.SampleTime).ToList();
+		    // get two points in the positive quadrant (Quadrant IV) to calculate 
+		    // slope and interpolate an angle at the targetTorqueMin.
+		    var negativeValues = testSamples.Where(t => t.Torque < 0).OrderBy(t => t.SampleTime).ToList();
 
-                // get minimum torque value, then get the value just prior to that in time.
-                Sample minTorqueSample = negativeValues.OrderBy(s => s.Torque).First();
-                var minSampleIdx = negativeValues.IndexOf(minTorqueSample);
-                Sample oneBeforeMinTorqueSample = negativeValues[minSampleIdx - 1];
+		    // get minimum torque value, then get the value just prior to that in time.
+		    Sample minTorqueSample = negativeValues.OrderBy(s => s.Torque).First();
+		    var minSampleIdx = negativeValues.IndexOf(minTorqueSample);
+		    Sample oneBeforeMinTorqueSample = negativeValues[minSampleIdx - 1];
 
-                // get out before null refernce exception
-                if (maxTorqueSample == null || oneBeforeMaxTorqueSample == null) return;
-                if (minTorqueSample == null || oneBeforeMinTorqueSample == null) return;
+		    // get out before null refernce exception
+		    if (maxTorqueSample == null || oneBeforeMaxTorqueSample == null) return;
+		    if (minTorqueSample == null || oneBeforeMinTorqueSample == null) return;
 
-                // now calculate the slopes
-                var slopePosVals = // negative
-                    (maxTorqueSample.Torque - oneBeforeMaxTorqueSample.Torque) / // positive
-                    (maxTorqueSample.Angle - oneBeforeMaxTorqueSample.Angle); // negative
+		    // now calculate the slopes
+		    var slopePosVals = // negative
+			    (maxTorqueSample.Torque - oneBeforeMaxTorqueSample.Torque) / // positive
+			    (maxTorqueSample.Angle - oneBeforeMaxTorqueSample.Angle); // negative
 
-                var torqueDiffPositive = targetTorqueMax - oneBeforeMaxTorqueSample.Torque; // positive
-                var angleDiffNegative = torqueDiffPositive / slopePosVals; // negative
-                var expectedAnglePosTorque = oneBeforeMaxTorqueSample.Angle + angleDiffNegative; // negative
+		    var torqueDiffPositive = targetTorqueMax - oneBeforeMaxTorqueSample.Torque; // positive
+		    var angleDiffNegative = torqueDiffPositive / slopePosVals; // negative
+		    var expectedAnglePosTorque = oneBeforeMaxTorqueSample.Angle + angleDiffNegative; // negative
 
-                var slopeNegVals = // negative
-                    (minTorqueSample.Torque - oneBeforeMinTorqueSample.Torque) / // negative
-                    (minTorqueSample.Angle - oneBeforeMinTorqueSample.Angle); // positive
+		    var slopeNegVals = // negative
+			    (minTorqueSample.Torque - oneBeforeMinTorqueSample.Torque) / // negative
+			    (minTorqueSample.Angle - oneBeforeMinTorqueSample.Angle); // positive
 
-                var torqueDiffNegative = targetTorqueMin - oneBeforeMinTorqueSample.Torque; // negative
-                var angleDiffPositive = torqueDiffNegative / slopeNegVals; // positive
-                var expectedAngleNegTorque = oneBeforeMinTorqueSample.Angle + angleDiffPositive; // positive
+		    var torqueDiffNegative = targetTorqueMin - oneBeforeMinTorqueSample.Torque; // negative
+		    var angleDiffPositive = torqueDiffNegative / slopeNegVals; // positive
+		    var expectedAngleNegTorque = oneBeforeMinTorqueSample.Angle + angleDiffPositive; // positive
 
-                // now set the values on this object.
-                CwTestTorque = (int) targetTorqueMax;
-                CcwTestTorque = (int) targetTorqueMin;
-                NominalCwDeflection = (decimal) expectedAnglePosTorque;
-                NominalCcwDeflection = (decimal) expectedAngleNegTorque;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+		    // now set the values on this object.
+		    CwTestTorque = (int) targetTorqueMax;
+		    CcwTestTorque = (int) targetTorqueMin;
+		    NominalCwDeflection = (decimal) expectedAnglePosTorque;
+		    NominalCcwDeflection = (decimal) expectedAngleNegTorque;
+	    }
     }
 }
