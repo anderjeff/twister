@@ -11,10 +11,11 @@ namespace Twister.Business.Database
 {
     internal class TableBaseDb
     {
+        private static readonly string vjsPath = @"G:\Programs\Shared\Connections\vjs.txt";
+        private static readonly string twisterPath = @"G:\Programs\Shared\Connections\Twister2015.txt";
         private static ILog _log = LogManager.GetLogger(typeof(TableBaseDb));
 
-        private static readonly string vjsPath = @"G:\Engineering\Programs\Shared\Connections\vjs.txt";
-        private static readonly string twisterPath = @"G:\Engineering\Programs\Shared\Connections\Twister2015.txt";
+
 
         private static SqlConnection vjsConn;
         private static SqlConnection twisterConn;

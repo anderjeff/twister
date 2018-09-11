@@ -7,7 +7,7 @@ namespace Twister.Common
     {
         static LogManager()
         {
-	        var configPath = @"G:\Engineering\Programs\Twister 2015\log4net.config";
+	        var configPath = @"G:\Programs\Twister 2015\log4net.config";
 	        if (File.Exists(configPath))
 	        {
 		        log4net.Config.XmlConfigurator.Configure(new FileInfo(configPath));
