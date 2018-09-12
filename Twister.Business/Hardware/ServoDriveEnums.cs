@@ -35,7 +35,9 @@ namespace Twister.Business.Hardware
 			CcwTorqueLastCalibration = 5040, // USER.INT
 			CyclesPerSecond = 5042, // USER.INT
             CwMaxLastCycle = 5044, // USER.INT64
-            CcwMaxLastCycle = 5048 // USER.INT64
+            CcwMaxLastCycle = 5048, // USER.INT64
+            ShutdownCode = 5052, //USER.INT32
+            HasPreviousCalibrationCycle = 5054 // USER.INT32
         }
 }
 }

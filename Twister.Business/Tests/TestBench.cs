@@ -163,6 +163,7 @@ namespace Twister.Business.Tests
 			if (!(_currentTest is FatigueTest)) return;
 			if (newCondition == null) return;
 
+            Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.HasPreviousCalibrationCycle, 0);
             Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CalibrationInterval, newCondition.CalibrationInterval);
             Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CyclesPerSecond, newCondition.CyclesPerSecond);
 			Singleton.LoadTestParameter(ServoDriveEnums.RegisterAddress.CwTorqueLimit, newCondition.ClockwiseTorque);
