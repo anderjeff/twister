@@ -472,7 +472,8 @@ MBInfo
 	$MBMap32(5042, cyclesPerSecond)' used for the fatigue test, lets the user specify the number of cycles per second, then the program can set run speed based off the angles in calibration cycle.
 	$MBMap64(5044, cwMaxLastCycle)' the max position (MOVE.PLFB) in CW direction achieved last cycle
 	$MBMap64(5048, ccwMaxLastCycle)' the max position (MOVE.PLFB) in CCW direction achieved last cycle
-	$MBMap32(5052, shutdownCode)
+	$MBMap32(5052, shutdownCode) ' the reason a shutdown occurred.
+	$MBMap32(5054, hasPreviousCalibrationCycle) 'indicates if a calibration cycle should use previous calibration results for comparison.
 End 
 
 ' create boolean values, since it's not supported
