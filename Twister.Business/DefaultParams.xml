@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <parameter name="ccwTorque" value="-150" />
+  <parameter name="cwTorque" value="150" />
+  <parameter name="runSpeed" value="1" />
+  <parameter name="manualSpeed" value="5" />
+</root>
