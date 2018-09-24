@@ -13,7 +13,8 @@ namespace Twister.Business.Tests
 	/// </summary>
 	public class TestBench : NotifyPropertyChangedBase
 	{
-		private static readonly string DEFAULT_BENCH_PARAMS = @"G:\Programs\Twister\DefaultParams.xml";
+		private static readonly string DEFAULT_BENCH_PARAMS = @"DefaultParams.xml";
+        //private static readonly string DEFAULT_BENCH_PARAMS = @"G:\Programs\Twister\DefaultParams.xml";
 
 		// Singleton pattern.
 		protected static TestBench _testBench;
