@@ -1,3 +1,5 @@
+REM Uploaded from AKD_VFD on 9/22/2018 1:40:17 PM
+REM #line 0 "C:\Code\Twister\Twister.Business\TwisterAkdBasic.bas"
 '-------------- Device Params -----------------------
 Params 
 	FB1.PIN = 100
@@ -472,8 +474,8 @@ MBInfo
 	$MBMap32(5042, cyclesPerSecond)' used for the fatigue test, lets the user specify the number of cycles per second, then the program can set run speed based off the angles in calibration cycle.
 	$MBMap64(5044, cwMaxLastCycle)' the max position (MOVE.PLFB) in CW direction achieved last cycle
 	$MBMap64(5048, ccwMaxLastCycle)' the max position (MOVE.PLFB) in CCW direction achieved last cycle
-	$MBMap32(5052, shutdownCode)' the reason a shutdown occurred.
-	$MBMap32(5054, hasPreviousCalibrationCycle)'indicates if a calibration cycle should use previous calibration results for comparison.
+	$MBMap32(5052, shutdownCode) ' the reason a shutdown occurred.
+	$MBMap32(5054, hasPreviousCalibrationCycle) 'indicates if a calibration cycle should use previous calibration results for comparison.
 End 
 
 ' create boolean values, since it's not supported
@@ -834,13 +836,11 @@ Sub PerformSteeringShaftTestCycle
 	End If
 	
 	' here is the actual test, the -191147 is 15 degrees at the flange
-	Print "currentTorque: " + STR$ (currentTorque)
 	
-	If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then
-        Call RotateClockwise()
-        Print "ROTATING CW, currentTorque: " + STR$(currentTorque)
-    ElseIf (currentTorque > ccwTorqueLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then
-        firstStageComplete = _TRUE
+	If (currentTorque < cwTorqueLimit And firstStageComplete = _FALSE And PL.FB > -191147) Then 
+		Call RotateClockwise
+	ElseIf (currentTorque > ccwTorqueLimit And secondStageComplete = _FALSE And PL.FB < 191147) Then 
+		firstStageComplete = _TRUE
 		Call RotateCounterClockwise
 		Print "ROTATING CCW, currentTorque: " + STR$ (currentTorque)
 	Else 
@@ -1207,3 +1207,6 @@ Sub DebugMessageString(value As String)
 End Sub
 
 '-------------- Interrupt Routines -------------------
+
+
+

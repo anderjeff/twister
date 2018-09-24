@@ -10,7 +10,8 @@ namespace Twister.Business.Data
     /// </summary>
     public class EmployeeInfo
     {
-        private const string EMPLOYEE_PATH = "G:\\Programs\\Twister 2015\\Employees.xml";
+        //private const string EMPLOYEE_PATH = "G:\\Programs\\Twister 2015\\Employees.xml";
+        private const string EMPLOYEE_PATH = "Employees.xml";
 
         public static void LoadOperatorInfo(BenchOperator benchOperator)
         {
