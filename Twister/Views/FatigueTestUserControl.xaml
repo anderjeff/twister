@@ -97,9 +97,9 @@
                        FontSize="16" Foreground="Green" Background="Yellow" FontWeight="SemiBold" />
             <StackPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" Margin="0,5,0,0"
                    Visibility="{Binding IsComplete, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisConverter}}" >
-                <Label Content="Test Is Complete."
+                <Label Content="{Binding TestStoppedReason}"
                        VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                       FontSize="16" Foreground="White" Background="Green" FontWeight="SemiBold" Width="250"/>
+                       FontSize="16" Foreground="White" Background="Green" FontWeight="SemiBold" Width="auto" Padding="5,5,20,5"/>
                 <Button Content="Close" Command="{Binding CloseAppCommand}" Margin="5,0,0,0" Padding="5" />
             </StackPanel>
 

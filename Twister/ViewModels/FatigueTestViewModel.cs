@@ -48,6 +48,7 @@ namespace Twister.ViewModels
         public List<FatigueTestCalibration> TestCalibrations;
         private bool _isCalibrating;
         private bool _isComplete;
+        private string _testStoppedReason;
 
         public FatigueTestViewModel()
         {
@@ -113,6 +114,17 @@ namespace Twister.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public string TestStoppedReason
+        {
+            get => _testStoppedReason;
+            set
+            {
+                _testStoppedReason = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool BackButtonVisible
         {
             get => _backButtonVisible;
@@ -301,7 +313,10 @@ namespace Twister.ViewModels
         private void StopTest()
         {
             TestBench.Singleton.EmergencyStop();
-            LogDataAndSwitchViews();
+            _testInProcess = false;
+            StopCommand.RaiseCanExecuteChanged();
+            TestStoppedReason = "Stop button pressed, this test is over.";
+            IsComplete = true;
         }
 
         private bool CanStopTest()
@@ -455,29 +470,15 @@ namespace Twister.ViewModels
                 }
                 else
                 {
-                    // clean up and load next view.
                     TestBench.Singleton.ManuallyCompleteTestCycle();
+
+                    // update the UI by setting these
                     _testInProcess = false;
                     StopCommand.RaiseCanExecuteChanged();
+                    TestStoppedReason = "Test Is Complete.";
                     IsComplete = true;
-                    //LogDataAndSwitchViews();
                 }
             }
-        }
-
-        private void LogDataAndSwitchViews()
-        {
-            _loggingDataThread.Abort();
-            while (_loggingDataThread.ThreadState == ThreadState.Running)
-            {
-                Thread.Sleep(50);
-            }
-            LogAvailableData();
-
-            // just so we can see what is happening to the data points.
-            Thread.Sleep(1000);
-
-            IsComplete = true;
         }
 
         private void LoadNextCondition(int currentIndex)
