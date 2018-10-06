@@ -41,6 +41,7 @@ namespace Twister.Business.Hardware
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CwTorqueLastCalibration, "CwTorqueLastCalibration");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CcwTorqueLastCalibration, "CcwTorqueLastCalibration");
 			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.CyclesPerSecond, "CyclesPerSecond");
+			_addressDictionary.Add(ServoDriveEnums.RegisterAddress.HasPreviousCalibrationCycle, "HasPreviousCalibrationCycle");
 		}
 
 		#region AKD Basic Program Custom Registers.
@@ -88,8 +89,9 @@ namespace Twister.Business.Hardware
 		private int CwTorqueLastCalibration { get; set; }
 		private int CcwTorqueLastCalibration { get; set; }
 		private int CyclesPerSecond { get; set; }
+	    private int HasPreviousCalibrationCycle { get; set; }
 
-		#endregion
+	    #endregion
 		
 		/// <summary>
 		/// The source of the angle torque values.

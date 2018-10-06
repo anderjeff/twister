@@ -47,6 +47,7 @@ namespace Twister.ViewModels
         private FatigueTestCalibration _currentCalibration;
         public List<FatigueTestCalibration> TestCalibrations;
         private bool _isCalibrating;
+        private bool _isComplete;
 
         public FatigueTestViewModel()
         {
@@ -55,12 +56,18 @@ namespace Twister.ViewModels
             BackCommand = new RelayCommand(GoBack);
             RunCommand = new RelayCommand(StartTest, CanStartTest);
             StopCommand = new RelayCommand(StopTest, CanStopTest);
+            CloseAppCommand = new RelayCommand(CloseApp);
 
             DataLogPath = "C:\\temp\\twister.dat";
             BackButtonVisible = true;
 
             // for persisting the calibrations used throughout the test.
             TestCalibrations = new List<FatigueTestCalibration>();
+        }
+
+        private void CloseApp()
+        {
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void GoBack()
@@ -97,6 +104,15 @@ namespace Twister.ViewModels
             }
         }
 
+        public bool IsComplete
+        {
+            get => _isComplete;
+            set
+            {
+                _isComplete = value;
+                OnPropertyChanged();
+            }
+        }
         public bool BackButtonVisible
         {
             get => _backButtonVisible;
@@ -258,6 +274,7 @@ namespace Twister.ViewModels
         public RelayCommand BackCommand { get; private set; }
         public RelayCommand RunCommand { get; private set; }
         public RelayCommand StopCommand { get; private set; }
+        public RelayCommand CloseAppCommand { get; }
 
         public ObservableCollection<FatigueTestCondition_VM> TestConditions { get; set; }
 
@@ -440,8 +457,10 @@ namespace Twister.ViewModels
                 {
                     // clean up and load next view.
                     TestBench.Singleton.ManuallyCompleteTestCycle();
-
-                    LogDataAndSwitchViews();
+                    _testInProcess = false;
+                    StopCommand.RaiseCanExecuteChanged();
+                    IsComplete = true;
+                    //LogDataAndSwitchViews();
                 }
             }
         }
@@ -458,7 +477,7 @@ namespace Twister.ViewModels
             // just so we can see what is happening to the data points.
             Thread.Sleep(1000);
 
-            MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSummaryViewModel;
+            IsComplete = true;
         }
 
         private void LoadNextCondition(int currentIndex)
