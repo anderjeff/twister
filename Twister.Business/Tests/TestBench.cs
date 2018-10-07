@@ -348,7 +348,13 @@ namespace Twister.Business.Tests
 			return cycleCount;
 		}
 
-		/// <summary>
+	    public int GetShutdownCode()
+	    {
+	        int shutdownCode = _acDrive.RetrieveParameter(ServoDriveEnums.RegisterAddress.ShutdownCode);
+	        return shutdownCode;
+	    }
+
+	    /// <summary>
 		///     Saves a single sample of data about the test bench.
 		/// </summary>
 		public void AddToCurrentTestData(Sample sample)

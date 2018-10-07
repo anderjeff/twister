@@ -94,7 +94,7 @@
                 Command="{Binding FatigueTestCommand}" />
 
         <CheckBox Content="Use Test Simulator" 
-                  Visibility="Collapsed"
+                  Visibility="Visible"
                   IsChecked="{Binding SimulatorIsUsed}"
                   ToolTip="Simulate the connection to the Kolmorgen Servo Drive.  This cannot be used in production testing."/>
 

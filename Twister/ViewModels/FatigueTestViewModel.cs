@@ -38,6 +38,8 @@ namespace Twister.ViewModels
         private int _ccwTorqueLastCalibration;
         private bool _backButtonVisible;
         private bool _testInProcess;
+        private bool _testInProcessDirect;
+        private bool _servoDriveEndedTest;
 
         private DispatcherTimer _updateUiTimer;
         private Thread _monitoringThread;
@@ -47,6 +49,8 @@ namespace Twister.ViewModels
         private FatigueTestCalibration _currentCalibration;
         public List<FatigueTestCalibration> TestCalibrations;
         private bool _isCalibrating;
+        private bool _isComplete;
+        private string _testStoppedReason;
 
         public FatigueTestViewModel()
         {
@@ -55,12 +59,18 @@ namespace Twister.ViewModels
             BackCommand = new RelayCommand(GoBack);
             RunCommand = new RelayCommand(StartTest, CanStartTest);
             StopCommand = new RelayCommand(StopTest, CanStopTest);
+            CloseAppCommand = new RelayCommand(CloseApp);
 
             DataLogPath = "C:\\temp\\twister.dat";
             BackButtonVisible = true;
 
             // for persisting the calibrations used throughout the test.
             TestCalibrations = new List<FatigueTestCalibration>();
+        }
+
+        private void CloseApp()
+        {
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void GoBack()
@@ -93,6 +103,26 @@ namespace Twister.ViewModels
             set
             {
                 _isSimulated = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsComplete
+        {
+            get => _isComplete;
+            set
+            {
+                _isComplete = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string TestStoppedReason
+        {
+            get => _testStoppedReason;
+            set
+            {
+                _testStoppedReason = value;
                 OnPropertyChanged();
             }
         }
@@ -258,6 +288,7 @@ namespace Twister.ViewModels
         public RelayCommand BackCommand { get; private set; }
         public RelayCommand RunCommand { get; private set; }
         public RelayCommand StopCommand { get; private set; }
+        public RelayCommand CloseAppCommand { get; }
 
         public ObservableCollection<FatigueTestCondition_VM> TestConditions { get; set; }
 
@@ -284,7 +315,15 @@ namespace Twister.ViewModels
         private void StopTest()
         {
             TestBench.Singleton.EmergencyStop();
-            LogDataAndSwitchViews();
+            EndTest("Stop button pressed, this test is over.");
+        }
+
+        private void EndTest(string reason)
+        {
+            _testInProcess = false;
+            StopCommand.RaiseCanExecuteChanged();
+            TestStoppedReason = reason;
+            IsComplete = true;
         }
 
         private bool CanStopTest()
@@ -403,6 +442,7 @@ namespace Twister.ViewModels
                     _currentTorqueDirect = (int)mostRecent.Torque;
                     _currentAngleDirect = mostRecent.Angle;
                     _cycleCountDirect = TestBench.Singleton.GetCycleCount();
+                    _testInProcessDirect = TestBench.Singleton.IsTesting;
                 }
             }
         }
@@ -411,7 +451,25 @@ namespace Twister.ViewModels
         {
             UpdateUi();
             CheckIfNextConditionShouldBeLoaded();
-            IsCalibrating = TestBench.Singleton.IsDueForCalibration();        
+            IsCalibrating = TestBench.Singleton.IsDueForCalibration();
+
+            if (_servoDriveEndedTest)
+            {
+                // get reason for shutdown.
+                int reason = TestBench.Singleton.GetShutdownCode();
+                switch (reason)
+                {
+                    case(1):
+                        EndTest("Calibrated angle in CW direction increased unexpectedly.");
+                        break;
+                    case(2):
+                        EndTest("Calibrated angle in CCW direction increased unexpectedly.");
+                        break;
+                    default:
+                        // do nothing, this is normal case.
+                        break;
+                }
+            }
         }
 
         private void UpdateUi()
@@ -421,6 +479,7 @@ namespace Twister.ViewModels
                 CurrentAngle = _currentAngleDirect;
                 CycleCount = _cycleCountDirect;
                 SelectedTestConditionViewModel.CyclesCompleted = _cycleCountDirect - _cycleCorrectionCount;
+                _servoDriveEndedTest = _testInProcessDirect;
             }
 
             if (IsSimulated) UpdateCyclingGraphic();
@@ -438,27 +497,10 @@ namespace Twister.ViewModels
                 }
                 else
                 {
-                    // clean up and load next view.
                     TestBench.Singleton.ManuallyCompleteTestCycle();
-
-                    LogDataAndSwitchViews();
+                    EndTest("Test Is Complete.");
                 }
             }
-        }
-
-        private void LogDataAndSwitchViews()
-        {
-            _loggingDataThread.Abort();
-            while (_loggingDataThread.ThreadState == ThreadState.Running)
-            {
-                Thread.Sleep(50);
-            }
-            LogAvailableData();
-
-            // just so we can see what is happening to the data points.
-            Thread.Sleep(1000);
-
-            MainWindow_VM.Instance.CurrentViewModel = MainWindow_VM.Instance.FatigueTestSummaryViewModel;
         }
 
         private void LoadNextCondition(int currentIndex)
