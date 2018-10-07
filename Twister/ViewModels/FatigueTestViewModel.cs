@@ -38,6 +38,8 @@ namespace Twister.ViewModels
         private int _ccwTorqueLastCalibration;
         private bool _backButtonVisible;
         private bool _testInProcess;
+        private bool _testInProcessDirect;
+        private bool _servoDriveEndedTest;
 
         private DispatcherTimer _updateUiTimer;
         private Thread _monitoringThread;
@@ -313,9 +315,14 @@ namespace Twister.ViewModels
         private void StopTest()
         {
             TestBench.Singleton.EmergencyStop();
+            EndTest("Stop button pressed, this test is over.");
+        }
+
+        private void EndTest(string reason)
+        {
             _testInProcess = false;
             StopCommand.RaiseCanExecuteChanged();
-            TestStoppedReason = "Stop button pressed, this test is over.";
+            TestStoppedReason = reason;
             IsComplete = true;
         }
 
@@ -435,6 +442,7 @@ namespace Twister.ViewModels
                     _currentTorqueDirect = (int)mostRecent.Torque;
                     _currentAngleDirect = mostRecent.Angle;
                     _cycleCountDirect = TestBench.Singleton.GetCycleCount();
+                    _testInProcessDirect = TestBench.Singleton.IsTesting;
                 }
             }
         }
@@ -443,7 +451,25 @@ namespace Twister.ViewModels
         {
             UpdateUi();
             CheckIfNextConditionShouldBeLoaded();
-            IsCalibrating = TestBench.Singleton.IsDueForCalibration();        
+            IsCalibrating = TestBench.Singleton.IsDueForCalibration();
+
+            if (_servoDriveEndedTest)
+            {
+                // get reason for shutdown.
+                int reason = TestBench.Singleton.GetShutdownCode();
+                switch (reason)
+                {
+                    case(1):
+                        EndTest("Calibrated angle in CW direction increased unexpectedly.");
+                        break;
+                    case(2):
+                        EndTest("Calibrated angle in CCW direction increased unexpectedly.");
+                        break;
+                    default:
+                        // do nothing, this is normal case.
+                        break;
+                }
+            }
         }
 
         private void UpdateUi()
@@ -453,6 +479,7 @@ namespace Twister.ViewModels
                 CurrentAngle = _currentAngleDirect;
                 CycleCount = _cycleCountDirect;
                 SelectedTestConditionViewModel.CyclesCompleted = _cycleCountDirect - _cycleCorrectionCount;
+                _servoDriveEndedTest = _testInProcessDirect;
             }
 
             if (IsSimulated) UpdateCyclingGraphic();
@@ -471,12 +498,7 @@ namespace Twister.ViewModels
                 else
                 {
                     TestBench.Singleton.ManuallyCompleteTestCycle();
-
-                    // update the UI by setting these
-                    _testInProcess = false;
-                    StopCommand.RaiseCanExecuteChanged();
-                    TestStoppedReason = "Test Is Complete.";
-                    IsComplete = true;
+                    EndTest("Test Is Complete.");
                 }
             }
         }
